@@ -1,6 +1,13 @@
-// Animation components for CJS 2026
-export { AnimatedLogo, AnimatedLogoWithText } from './AnimatedLogo'
-export { BlurText, SplitText, GradientText } from './BlurText'
-export { CountUp, StatCard } from './CountUp'
-export { ParticlesBackground, FloatingDots } from './ParticlesBackground'
-export { SplashScreen, SimpleSplash } from './SplashScreen'
+// ============================================
+// Component Exports
+// ============================================
+export { default as BlurText } from './BlurText';
+export { default as ParticlesBackground } from './ParticlesBackground';
+export { default as AnimatedLogo } from './AnimatedLogo';
+export { default as SplashScreen } from './SplashScreen';
+export { default as CountUp } from './CountUp';
+export { default as Navbar } from './Navbar';
+export { default as EmailSignup } from './EmailSignup';
+export { default as Footer } from './Footer';
+export { default as Layout } from './Layout';
+export { default as ProtectedRoute } from './ProtectedRoute';

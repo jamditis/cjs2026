@@ -1,165 +1,99 @@
-import React from 'react'
-import { motion } from 'framer-motion'
+import { useRef, useEffect, useState } from 'react';
+import { useSpring, useTransform, motion } from 'framer-motion';
 
-/**
- * BlurText - Text that animates in with a blur effect
- * Inspired by React Bits BlurText component
- */
-export function BlurText({
+export const BlurText = ({
   text,
+  delay = 200,
   className = '',
-  delay = 0,
-  duration = 0.5,
-  blur = 10,
-  animateByWord = false,
-  staggerDelay = 0.05
-}) {
-  // Split text into words or characters
-  const elements = animateByWord ? text.split(' ') : text.split('')
+  animateBy = 'words', // 'words' or 'letters'
+  direction = 'top', // 'top' or 'bottom'
+  threshold = 0.1,
+  rootMargin = '-50px',
+  animationFrom,
+  animationTo,
+  easing = 'easeOut',
+  onAnimationComplete,
+}) => {
+  const elements = animateBy === 'words' ? text.split(' ') : text.split('');
+  const [inView, setInView] = useState(false);
+  const ref = useRef();
+  const animatedCount = useRef(0);
 
-  const containerVariants = {
-    hidden: {},
-    visible: {
-      transition: {
-        staggerChildren: staggerDelay,
-        delayChildren: delay
-      }
-    }
-  }
+  // Default animations based on direction
+  const defaultFrom =
+    direction === 'top'
+      ? { filter: 'blur(10px)', opacity: 0, transform: 'translate3d(0,-50px,0)' }
+      : { filter: 'blur(10px)', opacity: 0, transform: 'translate3d(0,50px,0)' };
 
-  const itemVariants = {
-    hidden: {
-      opacity: 0,
-      filter: `blur(${blur}px)`,
-      y: 10
+  const defaultTo = [
+    {
+      filter: 'blur(5px)',
+      opacity: 0.5,
+      transform: direction === 'top' ? 'translate3d(0,5px,0)' : 'translate3d(0,-5px,0)',
     },
-    visible: {
-      opacity: 1,
-      filter: 'blur(0px)',
-      y: 0,
-      transition: {
-        duration: duration,
-        ease: [0.22, 1, 0.36, 1]
-      }
+    { filter: 'blur(0px)', opacity: 1, transform: 'translate3d(0,0,0)' },
+  ];
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true);
+          observer.unobserve(ref.current);
+        }
+      },
+      { threshold, rootMargin }
+    );
+
+    if (ref.current) {
+      observer.observe(ref.current);
     }
-  }
+
+    return () => observer.disconnect();
+  }, [threshold, rootMargin]);
+
+  const springs = elements.map(() =>
+    useSpring(0, {
+      stiffness: 70, // Softer stiffness for a "paper/ink" feel
+      damping: 20,   // Higher damping for less bounce, more "settling"
+      mass: 1,
+    })
+  );
 
   return (
-    <motion.span
-      className={`inline-flex flex-wrap ${className}`}
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-    >
+    <p ref={ref} className={`blur-text ${className} flex flex-wrap`}>
       {elements.map((element, index) => (
-        <motion.span
+        <span
           key={index}
-          variants={itemVariants}
-          className="inline-block"
-          style={{ whiteSpace: animateByWord ? 'pre' : 'normal' }}
+          style={{
+            display: 'inline-block',
+            marginRight: animateBy === 'words' ? '0.25em' : '0',
+            position: 'relative',
+          }}
         >
-          {element}
-          {animateByWord && index < elements.length - 1 ? '\u00A0' : ''}
-        </motion.span>
+          {/* React Bits Logic with Framer Motion */}
+          <motion.span
+            initial={animationFrom || defaultFrom}
+            animate={inView ? (animationTo || defaultTo) : (animationFrom || defaultFrom)}
+            transition={{
+              duration: 0.8,
+              delay: index * 0.05 + delay / 1000,
+              ease: [0.25, 0.4, 0.25, 1], // Cubic bezier for "ink flow" feel
+            }}
+            onAnimationComplete={() => {
+              animatedCount.current += 1;
+              if (animatedCount.current === elements.length && onAnimationComplete) {
+                onAnimationComplete();
+              }
+            }}
+            className="inline-block"
+          >
+            {element === ' ' ? '\u00A0' : element}
+          </motion.span>
+        </span>
       ))}
-    </motion.span>
-  )
-}
+    </p>
+  );
+};
 
-/**
- * SplitText - Text that splits and animates in character by character
- */
-export function SplitText({
-  text,
-  className = '',
-  delay = 0,
-  staggerDelay = 0.03,
-  direction = 'up' // 'up', 'down', 'left', 'right'
-}) {
-  const chars = text.split('')
-
-  const getInitialPosition = () => {
-    switch (direction) {
-      case 'up': return { y: 20, opacity: 0 }
-      case 'down': return { y: -20, opacity: 0 }
-      case 'left': return { x: 20, opacity: 0 }
-      case 'right': return { x: -20, opacity: 0 }
-      default: return { y: 20, opacity: 0 }
-    }
-  }
-
-  const containerVariants = {
-    hidden: {},
-    visible: {
-      transition: {
-        staggerChildren: staggerDelay,
-        delayChildren: delay
-      }
-    }
-  }
-
-  const charVariants = {
-    hidden: getInitialPosition(),
-    visible: {
-      x: 0,
-      y: 0,
-      opacity: 1,
-      transition: {
-        duration: 0.4,
-        ease: [0.22, 1, 0.36, 1]
-      }
-    }
-  }
-
-  return (
-    <motion.span
-      className={`inline-block ${className}`}
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-    >
-      {chars.map((char, index) => (
-        <motion.span
-          key={index}
-          variants={charVariants}
-          className="inline-block"
-          style={{ whiteSpace: char === ' ' ? 'pre' : 'normal' }}
-        >
-          {char === ' ' ? '\u00A0' : char}
-        </motion.span>
-      ))}
-    </motion.span>
-  )
-}
-
-/**
- * GradientText - Text with animated gradient
- */
-export function GradientText({
-  text,
-  className = '',
-  colors = ['#CA3553', '#ff6b6b', '#CA3553'],
-  animationDuration = 3
-}) {
-  return (
-    <motion.span
-      className={`inline-block bg-clip-text text-transparent ${className}`}
-      style={{
-        backgroundImage: `linear-gradient(90deg, ${colors.join(', ')})`,
-        backgroundSize: '200% auto'
-      }}
-      animate={{
-        backgroundPosition: ['0% center', '200% center']
-      }}
-      transition={{
-        duration: animationDuration,
-        repeat: Infinity,
-        ease: 'linear'
-      }}
-    >
-      {text}
-    </motion.span>
-  )
-}
-
-export default BlurText
+export default BlurText;

@@ -2,17 +2,45 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Base styles */
-body {
-  font-family: Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* ============================================
+   CJS 2026 - Illustrated/Editorial Aesthetic
+   Inspired by hand-drawn NC map with mountains
+   ============================================ */
+
+:root {
+  --teal: #2A9D8F;
+  --teal-dark: #1E7268;
+  --teal-light: #5FBFB3;
+  --cream: #F5F0E6;
+  --parchment: #EDE8DC;
+  --ink: #2C3E50;
+  --cardinal: #C84B31;
+  --sketch: #8B9A8B;
 }
 
-/* Montserrat for headings */
+/* Base styles */
+body {
+  font-family: 'Source Sans 3', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--cream);
+  color: var(--ink);
+}
+
+/* Playfair Display for headings */
 h1, h2, h3, h4, h5, h6,
-.font-montserrat {
-  font-family: 'Montserrat', sans-serif;
+.font-heading {
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+/* Caveat for handwritten accents */
+.font-accent {
+  font-family: 'Caveat', cursive;
+}
+
+/* Source Sans for body */
+.font-body {
+  font-family: 'Source Sans 3', sans-serif;
 }
 
 /* Smooth scroll */
@@ -22,11 +50,58 @@ html {
 
 /* Focus states for accessibility */
 *:focus-visible {
-  outline: 2px solid #CA3553;
+  outline: 2px solid var(--teal);
   outline-offset: 2px;
 }
 
-/* Custom animations */
+/* ============================================
+   Paper/Sketch Texture Background
+   ============================================ */
+
+.bg-paper {
+  background-color: var(--cream);
+  background-image:
+    /* Subtle noise texture */
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E"),
+    /* Paper grain */
+    linear-gradient(90deg, transparent 0%, rgba(139, 154, 139, 0.02) 50%, transparent 100%);
+}
+
+.bg-parchment {
+  background-color: var(--parchment);
+  background-image:
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
+}
+
+/* Sketch-style border effect */
+.sketch-border {
+  position: relative;
+}
+
+.sketch-border::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border: 2px solid var(--ink);
+  border-radius: inherit;
+  opacity: 0.15;
+  transform: rotate(-0.5deg);
+}
+
+.sketch-border::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border: 1px solid var(--ink);
+  border-radius: inherit;
+  opacity: 0.08;
+  transform: rotate(0.5deg);
+}
+
+/* ============================================
+   Animations
+   ============================================ */
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -38,12 +113,48 @@ html {
   }
 }
 
-@keyframes pulse-subtle {
+@keyframes sketchIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px) rotate(-1deg);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) rotate(0deg);
+  }
+}
+
+@keyframes handDraw {
+  0% {
+    stroke-dashoffset: 1000;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(1deg);
+  }
+}
+
+@keyframes pulse-soft {
   0%, 100% {
     opacity: 1;
+    transform: scale(1);
   }
   50% {
     opacity: 0.8;
+    transform: scale(1.02);
   }
 }
 
@@ -51,73 +162,257 @@ html {
   animation: fadeIn 0.6s ease-out forwards;
 }
 
-.animate-pulse-subtle {
-  animation: pulse-subtle 2s ease-in-out infinite;
+.animate-sketch-in {
+  animation: sketchIn 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
-/* Countdown number styling */
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 3s ease-in-out infinite;
+}
+
+/* Stagger children animations */
+.stagger-children > * {
+  animation: sketchIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  opacity: 0;
+}
+
+.stagger-children > *:nth-child(1) { animation-delay: 0.1s; }
+.stagger-children > *:nth-child(2) { animation-delay: 0.2s; }
+.stagger-children > *:nth-child(3) { animation-delay: 0.3s; }
+.stagger-children > *:nth-child(4) { animation-delay: 0.4s; }
+.stagger-children > *:nth-child(5) { animation-delay: 0.5s; }
+
+/* ============================================
+   Typography Utilities
+   ============================================ */
+
+.text-ink {
+  color: var(--ink);
+}
+
+.text-teal {
+  color: var(--teal);
+}
+
+.text-cardinal {
+  color: var(--cardinal);
+}
+
+/* Handwritten style text */
+.handwritten {
+  font-family: 'Caveat', cursive;
+  font-size: 1.5em;
+  line-height: 1.2;
+}
+
+/* Editorial headline style */
+.editorial-headline {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+/* Italic accent (like "Prepare to partner") */
+.italic-accent {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+}
+
+/* ============================================
+   Countdown Styling
+   ============================================ */
+
 .countdown-number {
   font-variant-numeric: tabular-nums;
+  font-family: 'Playfair Display', Georgia, serif;
 }
 
-/* Button hover effects */
+.countdown-card {
+  background: white;
+  border: 2px solid var(--teal);
+  border-radius: 8px;
+  position: relative;
+  box-shadow:
+    4px 4px 0 var(--teal-light),
+    inset 0 0 0 1px rgba(42, 157, 143, 0.1);
+}
+
+/* ============================================
+   Buttons
+   ============================================ */
+
 .btn-primary {
-  @apply bg-brand-red text-white px-8 py-4 rounded-lg font-montserrat font-semibold text-lg transition-all duration-200;
+  @apply px-8 py-4 rounded-lg font-body font-semibold text-lg transition-all duration-200;
+  background-color: var(--teal);
+  color: white;
+  border: 2px solid var(--teal-dark);
+  box-shadow: 3px 3px 0 var(--teal-dark);
 }
 
 .btn-primary:hover {
-  @apply bg-opacity-90 transform scale-105;
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0 var(--teal-dark);
 }
 
 .btn-primary:active {
-  @apply transform scale-100;
+  transform: translate(1px, 1px);
+  box-shadow: 2px 2px 0 var(--teal-dark);
 }
 
-/* Link underline animation */
+.btn-secondary {
+  @apply px-6 py-3 rounded-lg font-body font-medium transition-all duration-200;
+  background-color: transparent;
+  color: var(--teal);
+  border: 2px solid var(--teal);
+}
+
+.btn-secondary:hover {
+  background-color: var(--teal);
+  color: white;
+}
+
+/* ============================================
+   Cards
+   ============================================ */
+
+.card-sketch {
+  background: white;
+  border: 2px solid var(--ink);
+  border-radius: 12px;
+  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-sketch::before {
+  content: '';
+  position: absolute;
+  inset: 4px 4px -4px -4px;
+  background: var(--teal-light);
+  border-radius: inherit;
+  z-index: -1;
+  opacity: 0.3;
+  transition: transform 0.3s ease;
+}
+
+.card-sketch:hover {
+  transform: translate(-2px, -2px);
+}
+
+.card-sketch:hover::before {
+  transform: translate(4px, 4px);
+}
+
+/* ============================================
+   Decorative Elements
+   ============================================ */
+
+/* Squiggly underline */
+.squiggle-underline {
+  position: relative;
+  display: inline-block;
+}
+
+.squiggle-underline::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -4px;
+  height: 6px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 10'%3E%3Cpath d='M0 5 Q 12.5 0, 25 5 T 50 5 T 75 5 T 100 5' stroke='%232A9D8F' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+  background-size: 50px 6px;
+  background-repeat: repeat-x;
+}
+
+/* Sketch circle highlight */
+.sketch-circle {
+  position: relative;
+}
+
+.sketch-circle::before {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border: 3px solid var(--teal);
+  border-radius: 50%;
+  opacity: 0.6;
+  transform: rotate(-3deg);
+}
+
+/* Hand-drawn arrow */
+.hand-arrow {
+  position: relative;
+}
+
+.hand-arrow::after {
+  content: '→';
+  font-family: 'Caveat', cursive;
+  font-size: 1.5em;
+  color: var(--teal);
+  margin-left: 0.5em;
+}
+
+/* ============================================
+   Link Styles
+   ============================================ */
+
 .link-underline {
   position: relative;
+  color: var(--teal);
+  text-decoration: none;
 }
 
 .link-underline::after {
   content: '';
   position: absolute;
-  width: 0;
+  width: 100%;
   height: 2px;
   bottom: -2px;
   left: 0;
-  background-color: #CA3553;
-  transition: width 0.3s ease;
+  background-color: var(--teal);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.3s ease;
 }
 
 .link-underline:hover::after {
-  width: 100%;
+  transform: scaleX(1);
+  transform-origin: left;
 }
 
-/* Floating animation for particles */
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0) translateX(0);
-  }
-  25% {
-    transform: translateY(-20px) translateX(10px);
-  }
-  50% {
-    transform: translateY(-10px) translateX(-10px);
-  }
-  75% {
-    transform: translateY(-30px) translateX(5px);
-  }
-}
+/* ============================================
+   Logo Glow (teal instead of red)
+   ============================================ */
 
-.animate-float {
-  animation: float 15s ease-in-out infinite;
-}
-
-/* Glow effect for logo */
 .logo-glow {
-  filter: drop-shadow(0 0 10px rgba(202, 53, 83, 0.3));
+  filter: drop-shadow(0 0 8px rgba(42, 157, 143, 0.3));
+  transition: filter 0.3s ease;
 }
 
 .logo-glow:hover {
-  filter: drop-shadow(0 0 20px rgba(202, 53, 83, 0.5));
+  filter: drop-shadow(0 0 16px rgba(42, 157, 143, 0.5));
+}
+
+/* ============================================
+   Section Dividers
+   ============================================ */
+
+.divider-sketch {
+  height: 2px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 2'%3E%3Cpath d='M0 1 Q 25 0, 50 1 T 100 1' stroke='%232A9D8F' stroke-width='1' fill='none' opacity='0.5'/%3E%3C/svg%3E");
+  background-size: 100px 2px;
+  background-repeat: repeat-x;
+}
+
+/* Mountain silhouette divider */
+.divider-mountains {
+  height: 60px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 60' preserveAspectRatio='none'%3E%3Cpath d='M0 60 L0 40 L100 25 L200 35 L300 15 L400 30 L500 10 L600 25 L700 20 L800 35 L900 15 L1000 30 L1100 25 L1200 40 L1200 60 Z' fill='%232A9D8F' opacity='0.1'/%3E%3C/svg%3E");
+  background-size: 100% 100%;
 }

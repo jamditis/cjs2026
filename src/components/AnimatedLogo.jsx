@@ -1,126 +1,78 @@
-import React from 'react'
-import { motion } from 'framer-motion'
+import React from 'react';
+import { motion } from 'framer-motion';
 
-/**
- * Animated CJS Logo
- *
- * The logo features 5 people (circles) connected around a center with triangles.
- * This component animates the logo with:
- * - Fade in and scale on mount
- * - Subtle continuous rotation
- * - Pulse effect on hover
- */
-export function AnimatedLogo({
-  size = 120,
-  className = '',
-  animate = true,
-  showPulse = true
-}) {
-  const logoVariants = {
-    hidden: {
-      opacity: 0,
-      scale: 0.8,
-      rotate: -10
-    },
-    visible: {
-      opacity: 1,
-      scale: 1,
-      rotate: 0,
-      transition: {
-        duration: 0.8,
-        ease: [0.22, 1, 0.36, 1] // Custom easing
-      }
-    },
-    hover: {
-      scale: 1.05,
-      transition: {
-        duration: 0.3,
-        ease: 'easeOut'
-      }
-    }
-  }
+const AnimatedLogo = ({ className = "w-24 h-24" }) => {
+  // SVG Path for a "Gear" icon approximation, simplified for drawing animation
+  const gearPath = "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v2h-2zm0 10h2v2h-2zm-5-5h2v2H6zm10 0h2v2h-2zm-1.9-3.9l1.4-1.4 1.4 1.4-1.4 1.4zm-7.2 7.2l1.4-1.4 1.4 1.4-1.4 1.4zm0-7.2l1.4 1.4-1.4 1.4-1.4-1.4zm7.2 7.2l1.4 1.4-1.4 1.4-1.4-1.4z";
 
   return (
-    <motion.div
-      className={`relative ${className}`}
-      initial={animate ? 'hidden' : 'visible'}
-      animate="visible"
-      whileHover={showPulse ? 'hover' : undefined}
-      variants={logoVariants}
-    >
-      {/* Pulse ring effect */}
-      {showPulse && (
-        <motion.div
-          className="absolute inset-0 rounded-full"
-          style={{
-            background: 'radial-gradient(circle, rgba(202, 53, 83, 0.2) 0%, transparent 70%)',
-          }}
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.5, 0, 0.5],
-          }}
-          transition={{
-            duration: 3,
-            repeat: Infinity,
-            ease: 'easeInOut'
+    <div className={`${className} relative flex items-center justify-center`}>
+      <motion.svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="w-full h-full text-brand-teal"
+        initial="hidden"
+        animate="visible"
+      >
+        {/* Draw the gear outline */}
+        <motion.circle
+          cx="12"
+          cy="12"
+          r="9"
+          variants={{
+            hidden: { pathLength: 0, opacity: 0 },
+            visible: { 
+              pathLength: 1, 
+              opacity: 1, 
+              transition: { 
+                pathLength: { duration: 1.5, ease: "easeInOut" },
+                opacity: { duration: 0.5 }
+              } 
+            },
           }}
         />
-      )}
+        
+        {/* Draw inner details - simulated complex path */}
+        <motion.path
+          d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"
+          variants={{
+            hidden: { pathLength: 0, opacity: 0 },
+            visible: { 
+              pathLength: 1, 
+              opacity: 1, 
+              transition: { 
+                pathLength: { duration: 1, ease: "easeInOut", delay: 0.5 },
+                opacity: { duration: 0.5, delay: 0.5 }
+              } 
+            },
+          }}
+        />
+        
+        {/* Rotating dash for activity */}
+        <motion.g
+           animate={{ rotate: 360 }}
+           transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+           style={{ originX: "12px", originY: "12px" }}
+        >
+           <motion.path
+             d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"
+             variants={{
+                hidden: { pathLength: 0, opacity: 0 },
+                visible: {
+                    pathLength: 1,
+                    opacity: 0.5,
+                    transition: { duration: 1, delay: 1 }
+                }
+             }}
+           />
+        </motion.g>
+      </motion.svg>
+    </div>
+  );
+};
 
-      {/* Logo image */}
-      <motion.img
-        src="/cjs-logo-iso.png"
-        alt="Collaborative Journalism Summit"
-        width={size}
-        height={size}
-        className="relative z-10"
-        animate={animate ? {
-          rotate: [0, 360],
-        } : undefined}
-        transition={{
-          duration: 60, // Very slow rotation
-          repeat: Infinity,
-          ease: 'linear'
-        }}
-      />
-    </motion.div>
-  )
-}
-
-/**
- * Animated Logo with text underneath
- */
-export function AnimatedLogoWithText({
-  size = 120,
-  showSubtitle = true,
-  className = ''
-}) {
-  return (
-    <motion.div
-      className={`flex flex-col items-center ${className}`}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay: 0.2 }}
-    >
-      <AnimatedLogo size={size} />
-
-      <motion.div
-        className="mt-4 text-center"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
-      >
-        <h1 className="font-montserrat font-bold text-2xl text-white">
-          CJS 2026
-        </h1>
-        {showSubtitle && (
-          <p className="text-white/70 text-sm mt-1">
-            10th anniversary
-          </p>
-        )}
-      </motion.div>
-    </motion.div>
-  )
-}
-
-export default AnimatedLogo
+export default AnimatedLogo;

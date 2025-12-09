@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion'
  * Shows on initial page load, then fades out to reveal content
  */
 export function SplashScreen({
-  duration = 2500, // Total splash duration in ms
+  duration = 2000, // Reduced duration slightly
   onComplete,
   children
 }) {
@@ -31,7 +31,7 @@ export function SplashScreen({
       <AnimatePresence>
         {isVisible && (
           <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-brand-black"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-paper"
             initial={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5, ease: 'easeOut' }}
@@ -53,9 +53,9 @@ export function SplashScreen({
                 <motion.img
                   src="/cjs-logo-iso.png"
                   alt="CJS"
-                  className="w-24 h-24 md:w-32 md:h-32"
+                  className="w-24 h-24 md:w-32 md:h-32 logo-glow"
                   animate={isAnimating ? {
-                    filter: ['brightness(1)', 'brightness(1.3)', 'brightness(1)']
+                    filter: ['brightness(1)', 'brightness(1.1)', 'brightness(1)']
                   } : {}}
                   transition={{
                     duration: 1.5,
@@ -73,7 +73,7 @@ export function SplashScreen({
                 transition={{ delay: 0.4, duration: 0.5 }}
               >
                 <motion.h1
-                  className="font-montserrat font-bold text-2xl text-white"
+                  className="font-heading font-bold text-3xl text-brand-ink"
                   animate={isAnimating ? {
                     opacity: [1, 0.7, 1]
                   } : {}}
@@ -86,7 +86,7 @@ export function SplashScreen({
                   CJS 2026
                 </motion.h1>
                 <motion.p
-                  className="text-white/60 text-sm mt-1"
+                  className="text-brand-ink/60 text-lg mt-1 font-accent"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.6 }}
@@ -97,7 +97,7 @@ export function SplashScreen({
 
               {/* Loading indicator */}
               <motion.div
-                className="mt-8 flex gap-1"
+                className="mt-8 flex gap-2"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.8 }}
@@ -105,7 +105,7 @@ export function SplashScreen({
                 {[0, 1, 2].map((i) => (
                   <motion.div
                     key={i}
-                    className="w-2 h-2 rounded-full bg-brand-red"
+                    className="w-2 h-2 rounded-full bg-brand-teal"
                     animate={{
                       y: [0, -8, 0],
                       opacity: [0.5, 1, 0.5]
@@ -160,14 +160,14 @@ export function SimpleSplash({
       {!showContent ? (
         <motion.div
           key="splash"
-          className="fixed inset-0 z-50 flex items-center justify-center bg-brand-black"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-paper"
           exit={{ opacity: 0, scale: 1.1 }}
           transition={{ duration: 0.4 }}
         >
           <motion.img
             src="/cjs-logo-iso.png"
             alt="CJS 2026"
-            className="w-20 h-20"
+            className="w-20 h-20 logo-glow"
             initial={{ opacity: 0, scale: 0.5 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
