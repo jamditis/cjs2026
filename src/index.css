@@ -1,0 +1,94 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base styles */
+body {
+  font-family: Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Montserrat for headings */
+h1, h2, h3, h4, h5, h6,
+.font-montserrat {
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Focus states for accessibility */
+*:focus-visible {
+  outline: 2px solid #CA3553;
+  outline-offset: 2px;
+}
+
+/* Custom animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-subtle {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 2s ease-in-out infinite;
+}
+
+/* Countdown number styling */
+.countdown-number {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Button hover effects */
+.btn-primary {
+  @apply bg-brand-red text-white px-8 py-4 rounded-lg font-montserrat font-semibold text-lg transition-all duration-200;
+}
+
+.btn-primary:hover {
+  @apply bg-opacity-90 transform scale-105;
+}
+
+.btn-primary:active {
+  @apply transform scale-100;
+}
+
+/* Link underline animation */
+.link-underline {
+  position: relative;
+}
+
+.link-underline::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -2px;
+  left: 0;
+  background-color: #CA3553;
+  transition: width 0.3s ease;
+}
+
+.link-underline:hover::after {
+  width: 100%;
+}
