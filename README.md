@@ -4,7 +4,7 @@
 
 The 10th anniversary edition of the Collaborative Journalism Summit.
 
-🌐 **Website**: [cjs2026.web.app](https://cjs2026.web.app)
+🌐 **Website**: [collaborativejournalism.org/cjs2026](https://collaborativejournalism.org/cjs2026)
 
 ---
 
@@ -58,7 +58,7 @@ CJS 2026 marks a milestone: **10 years** of collaborative journalism.
 
 ## Registration
 
-Registration opens soon. [Sign up for updates](https://cjs2026.web.app).
+Registration opens soon. [Sign up for updates](https://collaborativejournalism.org/cjs2026).
 
 **Scholarship tickets** are available to ensure cost is not a barrier to participation. Email summit@collaborativejournalism.org to request one.
 
