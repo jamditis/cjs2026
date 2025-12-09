@@ -92,3 +92,32 @@ html {
 .link-underline:hover::after {
   width: 100%;
 }
+
+/* Floating animation for particles */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) translateX(0);
+  }
+  25% {
+    transform: translateY(-20px) translateX(10px);
+  }
+  50% {
+    transform: translateY(-10px) translateX(-10px);
+  }
+  75% {
+    transform: translateY(-30px) translateX(5px);
+  }
+}
+
+.animate-float {
+  animation: float 15s ease-in-out infinite;
+}
+
+/* Glow effect for logo */
+.logo-glow {
+  filter: drop-shadow(0 0 10px rgba(202, 53, 83, 0.3));
+}
+
+.logo-glow:hover {
+  filter: drop-shadow(0 0 20px rgba(202, 53, 83, 0.5));
+}
