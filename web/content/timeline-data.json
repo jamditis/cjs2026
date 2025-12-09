@@ -1,0 +1,467 @@
+{
+  "meta": {
+    "title": "10 Years of Collaborative Journalism",
+    "subtitle": "From experiment to ecosystem",
+    "description": "A decade of bringing journalists together to work in the public interest"
+  },
+  "phases": [
+    {
+      "id": "foundation",
+      "name": "Foundation",
+      "years": "2017-2019",
+      "question": "Can we do this?",
+      "description": "Proving collaborative journalism works"
+    },
+    {
+      "id": "adaptation",
+      "name": "Adaptation",
+      "years": "2020-2021",
+      "question": "How do we adapt?",
+      "description": "Surviving disruption together"
+    },
+    {
+      "id": "sustainability",
+      "name": "Sustainability",
+      "years": "2022-2023",
+      "question": "How do we sustain this?",
+      "description": "Building lasting infrastructure"
+    },
+    {
+      "id": "impact",
+      "name": "Impact",
+      "years": "2024-2025",
+      "question": "What impact can we achieve?",
+      "description": "Demonstrating transformative outcomes"
+    },
+    {
+      "id": "future",
+      "name": "Future",
+      "years": "2026",
+      "question": "What's next?",
+      "description": "Charting the next decade"
+    }
+  ],
+  "summits": [
+    {
+      "year": 2017,
+      "location": {
+        "city": "Montclair",
+        "state": "NJ",
+        "venue": "Montclair State University",
+        "coordinates": {
+          "lat": 40.8259,
+          "lng": -74.209
+        }
+      },
+      "format": "in-person",
+      "phase": "foundation",
+      "theme": "Establishing the foundation",
+      "tagline": "The inaugural summit",
+      "attendees": 170,
+      "iconicBuilding": {
+        "name": "Wellmont Theater",
+        "description": "Historic Montclair venue",
+        "imageKey": "wellmont"
+      },
+      "highlights": [
+        "170+ reporters and editors attended",
+        "First open funding call: three $7,000 grants",
+        "Created temporary virtual newsroom for students",
+        "ProPublica's Electionland featured"
+      ],
+      "keyQuote": {
+        "text": "Working together in the public interest can achieve greater results than working alone in our own interests.",
+        "speaker": "Stefanie Murray",
+        "role": "Director, Center for Cooperative Media"
+      },
+      "notableProjects": [
+        "Electionland (ProPublica)"
+      ]
+    },
+    {
+      "year": 2018,
+      "location": {
+        "city": "Montclair",
+        "state": "NJ",
+        "venue": "Montclair State University",
+        "coordinates": {
+          "lat": 40.8259,
+          "lng": -74.209
+        }
+      },
+      "format": "in-person",
+      "phase": "foundation",
+      "theme": "Ethnic media partnerships",
+      "tagline": "Building bridges across newsrooms",
+      "iconicBuilding": {
+        "name": "MSU Campus",
+        "description": "School of Communication and Media",
+        "imageKey": "msu-campus"
+      },
+      "highlights": [
+        "Keynote by Daniela Gerson on ethnic media collaborations",
+        "Gregoire Lemarchand on CrossCheck misinformation project",
+        "Lightning talks format introduced",
+        "Impact measurement focus: 'Tracking the So What'"
+      ],
+      "keynotes": [
+        {
+          "speaker": "Daniela Gerson",
+          "topic": "Lessons from ethnic media collaborations"
+        },
+        {
+          "speaker": "Gregoire Lemarchand",
+          "organization": "AFP",
+          "topic": "CrossCheck and fighting election misinformation"
+        }
+      ],
+      "notableProjects": [
+        "Documenting Hate (ProPublica)",
+        "CrossCheck"
+      ]
+    },
+    {
+      "year": 2019,
+      "location": {
+        "city": "Philadelphia",
+        "state": "PA",
+        "venue": "Temple University",
+        "coordinates": {
+          "lat": 39.9526,
+          "lng": -75.1652
+        }
+      },
+      "format": "in-person",
+      "phase": "foundation",
+      "theme": "Equity and inclusion",
+      "tagline": "People over projects",
+      "iconicBuilding": {
+        "name": "Independence Hall",
+        "description": "Birthplace of American democracy",
+        "imageKey": "independence-hall"
+      },
+      "highlights": [
+        "Broke in Philly case study deep dive",
+        "Focus on equitable newsroom collaborations",
+        "Changing racial narratives through partnership",
+        "The Reentry Project featured"
+      ],
+      "keySessions": [
+        "Blindspots begone! Challenges and pathways to equitable newsroom collaborations",
+        "People over projects: Changing racial narratives in media through partnership"
+      ],
+      "notableProjects": [
+        "Broke in Philly",
+        "The Reentry Project",
+        "Documenting Hate"
+      ]
+    },
+    {
+      "year": 2020,
+      "location": {
+        "city": "Virtual",
+        "state": null,
+        "venue": "Online",
+        "originallyPlanned": "Charlotte, NC",
+        "coordinates": null
+      },
+      "format": "virtual",
+      "phase": "adaptation",
+      "theme": "COVID-19 response",
+      "tagline": "Adapting together",
+      "iconicBuilding": {
+        "name": "Laptop Screen",
+        "description": "The COVID pivot",
+        "imageKey": "laptop-zoom"
+      },
+      "highlights": [
+        "Pivot to virtual due to pandemic",
+        "Free registration for accessibility",
+        "Coronavirus collaboration coverage featured",
+        "Climate journalism collaborations explored"
+      ],
+      "keySessions": [
+        "Coronavirus collaboration: How newsrooms are partnering to cover the biggest story of our lifetime",
+        "Rising temperatures, rising collaboration: Climate crisis partnerships"
+      ],
+      "historicalNote": "Charlotte, NC was the planned location. COVID prevented this, making 2026's return to North Carolina a 'full circle' moment."
+    },
+    {
+      "year": 2021,
+      "location": {
+        "city": "Virtual",
+        "state": null,
+        "venue": "Online",
+        "coordinates": null
+      },
+      "format": "virtual",
+      "phase": "adaptation",
+      "theme": "Accessibility and adaptation",
+      "tagline": "Removing barriers",
+      "iconicBuilding": {
+        "name": "Home Office",
+        "description": "Working from home era",
+        "imageKey": "home-wifi"
+      },
+      "highlights": [
+        "Tiered pricing introduced (Blue, Yellow, Green)",
+        "No-cost scholarships available",
+        "Three half-day format for global participation",
+        "ICIJ featured",
+        "Collaborative meditation breaks introduced"
+      ],
+      "innovations": [
+        "Tiered pricing by financial capacity",
+        "Code of Conduct and Care policies",
+        "Wellness programming (meditation)"
+      ],
+      "notableProjects": [
+        "Texas Metro News + Dallas Morning News partnership",
+        "Rainforest Investigations Network",
+        "Resolve Philly",
+        "Charlotte Journalism Collaborative",
+        "Granite State News Collaborative"
+      ]
+    },
+    {
+      "year": 2022,
+      "location": {
+        "city": "Chicago",
+        "state": "IL",
+        "venue": "Chicago",
+        "coordinates": {
+          "lat": 41.8781,
+          "lng": -87.6298
+        }
+      },
+      "format": "hybrid",
+      "phase": "sustainability",
+      "theme": "Trust and sustainability",
+      "tagline": "Building to last",
+      "iconicBuilding": {
+        "name": "Willis Tower",
+        "description": "Chicago's iconic skyline",
+        "imageKey": "willis-tower"
+      },
+      "highlights": [
+        "Hybrid format (in-person + virtual)",
+        "City Bureau featured as #1 community-centered journalism example",
+        "Solving for Chicago (20-outlet collaborative)",
+        "Marina Walker Guevara keynote",
+        "Change Agents podcast featured"
+      ],
+      "keynotes": [
+        {
+          "speaker": "Marina Walker Guevara",
+          "topic": "Equity-centered collaborative journalism"
+        }
+      ],
+      "keyTakeaways": [
+        "Strong scaffolding ensures sustainability",
+        "Universities and newsrooms must embrace failure",
+        "Growth takes time and patience",
+        "Trust forms the foundation"
+      ],
+      "keyQuote": {
+        "text": "Trust is confidence in the face of risk that the other person will do the right thing.",
+        "speaker": "Summit takeaway"
+      }
+    },
+    {
+      "year": 2023,
+      "location": {
+        "city": "Washington",
+        "state": "D.C.",
+        "venue": "Washington, D.C.",
+        "coordinates": {
+          "lat": 38.9072,
+          "lng": -77.0369
+        }
+      },
+      "format": "in-person",
+      "phase": "sustainability",
+      "theme": "Policy development",
+      "tagline": "Building frameworks",
+      "iconicBuilding": {
+        "name": "Capitol Building",
+        "description": "Policy focus, democracy journalism",
+        "imageKey": "capitol"
+      },
+      "highlights": [
+        "Working group on collaborative journalism policies launched",
+        "New session categories: Strategies, Tactics, Tools",
+        "#CJSBeats podcast launched",
+        "Comprehensive materials documentation"
+      ],
+      "innovations": [
+        "Session categorization system",
+        "Policy working group",
+        "Airtable-based resource sharing"
+      ]
+    },
+    {
+      "year": 2024,
+      "location": {
+        "city": "Detroit",
+        "state": "MI",
+        "venue": "Detroit",
+        "coordinates": {
+          "lat": 42.3314,
+          "lng": -83.0458
+        }
+      },
+      "format": "in-person",
+      "phase": "impact",
+      "theme": "Scale and global impact",
+      "tagline": "World-changing collaborations",
+      "iconicBuilding": {
+        "name": "Renaissance Center",
+        "description": "Motor City revival",
+        "imageKey": "ren-center"
+      },
+      "highlights": [
+        "Gerard Ryle keynote (ICIJ director)",
+        "Six biggest collaborations in journalism history featured",
+        "Revenue diversification focus",
+        "Community volunteer opportunities"
+      ],
+      "keynotes": [
+        {
+          "speaker": "Gerard Ryle",
+          "organization": "ICIJ",
+          "topic": "Leading global investigative collaborations"
+        }
+      ],
+      "globalImpact": [
+        "Panama Papers",
+        "Paradise Papers",
+        "Pandora Papers",
+        "Four world leaders toppled"
+      ]
+    },
+    {
+      "year": 2025,
+      "location": {
+        "city": "Denver",
+        "state": "CO",
+        "venue": "Denver",
+        "coordinates": {
+          "lat": 39.7392,
+          "lng": -104.9903
+        }
+      },
+      "format": "in-person",
+      "phase": "impact",
+      "theme": "Community impact",
+      "tagline": "Partnerships with a purpose",
+      "attendees": 200,
+      "iconicBuilding": {
+        "name": "Union Station",
+        "description": "Colorado as collaboration laboratory",
+        "imageKey": "union-station"
+      },
+      "highlights": [
+        "200+ participants",
+        "MLK50 keynote: $12M medical debt erased",
+        "Appalachia Relief disaster response featured",
+        "Sustainability accelerator launched",
+        "180+ Colorado outlets collaborating"
+      ],
+      "keynotes": [
+        {
+          "speaker": "Ayanna Watkins & Wendi Thomas",
+          "organization": "MLK50: Justice Through Journalism",
+          "topic": "Community impact through investigative journalism"
+        }
+      ],
+      "keyQuote": {
+        "text": "Collaboration is like a marriage.",
+        "speaker": "Laura Frank",
+        "role": "Colorado News Collaborative"
+      },
+      "communityImpact": [
+        "$12 million medical debt erased",
+        "Minimum wage increases for hospital workers",
+        "Unscrupulous medical collection lawsuits stopped"
+      ]
+    },
+    {
+      "year": 2026,
+      "location": {
+        "city": "Chapel Hill",
+        "state": "NC",
+        "venue": "UNC Friday Center",
+        "coordinates": {
+          "lat": 35.9132,
+          "lng": -79.0558
+        }
+      },
+      "format": "in-person",
+      "phase": "future",
+      "theme": "10th Anniversary",
+      "tagline": "From experiment to ecosystem",
+      "dates": {
+        "start": "2026-06-08",
+        "end": "2026-06-09"
+      },
+      "iconicBuilding": {
+        "name": "Old Well",
+        "description": "UNC Chapel Hill landmark",
+        "imageKey": "old-well"
+      },
+      "plannedHighlights": [
+        "10th anniversary celebration",
+        "State of Collaboration: 10-year edition",
+        "Alumni reunion programming",
+        "Timeline installation",
+        "Full circle: returning to North Carolina"
+      ],
+      "historicalNote": "North Carolina was originally planned for 2020 before COVID. The 2026 summit completes that journey, making it a fitting location for the 10th anniversary."
+    }
+  ],
+  "recurringElements": {
+    "formats": [
+      {
+        "name": "Lightning Talks",
+        "description": "5-10 minute presentations showcasing collaborative projects",
+        "introducedYear": 2018
+      },
+      {
+        "name": "State of Collaboration",
+        "description": "Annual research overview of collaborative journalism trends"
+      },
+      {
+        "name": "Case Studies",
+        "description": "Deep dives into real-world collaborative projects"
+      }
+    ],
+    "partners": [
+      "ProPublica",
+      "Solutions Journalism Network",
+      "International Consortium of Investigative Journalists (ICIJ)",
+      "First Draft",
+      "Center for Public Integrity",
+      "News Revenue Hub"
+    ],
+    "funders": [
+      "Knight Foundation",
+      "Democracy Fund",
+      "Rita Allen Foundation",
+      "MacArthur Foundation",
+      "Corporation for Public Broadcasting",
+      "Lenfest Institute for Journalism"
+    ]
+  },
+  "impactStats": {
+    "totalSummits": 10,
+    "citiesVisited": 8,
+    "virtualYears": 2,
+    "estimatedTotalAttendees": "1,500+",
+    "notableOutcomes": [
+      "Four world leaders toppled (Panama Papers)",
+      "$12 million medical debt erased (MLK50)",
+      "180+ outlets collaborating in Colorado alone",
+      "Sustainability accelerator launched"
+    ]
+  }
+}

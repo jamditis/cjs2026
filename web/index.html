@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="https://win98icons.alexmeub.com/icons/png/globe_map-3.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>2026 Collaborative Journalism Summit — Coming Soon</title>
+    <meta name="description" content="Join us for the 10th anniversary of the Collaborative Journalism Summit in North Carolina, June/July 2026. A decade of partnership, reimagined. Co-hosted with INN." />
+    <meta name="keywords" content="collaborative journalism, journalism summit, 2026, partnership journalism, INN, Center for Cooperative Media" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://collaborativejournalism.org/" />
+    <meta property="og:title" content="2026 Collaborative Journalism Summit — 10th Anniversary" />
+    <meta property="og:description" content="A decade of partnership. A new chapter begins. Join us in North Carolina as we reimagine what collaborative journalism can become." />
+    <meta property="og:image" content="https://collaborativejournalism.org/wp-content/uploads/2025/10/cjs2026-featured-image.png" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://collaborativejournalism.org/" />
+    <meta property="twitter:title" content="2026 Collaborative Journalism Summit — 10th Anniversary" />
+    <meta property="twitter:description" content="A decade of partnership. A new chapter begins. Join us in North Carolina as we reimagine what collaborative journalism can become." />
+    <meta property="twitter:image" content="https://collaborativejournalism.org/wp-content/uploads/2025/10/cjs2026-featured-image.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
+    <style>
+      /* Critical styles to ensure visibility */
+      .countdown-timer {
+        background-color: rgba(0, 0, 0, 0.95) !important;
+      }
+      .info-blocks {
+        background-color: rgba(0, 0, 0, 0.95) !important;
+      }
+    </style>
+
+    <!-- Structured Data / JSON-LD -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Event",
+      "name": "2026 Collaborative Journalism Summit",
+      "description": "The 10th anniversary of the Collaborative Journalism Summit, celebrating a decade of partnership-driven journalism.",
+      "startDate": "2026-06",
+      "endDate": "2026-07",
+      "eventStatus": "https://schema.org/EventScheduled",
+      "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+      "location": {
+        "@type": "Place",
+        "name": "North Carolina",
+        "address": {
+          "@type": "PostalAddress",
+          "addressRegion": "NC",
+          "addressCountry": "US"
+        }
+      },
+      "organizer": [
+        {
+          "@type": "Organization",
+          "name": "Center for Cooperative Media",
+          "url": "https://centerforcooperativemedia.org"
+        },
+        {
+          "@type": "Organization",
+          "name": "Institute for Nonprofit News (INN)",
+          "url": "https://inn.org"
+        }
+      ],
+      "offers": {
+        "@type": "Offer",
+        "availability": "https://schema.org/PreOrder",
+        "url": "https://collaborativejournalism.org/"
+      }
+    }
+    </script>
+    <script src="https://cdn.tailwindcss.com?v=3.4.1"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Arial', 'sans-serif'],
+              montserrat: ['Montserrat', 'sans-serif'],
+            },
+            colors: {
+              'brand-red': '#CA3553',
+            }
+          }
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="./bundle.js"></script>
+  </body>
+</html>
