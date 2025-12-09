@@ -1,0 +1,16 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Email signups - anyone can create, only authenticated admins can read
+    match /email_signups/{document=**} {
+      allow create: if true;
+      allow read, update, delete: if false;
+    }
+
+    // Default deny all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
