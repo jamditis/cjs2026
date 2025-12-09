@@ -1,20 +1,18 @@
 const { onRequest } = require("firebase-functions/v2/https");
+const { defineSecret } = require("firebase-functions/params");
 const admin = require("firebase-admin");
 const cors = require("cors")({ origin: true });
 
 admin.initializeApp();
 const db = admin.firestore();
 
-// Airtable config (API key from environment variable for security)
+// Airtable config
 const AIRTABLE_BASE_ID = "appL8Sn87xUotm4jF";
 const AIRTABLE_TABLE_NAME = "Email signups";
 const AIRTABLE_SITE_CONTENT_TABLE = "tblTZ0F89UMTO8PO0";
-const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
 
-// Validate API key is set
-if (!AIRTABLE_API_KEY) {
-  console.warn("AIRTABLE_API_KEY environment variable not set");
-}
+// Define the secret (will be accessed at runtime)
+const airtableApiKey = defineSecret("AIRTABLE_API_KEY");
 
 // Cache for site content (in-memory, refreshes on function cold start)
 let contentCache = null;
@@ -24,7 +22,7 @@ const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 /**
  * Save email signup to both Firestore and Airtable
  */
-exports.saveEmailSignup = onRequest({ cors: true }, async (req, res) => {
+exports.saveEmailSignup = onRequest({ cors: true, secrets: [airtableApiKey] }, async (req, res) => {
   // Handle CORS
   cors(req, res, async () => {
     if (req.method !== "POST") {
@@ -56,7 +54,7 @@ exports.saveEmailSignup = onRequest({ cors: true }, async (req, res) => {
         {
           method: "POST",
           headers: {
-            "Authorization": `Bearer ${AIRTABLE_API_KEY}`,
+            "Authorization": `Bearer ${airtableApiKey.value()}`,
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
@@ -175,7 +173,7 @@ exports.getEditRequests = onRequest({ cors: true }, async (req, res) => {
  * Returns content organized by section and field for easy access
  * Caches results for 5 minutes to reduce API calls
  */
-exports.getSiteContent = onRequest({ cors: true }, async (req, res) => {
+exports.getSiteContent = onRequest({ cors: true, secrets: [airtableApiKey] }, async (req, res) => {
   cors(req, res, async () => {
     if (req.method !== "GET") {
       res.status(405).send("Method Not Allowed");
