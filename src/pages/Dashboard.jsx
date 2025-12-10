@@ -39,15 +39,15 @@ import { checkProfanity, validateNoProfanity } from '../utils/profanityFilter'
 
 // Past CJS summits for attendance picker
 const CJS_SUMMITS = [
-  { year: 2017, location: 'Philadelphia', note: 'inaugural' },
-  { year: 2018, location: 'New Orleans', note: null },
-  { year: 2019, location: 'Philadelphia', note: null },
-  { year: 2020, location: 'virtual', note: null },
-  { year: 2021, location: 'virtual', note: null },
-  { year: 2022, location: 'New Orleans', note: null },
-  { year: 2023, location: 'Atlanta', note: null },
-  { year: 2024, location: 'Austin', note: null },
-  { year: 2025, location: 'Denver', note: null },
+  { year: 2017, location: 'Montclair', state: 'NJ', emoji: '🎓', note: 'inaugural' },
+  { year: 2018, location: 'Montclair', state: 'NJ', emoji: '🎓', note: null },
+  { year: 2019, location: 'Philadelphia', state: 'PA', emoji: '🔔', note: null },
+  { year: 2020, location: 'virtual', state: null, emoji: '🏠', note: 'pandemic' },
+  { year: 2021, location: 'virtual', state: null, emoji: '💻', note: 'pandemic' },
+  { year: 2022, location: 'Chicago', state: 'IL', emoji: '🌆', note: null },
+  { year: 2023, location: 'Washington D.C.', state: null, emoji: '🏛️', note: null },
+  { year: 2024, location: 'Detroit', state: 'MI', emoji: '🚗', note: null },
+  { year: 2025, location: 'Denver', state: 'CO', emoji: '🏔️', note: null },
 ]
 
 // Generate attendance badges based on summit history
@@ -57,41 +57,86 @@ function getAttendanceBadges(attendedYears = []) {
 
   if (count === 0) {
     badges.push({ id: 'cjs-first-timer', label: 'first timer', emoji: '👋', description: 'CJS 2026 will be my first!' })
-  } else {
-    // OG badge - attended inaugural 2017
-    if (attendedYears.includes(2017)) {
-      badges.push({ id: 'cjs-og', label: 'OG', emoji: '🏆', description: 'been here since day one' })
-    }
+    return badges
+  }
 
-    // Count-based badges
-    if (count === 1) {
-      badges.push({ id: 'cjs-1x', label: 'returning', emoji: '🔄', description: 'back for more' })
-    } else if (count === 2) {
-      badges.push({ id: 'cjs-2x', label: 'back-to-back', emoji: '✌️', description: '2 summits attended' })
-    } else if (count === 3) {
-      badges.push({ id: 'cjs-3x', label: "third time's the charm", emoji: '🎯', description: '3 summits attended' })
-    } else if (count === 4) {
-      badges.push({ id: 'cjs-4x', label: '4x attendee', emoji: '4️⃣', description: '4 summits attended' })
-    } else if (count === 5) {
-      badges.push({ id: 'cjs-5x', label: '5x attendee', emoji: '🖐️', description: '5 summits attended' })
-    } else if (count >= 6) {
-      badges.push({ id: 'cjs-veteran', label: `${count}x veteran`, emoji: '🎖️', description: `${count} summits attended` })
-    }
+  // === Special badges ===
 
-    // Streak detection (consecutive years)
-    const sortedYears = [...attendedYears].sort((a, b) => a - b)
-    let maxStreak = 1, currentStreak = 1
-    for (let i = 1; i < sortedYears.length; i++) {
-      if (sortedYears[i] === sortedYears[i - 1] + 1) {
-        currentStreak++
-        maxStreak = Math.max(maxStreak, currentStreak)
-      } else {
-        currentStreak = 1
-      }
+  // OG badge - attended inaugural 2017
+  if (attendedYears.includes(2017)) {
+    badges.push({ id: 'cjs-og', label: 'OG', emoji: '🏆', description: 'been here since day one' })
+  }
+
+  // COVID badges - 2020 and/or 2021 virtual summits
+  const attended2020 = attendedYears.includes(2020)
+  const attended2021 = attendedYears.includes(2021)
+  if (attended2020 && attended2021) {
+    badges.push({ id: 'cjs-zoom-veteran', label: 'zoom veteran', emoji: '📹', description: 'survived both virtual summits' })
+  } else if (attended2020) {
+    badges.push({ id: 'cjs-pandemic-pioneer', label: 'pandemic pioneer', emoji: '🦠', description: 'attended our first virtual summit' })
+  } else if (attended2021) {
+    badges.push({ id: 'cjs-lockdown-loyalist', label: 'lockdown loyalist', emoji: '🔒', description: 'stuck with us through year two of virtual' })
+  }
+
+  // === Streak detection (consecutive years only) ===
+  const sortedYears = [...attendedYears].sort((a, b) => a - b)
+  let maxStreak = 1, currentStreak = 1
+  for (let i = 1; i < sortedYears.length; i++) {
+    if (sortedYears[i] === sortedYears[i - 1] + 1) {
+      currentStreak++
+      maxStreak = Math.max(maxStreak, currentStreak)
+    } else {
+      currentStreak = 1
     }
-    if (maxStreak >= 3) {
+  }
+
+  // Streak badges (only for actual consecutive attendance)
+  if (maxStreak >= 2) {
+    if (maxStreak === 2) {
+      badges.push({ id: 'cjs-streak-2', label: 'back-to-back', emoji: '✌️', description: '2 consecutive years' })
+    } else if (maxStreak === 3) {
+      badges.push({ id: 'cjs-streak-3', label: 'three-peat', emoji: '🎯', description: '3 consecutive years' })
+    } else if (maxStreak >= 4) {
       badges.push({ id: 'cjs-streak', label: `${maxStreak}-year streak`, emoji: '🔥', description: `${maxStreak} consecutive years` })
     }
+  }
+
+  // === City/location badges for single-year in-person attendance ===
+  // Only for years attended where they're the sole non-virtual attendance that year's location
+  const inPersonYears = attendedYears.filter(y => y !== 2020 && y !== 2021)
+
+  // Give location badge for each unique location attended
+  const locationCounts = {}
+  inPersonYears.forEach(year => {
+    const summit = CJS_SUMMITS.find(s => s.year === year)
+    if (summit && summit.location !== 'virtual') {
+      const loc = summit.location
+      if (!locationCounts[loc]) {
+        locationCounts[loc] = { count: 0, summit }
+      }
+      locationCounts[loc].count++
+    }
+  })
+
+  // If only attended one in-person summit, give city badge
+  if (inPersonYears.length === 1) {
+    const year = inPersonYears[0]
+    const summit = CJS_SUMMITS.find(s => s.year === year)
+    if (summit) {
+      badges.push({
+        id: `cjs-${summit.location.toLowerCase().replace(/\s+/g, '-')}`,
+        label: summit.location.toLowerCase(),
+        emoji: summit.emoji,
+        description: `attended CJS ${year} in ${summit.location}`
+      })
+    }
+  }
+
+  // Multi-summit count badge (total attendance)
+  if (count >= 3 && count <= 5) {
+    badges.push({ id: `cjs-${count}x`, label: `${count}x attendee`, emoji: '⭐', description: `attended ${count} summits total` })
+  } else if (count >= 6) {
+    badges.push({ id: 'cjs-super-fan', label: 'super fan', emoji: '🌟', description: `attended ${count} summits - true dedication!` })
   }
 
   return badges
@@ -263,7 +308,8 @@ function Dashboard() {
   }
 
   function completeTutorial() {
-    const newState = { dismissed: false, completed: true, skipUntilComplete: false }
+    // Set dismissed: true to immediately close modal (don't wait for profile update)
+    const newState = { dismissed: true, completed: true, skipUntilComplete: false }
     setTutorialState(newState)
     localStorage.setItem('cjs2026_profile_tutorial', JSON.stringify(newState))
   }
@@ -564,19 +610,22 @@ function Dashboard() {
   const statusConfig = {
     pending: {
       label: 'Registration pending',
-      color: 'brand-cardinal',
+      bgClass: 'bg-brand-cardinal/10',
+      textClass: 'text-brand-cardinal',
       icon: AlertCircle,
       description: 'Registration opens in early 2026',
     },
     registered: {
       label: 'Registered',
-      color: 'brand-teal',
+      bgClass: 'bg-brand-teal/10',
+      textClass: 'text-brand-teal',
       icon: CheckCircle,
       description: 'Your spot is reserved',
     },
     confirmed: {
       label: 'Confirmed',
-      color: 'brand-green-dark',
+      bgClass: 'bg-brand-green-dark/10',
+      textClass: 'text-brand-green-dark',
       icon: CheckCircle,
       description: 'See you in Chapel Hill!',
     },
@@ -805,11 +854,11 @@ function Dashboard() {
                                 }`}
                             >
                               <p className={`font-heading font-semibold text-sm ${isAttended ? 'text-brand-teal' : 'text-brand-ink'}`}>
-                                {summit.year}
+                                {summit.emoji} {summit.year}
                               </p>
                               <p className="text-xs text-brand-ink/50 truncate">
                                 {summit.location}
-                                {summit.note && <span className="text-brand-teal ml-1">({summit.note})</span>}
+                                {summit.note && <span className="text-brand-teal ml-1">• {summit.note}</span>}
                               </p>
                             </button>
                           )
@@ -1012,8 +1061,8 @@ function Dashboard() {
                 transition={{ delay: 0.1 }}
               >
                 <div className="flex items-start gap-4">
-                  <div className={`w-12 h-12 rounded-full bg-${status.color}/10 flex items-center justify-center`}>
-                    <StatusIcon className={`w-6 h-6 text-${status.color}`} />
+                  <div className={`w-12 h-12 rounded-full ${status.bgClass} flex items-center justify-center`}>
+                    <StatusIcon className={`w-6 h-6 ${status.textClass}`} />
                   </div>
                   <div className="flex-1">
                     <h2 className="font-heading font-semibold text-xl text-brand-ink mb-1">

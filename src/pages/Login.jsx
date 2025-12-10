@@ -77,15 +77,18 @@ function Login() {
               <p className="font-body text-brand-ink/50 text-sm mb-4">
                 Click the link in the email to sign in. The link expires in 1 hour.
               </p>
-              <div className="bg-brand-ink/5 rounded-lg p-3 text-left">
-                <p className="font-body text-xs text-brand-ink/60 mb-1">
-                  <strong>Check your spam folder</strong> — the email comes from:
+              <div className="bg-brand-teal/10 border-2 border-brand-teal/30 rounded-lg p-4 text-center">
+                <p className="font-body text-base text-brand-teal font-semibold mb-2">
+                  Check your spam folder!
                 </p>
-                <p className="font-mono text-xs text-brand-ink/50">
+                <p className="font-body text-sm text-brand-ink/60 mb-1">
+                  The email comes from:
+                </p>
+                <p className="font-mono text-sm text-brand-ink/70 mb-1">
                   noreply@cjs2026.firebaseapp.com
                 </p>
-                <p className="font-body text-xs text-brand-ink/50 mt-1">
-                  Subject line: "Sign in to cjs2026"
+                <p className="font-body text-sm text-brand-ink/60">
+                  Subject: "Sign in to cjs2026"
                 </p>
               </div>
               <div className="border-t-2 border-brand-ink/10 pt-6">
