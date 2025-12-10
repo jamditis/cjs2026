@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -15,75 +15,171 @@ import {
   FileText,
   Building,
   Globe,
-  Twitter,
+  Instagram,
   Linkedin,
   AtSign,
   Award,
   X,
-  Sparkles
+  Sparkles,
+  Camera,
+  Upload,
+  Loader2
 } from 'lucide-react'
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import { useAuth } from '../contexts/AuthContext'
+import { storage } from '../firebase'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
+import Stepper, { Step } from '../components/Stepper'
+import { checkProfanity, validateNoProfanity } from '../utils/profanityFilter'
 
 // ============================================
 // Badge Definitions
 // ============================================
+
+// Past CJS summits for attendance picker
+const CJS_SUMMITS = [
+  { year: 2017, location: 'Philadelphia', note: 'inaugural' },
+  { year: 2018, location: 'New Orleans', note: null },
+  { year: 2019, location: 'Philadelphia', note: null },
+  { year: 2020, location: 'virtual', note: null },
+  { year: 2021, location: 'virtual', note: null },
+  { year: 2022, location: 'New Orleans', note: null },
+  { year: 2023, location: 'Atlanta', note: null },
+  { year: 2024, location: 'Austin', note: null },
+  { year: 2025, location: 'Denver', note: null },
+]
+
+// Generate attendance badges based on summit history
+function getAttendanceBadges(attendedYears = []) {
+  const badges = []
+  const count = attendedYears.length
+
+  if (count === 0) {
+    badges.push({ id: 'cjs-first-timer', label: 'first timer', emoji: '👋', description: 'CJS 2026 will be my first!' })
+  } else {
+    // OG badge - attended inaugural 2017
+    if (attendedYears.includes(2017)) {
+      badges.push({ id: 'cjs-og', label: 'OG', emoji: '🏆', description: 'been here since day one' })
+    }
+
+    // Count-based badges
+    if (count === 1) {
+      badges.push({ id: 'cjs-1x', label: 'returning', emoji: '🔄', description: 'back for more' })
+    } else if (count === 2) {
+      badges.push({ id: 'cjs-2x', label: 'back-to-back', emoji: '✌️', description: '2 summits attended' })
+    } else if (count === 3) {
+      badges.push({ id: 'cjs-3x', label: "third time's the charm", emoji: '🎯', description: '3 summits attended' })
+    } else if (count === 4) {
+      badges.push({ id: 'cjs-4x', label: '4x attendee', emoji: '4️⃣', description: '4 summits attended' })
+    } else if (count === 5) {
+      badges.push({ id: 'cjs-5x', label: '5x attendee', emoji: '🖐️', description: '5 summits attended' })
+    } else if (count >= 6) {
+      badges.push({ id: 'cjs-veteran', label: `${count}x veteran`, emoji: '🎖️', description: `${count} summits attended` })
+    }
+
+    // Streak detection (consecutive years)
+    const sortedYears = [...attendedYears].sort((a, b) => a - b)
+    let maxStreak = 1, currentStreak = 1
+    for (let i = 1; i < sortedYears.length; i++) {
+      if (sortedYears[i] === sortedYears[i - 1] + 1) {
+        currentStreak++
+        maxStreak = Math.max(maxStreak, currentStreak)
+      } else {
+        currentStreak = 1
+      }
+    }
+    if (maxStreak >= 3) {
+      badges.push({ id: 'cjs-streak', label: `${maxStreak}-year streak`, emoji: '🔥', description: `${maxStreak} consecutive years` })
+    }
+  }
+
+  return badges
+}
+
 const BADGE_CATEGORIES = {
   experience: {
-    label: 'Collaboration experience',
+    label: 'collaboration experience',
+    maxPicks: 1,
+    allowCustom: false,
     badges: [
-      { id: 'collab-curious', label: 'Collab Curious', emoji: '🌱', description: 'New to collaborative journalism' },
-      { id: 'collab-practitioner', label: 'Practitioner', emoji: '🤝', description: 'Actively collaborating' },
-      { id: 'collab-veteran', label: 'Veteran', emoji: '🎖️', description: '3+ collaborations under my belt' },
-      { id: 'collab-evangelist', label: 'Evangelist', emoji: '📣', description: 'Spreading the collab gospel' },
+      { id: 'collab-curious', label: 'collab curious', emoji: '🌱', description: 'new to collaborative journalism' },
+      { id: 'collab-practitioner', label: 'practitioner', emoji: '🤝', description: 'actively collaborating' },
+      { id: 'collab-veteran', label: 'veteran', emoji: '🎖️', description: '3+ collaborations under my belt' },
+      { id: 'collab-evangelist', label: 'evangelist', emoji: '📣', description: 'spreading the collab gospel' },
     ]
   },
   role: {
-    label: 'Role',
+    label: 'role',
+    maxPicks: 1, // becomes 2 if personality-hire selected
+    allowCustom: false,
     badges: [
-      { id: 'role-reporter', label: 'Reporter', emoji: '📝', description: 'On the ground' },
-      { id: 'role-editor', label: 'Editor', emoji: '✂️', description: 'Making it better' },
-      { id: 'role-leadership', label: 'Leadership', emoji: '🧭', description: 'Setting direction' },
-      { id: 'role-funder', label: 'Funder', emoji: '💰', description: 'Supporting the work' },
-      { id: 'role-academic', label: 'Academic', emoji: '🎓', description: 'Research & teaching' },
-      { id: 'role-technologist', label: 'Technologist', emoji: '💻', description: 'Building tools' },
+      { id: 'role-reporter', label: 'reporter', emoji: '📝', description: 'on the ground' },
+      { id: 'role-editor', label: 'editor', emoji: '✂️', description: 'making it better' },
+      { id: 'role-leadership', label: 'leadership', emoji: '🧭', description: 'setting direction' },
+      { id: 'role-funder', label: 'funder', emoji: '💰', description: 'supporting the work' },
+      { id: 'role-academic', label: 'academic', emoji: '🎓', description: 'research & teaching' },
+      { id: 'role-technologist', label: 'technologist', emoji: '💻', description: 'building tools' },
+      { id: 'role-organizer', label: 'organizer', emoji: '🗂️', description: 'bringing people together' },
+      { id: 'role-personality-hire', label: 'personality hire', emoji: '✨', description: 'here for the vibes' },
     ]
   },
-  attendance: {
-    label: 'CJS attendance',
+  philosophy: {
+    label: 'philosophy',
+    maxPicks: 1,
+    allowCustom: true,
+    maxCustom: 3,
     badges: [
-      { id: 'cjs-first-timer', label: 'First Timer', emoji: '👋', description: 'My first CJS!' },
-      { id: 'cjs-returning', label: 'Returning', emoji: '🔄', description: '2-3 summits' },
-      { id: 'cjs-regular', label: 'Regular', emoji: '⭐', description: '4+ summits' },
-      { id: 'cjs-og', label: 'OG', emoji: '🏆', description: 'Since 2017' },
+      { id: 'value-cooperation', label: 'cooperation > competition', emoji: '🤲', description: 'rising tides lift all boats' },
+      { id: 'value-public-good', label: 'public good', emoji: '🌍', description: 'journalism as public service' },
+      { id: 'value-indie', label: 'indie spirit', emoji: '🏴', description: 'independent & nonprofit' },
+      { id: 'value-local-first', label: 'local first', emoji: '🏘️', description: 'community journalism advocate' },
+      { id: 'value-open-source', label: 'open source', emoji: '🔓', description: 'share the tools' },
+      { id: 'value-solidarity', label: 'solidarity', emoji: '✊', description: 'workers unite' },
+      { id: 'value-disruptor', label: 'disruptor', emoji: '💥', description: 'break the old models' },
+      { id: 'value-bridge-builder', label: 'bridge builder', emoji: '🌉', description: 'connecting communities' },
     ]
   },
-  values: {
-    label: 'Values & perspectives',
+  misc: {
+    label: 'misc',
+    maxPicks: 1,
+    allowCustom: true,
+    maxCustom: 3,
     badges: [
-      { id: 'value-cooperation', label: 'Cooperation > Competition', emoji: '🤲', description: 'Rising tides lift all boats' },
-      { id: 'value-public-good', label: 'Public Good', emoji: '🌍', description: 'Journalism as public service' },
-      { id: 'value-indie', label: 'Indie Spirit', emoji: '🏴', description: 'Independent & nonprofit' },
-      { id: 'value-local-first', label: 'Local First', emoji: '🏘️', description: 'Community journalism advocate' },
-      { id: 'value-open-source', label: 'Open Source', emoji: '🔓', description: 'Share the tools' },
-      { id: 'value-solidarity', label: 'Solidarity', emoji: '✊', description: 'Workers unite' },
-      { id: 'value-disruptor', label: 'Disruptor', emoji: '💥', description: 'Break the old models' },
-      { id: 'value-bridge-builder', label: 'Bridge Builder', emoji: '🌉', description: 'Connecting communities' },
-    ]
-  },
-  fun: {
-    label: 'Just for fun',
-    badges: [
-      { id: 'fun-coffee', label: 'Coffee Powered', emoji: '☕', description: 'Runs on caffeine' },
-      { id: 'fun-night-owl', label: 'Night Owl', emoji: '🦉', description: 'Best work after midnight' },
-      { id: 'fun-early-bird', label: 'Early Bird', emoji: '🐦', description: 'Dawn deadlines' },
-      { id: 'fun-spreadsheet', label: 'Spreadsheet Nerd', emoji: '📊', description: 'Pivot tables are my passion' },
+      { id: 'misc-deadline-driven', label: 'deadline driven', emoji: '⏰', description: 'best under pressure' },
+      { id: 'misc-data-hound', label: 'data hound', emoji: '🔍', description: 'FOIA is my love language' },
+      { id: 'misc-rural-beat', label: 'rural beat', emoji: '🌾', description: 'covering where others don\'t' },
+      { id: 'misc-audio-first', label: 'audio first', emoji: '🎙️', description: 'podcast or bust' },
+      { id: 'misc-newsletter-brain', label: 'newsletter brain', emoji: '📧', description: 'inbox zero? never heard of it' },
+      { id: 'misc-grant-writer', label: 'grant writer', emoji: '📋', description: 'theory of change enthusiast' },
+      { id: 'misc-cms-survivor', label: 'CMS survivor', emoji: '🖥️', description: 'i\'ve seen things' },
+      { id: 'misc-source-whisperer', label: 'source whisperer', emoji: '🤫', description: 'people tell me things' },
+      { id: 'misc-j-school', label: 'j-school', emoji: '🏫', description: 'Mizzou/Northwestern/Columbia/etc' },
+      { id: 'misc-self-taught', label: 'self-taught', emoji: '📚', description: 'learned in the field' },
+      { id: 'misc-bilingual', label: 'bilingual', emoji: '🗣️', description: 'reporting across languages' },
+      { id: 'misc-visual-thinker', label: 'visual thinker', emoji: '📐', description: 'charts, maps, graphics' },
     ]
   }
 }
 
+// Helper to get max picks for role category (2 if personality-hire selected)
+function getRoleMaxPicks(selectedBadges) {
+  return selectedBadges.includes('role-personality-hire') ? 2 : 1
+}
+
 const ALL_BADGES = Object.values(BADGE_CATEGORIES).flatMap(cat => cat.badges)
+
+// Common emojis for custom badge picker
+const EMOJI_OPTIONS = ['💡', '🎯', '🚀', '⚡', '🌟', '💪', '🎨', '📰', '🗞️', '✍️', '🔗', '🌐', '💬', '🎤', '📸', '🎬']
+
+// Photo upload constraints
+const PHOTO_CONFIG = {
+  maxSizeBytes: 2 * 1024 * 1024, // 2MB max
+  maxSizeMB: 2,
+  allowedTypes: ['image/jpeg', 'image/png', 'image/webp'],
+  allowedExtensions: ['.jpg', '.jpeg', '.png', '.webp'],
+  maxDimension: 800, // Will resize to max 800x800
+}
 
 function Dashboard() {
   const { currentUser, userProfile, logout, updateUserProfile } = useAuth()
@@ -93,13 +189,36 @@ function Dashboard() {
     organization: '',
     role: '',
     website: '',
-    twitter: '',
+    instagram: '',
     linkedin: '',
     bluesky: '',
     badges: [],
+    attendedSummits: [], // years attended (e.g., [2017, 2019, 2023])
+    customBadges: {}, // { philosophy: [{emoji, label}], misc: [{emoji, label}] }
   })
+  const [newCustomBadge, setNewCustomBadge] = useState({ category: null, emoji: '💡', label: '' })
   const [saving, setSaving] = useState(false)
   const [showBadgePicker, setShowBadgePicker] = useState(false)
+
+  // Photo upload state
+  const [photoFile, setPhotoFile] = useState(null)
+  const [photoPreview, setPhotoPreview] = useState(null)
+  const [photoUploading, setPhotoUploading] = useState(false)
+  const [photoError, setPhotoError] = useState(null)
+  const photoInputRef = useRef(null)
+
+  // Profanity validation errors
+  const [validationErrors, setValidationErrors] = useState({})
+
+  // Stepper wizard data
+  const [stepperData, setStepperData] = useState({
+    displayName: '',
+    organization: '',
+    role: '',
+    badges: [],
+    attendedSummits: [],
+    customBadges: {},
+  })
 
   // Tutorial state
   const [tutorialState, setTutorialState] = useState(() => {
@@ -118,10 +237,12 @@ function Dashboard() {
         organization: userProfile.organization || '',
         role: userProfile.role || '',
         website: userProfile.website || '',
-        twitter: userProfile.twitter || '',
+        instagram: userProfile.instagram || '',
         linkedin: userProfile.linkedin || '',
         bluesky: userProfile.bluesky || '',
         badges: userProfile.badges || [],
+        attendedSummits: userProfile.attendedSummits || [],
+        customBadges: userProfile.customBadges || {},
       })
     }
   }, [userProfile])
@@ -145,6 +266,182 @@ function Dashboard() {
     const newState = { dismissed: false, completed: true, skipUntilComplete: false }
     setTutorialState(newState)
     localStorage.setItem('cjs2026_profile_tutorial', JSON.stringify(newState))
+  }
+
+  // Resize image to reduce file size
+  function resizeImage(file, maxDimension) {
+    return new Promise((resolve, reject) => {
+      const img = new Image()
+      const canvas = document.createElement('canvas')
+      const ctx = canvas.getContext('2d')
+
+      img.onload = () => {
+        let { width, height } = img
+        if (width > maxDimension || height > maxDimension) {
+          if (width > height) {
+            height = (height / width) * maxDimension
+            width = maxDimension
+          } else {
+            width = (width / height) * maxDimension
+            height = maxDimension
+          }
+        }
+        canvas.width = width
+        canvas.height = height
+        ctx.drawImage(img, 0, 0, width, height)
+        canvas.toBlob(
+          blob => resolve(blob),
+          'image/jpeg',
+          0.85 // Quality
+        )
+      }
+      img.onerror = reject
+      img.src = URL.createObjectURL(file)
+    })
+  }
+
+  // Handle photo selection
+  async function handlePhotoSelect(e) {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setPhotoError(null)
+
+    // Validate file type
+    if (!PHOTO_CONFIG.allowedTypes.includes(file.type)) {
+      setPhotoError(`Please upload ${PHOTO_CONFIG.allowedExtensions.join(', ')} files only`)
+      return
+    }
+
+    // Validate file size
+    if (file.size > PHOTO_CONFIG.maxSizeBytes) {
+      setPhotoError(`File too large. Maximum size is ${PHOTO_CONFIG.maxSizeMB}MB`)
+      return
+    }
+
+    try {
+      // Resize image to reduce storage/bandwidth
+      const resizedBlob = await resizeImage(file, PHOTO_CONFIG.maxDimension)
+      const resizedFile = new File([resizedBlob], file.name, { type: 'image/jpeg' })
+
+      setPhotoFile(resizedFile)
+      setPhotoPreview(URL.createObjectURL(resizedBlob))
+    } catch (err) {
+      console.error('Error processing image:', err)
+      setPhotoError('Failed to process image. Please try another.')
+    }
+  }
+
+  // Upload photo to Firebase Storage
+  async function uploadPhoto() {
+    if (!photoFile || !currentUser) return null
+
+    setPhotoUploading(true)
+    try {
+      const fileExt = 'jpg'
+      const fileName = `profile-photos/${currentUser.uid}/${Date.now()}.${fileExt}`
+      const storageRef = ref(storage, fileName)
+
+      await uploadBytes(storageRef, photoFile)
+      const downloadURL = await getDownloadURL(storageRef)
+      return downloadURL
+    } catch (err) {
+      console.error('Error uploading photo:', err)
+      setPhotoError('Failed to upload photo. Please try again.')
+      return null
+    } finally {
+      setPhotoUploading(false)
+    }
+  }
+
+  // Clear photo selection
+  function clearPhoto() {
+    setPhotoFile(null)
+    setPhotoPreview(null)
+    setPhotoError(null)
+    if (photoInputRef.current) {
+      photoInputRef.current.value = ''
+    }
+  }
+
+  // Validate text with profanity filter
+  function validateTextField(value, fieldName) {
+    const error = validateNoProfanity(value, fieldName)
+    setValidationErrors(prev => ({
+      ...prev,
+      [fieldName]: error
+    }))
+    return !error
+  }
+
+  // Handle stepper wizard completion
+  async function handleStepperComplete() {
+    if (stepperData.displayName) {
+      // Validate for profanity
+      const { hasProfanity: nameProfanity } = checkProfanity(stepperData.displayName)
+      const { hasProfanity: orgProfanity } = checkProfanity(stepperData.organization)
+      const { hasProfanity: roleProfanity } = checkProfanity(stepperData.role)
+
+      if (nameProfanity || orgProfanity || roleProfanity) {
+        setValidationErrors({
+          displayName: nameProfanity ? 'Name contains inappropriate language' : null,
+          organization: orgProfanity ? 'Organization contains inappropriate language' : null,
+          role: roleProfanity ? 'Role contains inappropriate language' : null
+        })
+        return
+      }
+
+      setSaving(true)
+      try {
+        // Upload photo if selected
+        let photoURL = null
+        if (photoFile) {
+          photoURL = await uploadPhoto()
+        }
+
+        await updateUserProfile(currentUser.uid, {
+          ...editData,
+          ...stepperData,
+          ...(photoURL && { photoURL }),
+        })
+        setEditData(prev => ({ ...prev, ...stepperData }))
+        clearPhoto()
+        completeTutorial()
+      } catch (err) {
+        console.error('Error saving profile from stepper:', err)
+      } finally {
+        setSaving(false)
+      }
+    }
+  }
+
+  function toggleStepperBadge(badgeId) {
+    setStepperData(prev => {
+      const current = prev.badges || []
+      if (current.includes(badgeId)) {
+        return { ...prev, badges: current.filter(id => id !== badgeId) }
+      }
+      // Find which category this badge belongs to
+      const categoryKey = Object.keys(BADGE_CATEGORIES).find(key =>
+        BADGE_CATEGORIES[key].badges.some(b => b.id === badgeId)
+      )
+      if (!categoryKey) return prev
+
+      // Count current picks in this category
+      const categoryBadgeIds = BADGE_CATEGORIES[categoryKey].badges.map(b => b.id)
+      const currentCategoryPicks = current.filter(id => categoryBadgeIds.includes(id))
+
+      // Get max picks (special case for role if personality-hire selected)
+      let maxPicks = BADGE_CATEGORIES[categoryKey].maxPicks
+      if (categoryKey === 'role') {
+        maxPicks = getRoleMaxPicks(current)
+      }
+
+      if (currentCategoryPicks.length < maxPicks) {
+        return { ...prev, badges: [...current, badgeId] }
+      }
+      return prev
+    })
   }
 
   // Reset skip state on new session if profile still incomplete
@@ -187,11 +484,78 @@ function Dashboard() {
     setEditData(prev => {
       const current = prev.badges || []
       if (current.includes(badgeId)) {
+        // Always allow deselection
         return { ...prev, badges: current.filter(id => id !== badgeId) }
-      } else if (current.length < 3) {
+      }
+      // Find which category this badge belongs to
+      const categoryKey = Object.keys(BADGE_CATEGORIES).find(key =>
+        BADGE_CATEGORIES[key].badges.some(b => b.id === badgeId)
+      )
+      if (!categoryKey) return prev
+
+      // Count current picks in this category
+      const categoryBadgeIds = BADGE_CATEGORIES[categoryKey].badges.map(b => b.id)
+      const currentCategoryPicks = current.filter(id => categoryBadgeIds.includes(id))
+
+      // Get max picks (special case for role if personality-hire selected)
+      let maxPicks = BADGE_CATEGORIES[categoryKey].maxPicks
+      if (categoryKey === 'role') {
+        maxPicks = getRoleMaxPicks(current)
+      }
+
+      // Check if we can add more in this category
+      if (currentCategoryPicks.length < maxPicks) {
         return { ...prev, badges: [...current, badgeId] }
       }
       return prev
+    })
+  }
+
+  // Toggle summit attendance
+  function toggleSummitAttendance(year, isStepperData = false) {
+    const setter = isStepperData ? setStepperData : setEditData
+    setter(prev => {
+      const current = prev.attendedSummits || []
+      if (current.includes(year)) {
+        return { ...prev, attendedSummits: current.filter(y => y !== year) }
+      }
+      return { ...prev, attendedSummits: [...current, year] }
+    })
+  }
+
+  // Add custom badge
+  function addCustomBadge(category, emoji, label, isStepperData = false) {
+    if (!label.trim() || label.length > 20) return
+    const setter = isStepperData ? setStepperData : setEditData
+    setter(prev => {
+      const current = prev.customBadges || {}
+      const categoryBadges = current[category] || []
+      if (categoryBadges.length >= 3) return prev
+      if (categoryBadges.some(b => b.label.toLowerCase() === label.toLowerCase())) return prev
+      return {
+        ...prev,
+        customBadges: {
+          ...current,
+          [category]: [...categoryBadges, { emoji, label: label.trim().toLowerCase() }]
+        }
+      }
+    })
+    setNewCustomBadge({ category: null, emoji: '💡', label: '' })
+  }
+
+  // Remove custom badge
+  function removeCustomBadge(category, label, isStepperData = false) {
+    const setter = isStepperData ? setStepperData : setEditData
+    setter(prev => {
+      const current = prev.customBadges || {}
+      const categoryBadges = current[category] || []
+      return {
+        ...prev,
+        customBadges: {
+          ...current,
+          [category]: categoryBadges.filter(b => b.label !== label)
+        }
+      }
     })
   }
 
@@ -246,40 +610,393 @@ function Dashboard() {
             </p>
           </motion.div>
 
-          {/* Tutorial prompt with dismiss options */}
+          {/* Profile Setup Modal */}
           <AnimatePresence>
             {showTutorial && (
               <motion.div
-                className="mb-6 p-4 bg-brand-teal/10 border-2 border-brand-teal/30 rounded-lg"
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
+                className="fixed inset-0 z-50 flex items-center justify-center p-6 md:p-8"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
               >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex items-start gap-3">
-                    <Sparkles className="w-5 h-5 text-brand-teal flex-shrink-0 mt-0.5" />
-                    <div>
-                      <p className="font-body font-medium text-brand-ink">Complete your profile</p>
-                      <p className="font-body text-sm text-brand-ink/60">
-                        Add your name and info so other attendees can connect with you.
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex flex-col sm:flex-row gap-2 text-xs">
+                {/* Backdrop */}
+                <motion.div
+                  className="absolute inset-0 bg-brand-ink/50 backdrop-blur-sm"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  onClick={() => dismissTutorial(false)}
+                />
+
+                {/* Modal - wider with more breathing room */}
+                <motion.div
+                  className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto"
+                  initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                  transition={{ type: 'spring', duration: 0.5 }}
+                >
+                  {/* Dismiss buttons - more prominent */}
+                  <div className="absolute top-3 right-3 z-10 flex items-center gap-2">
                     <button
                       onClick={() => dismissTutorial(false)}
-                      className="text-brand-ink/50 hover:text-brand-ink transition-colors whitespace-nowrap"
+                      className="px-3 py-1.5 text-xs font-medium text-brand-ink/60 hover:text-brand-ink hover:bg-brand-ink/5 rounded-full transition-all"
+                      title="Skip for now"
                     >
-                      I'll do this later
+                      Later
                     </button>
                     <button
                       onClick={() => dismissTutorial(true)}
-                      className="text-brand-ink/40 hover:text-brand-ink/60 transition-colors whitespace-nowrap"
+                      className="p-1.5 text-brand-ink/40 hover:text-brand-ink hover:bg-brand-ink/5 rounded-full transition-all"
+                      title="Don't show again"
                     >
-                      I know what I'm doing
+                      <X className="w-5 h-5" />
                     </button>
                   </div>
-                </div>
+
+                  <Stepper
+                    initialStep={1}
+                    onFinalStepCompleted={handleStepperComplete}
+                    backButtonText="Back"
+                    nextButtonText="Next"
+                    disableStepIndicators={false}
+                    indicatorPosition="bottom"
+                    indicatorSize="small"
+                  >
+                    <Step>
+                      <div className="text-center mb-4">
+                        <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-brand-teal/10 flex items-center justify-center">
+                          <Sparkles className="w-6 h-6 text-brand-teal" />
+                        </div>
+                        <h2>Welcome to CJS 2026!</h2>
+                        <p>Let's set up your attendee profile so others can connect with you at the summit.</p>
+                      </div>
+                    </Step>
+
+                    <Step>
+                      <h2>What's your name?</h2>
+                      <p>This will appear on your attendee badge.</p>
+                      <label>Full name *</label>
+                      <input
+                        type="text"
+                        value={stepperData.displayName}
+                        onChange={(e) => {
+                          setStepperData(prev => ({ ...prev, displayName: e.target.value }))
+                          setValidationErrors(prev => ({ ...prev, displayName: null }))
+                        }}
+                        onBlur={(e) => validateTextField(e.target.value, 'displayName')}
+                        placeholder="Your name"
+                        autoFocus
+                        className={validationErrors.displayName ? 'border-brand-cardinal' : ''}
+                      />
+                      {validationErrors.displayName && (
+                        <p className="text-brand-cardinal text-xs mt-1">{validationErrors.displayName}</p>
+                      )}
+                    </Step>
+
+                    <Step>
+                      <h2>Add a profile photo</h2>
+                      <p>Optional, but helps people recognize you at the summit!</p>
+                      <div className="mt-4 flex flex-col items-center">
+                        {/* Photo preview or upload button */}
+                        <div className="relative">
+                          {photoPreview ? (
+                            <div className="relative">
+                              <img
+                                src={photoPreview}
+                                alt="Profile preview"
+                                className="w-32 h-32 rounded-full object-cover border-4 border-brand-teal/20"
+                              />
+                              <button
+                                type="button"
+                                onClick={clearPhoto}
+                                className="absolute -top-2 -right-2 p-1.5 bg-white rounded-full shadow-lg border border-brand-ink/10 text-brand-ink/60 hover:text-brand-cardinal transition-colors"
+                              >
+                                <X className="w-4 h-4" />
+                              </button>
+                            </div>
+                          ) : (
+                            <label className="cursor-pointer group">
+                              <div className="w-32 h-32 rounded-full bg-brand-ink/5 border-2 border-dashed border-brand-ink/20 flex flex-col items-center justify-center gap-2 group-hover:border-brand-teal group-hover:bg-brand-teal/5 transition-all">
+                                <Camera className="w-8 h-8 text-brand-ink/30 group-hover:text-brand-teal transition-colors" />
+                                <span className="text-xs text-brand-ink/50 group-hover:text-brand-teal">Upload photo</span>
+                              </div>
+                              <input
+                                ref={photoInputRef}
+                                type="file"
+                                accept={PHOTO_CONFIG.allowedTypes.join(',')}
+                                onChange={handlePhotoSelect}
+                                className="hidden"
+                              />
+                            </label>
+                          )}
+                        </div>
+
+                        {/* Upload status */}
+                        {photoUploading && (
+                          <div className="mt-3 flex items-center gap-2 text-brand-teal text-sm">
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            <span>Uploading...</span>
+                          </div>
+                        )}
+
+                        {/* Error message */}
+                        {photoError && (
+                          <p className="mt-3 text-brand-cardinal text-xs text-center">{photoError}</p>
+                        )}
+
+                        {/* File constraints info */}
+                        <p className="mt-4 text-xs text-brand-ink/40 text-center">
+                          Max {PHOTO_CONFIG.maxSizeMB}MB • JPG, PNG, or WebP
+                        </p>
+                      </div>
+                    </Step>
+
+                    <Step>
+                      <h2>Where do you work?</h2>
+                      <p>Help others find collaborators from their region or beat.</p>
+                      <label>Organization</label>
+                      <input
+                        type="text"
+                        value={stepperData.organization}
+                        onChange={(e) => {
+                          setStepperData(prev => ({ ...prev, organization: e.target.value }))
+                          setValidationErrors(prev => ({ ...prev, organization: null }))
+                        }}
+                        onBlur={(e) => validateTextField(e.target.value, 'organization')}
+                        placeholder="Your news organization"
+                        className={validationErrors.organization ? 'border-brand-cardinal' : ''}
+                      />
+                      {validationErrors.organization && (
+                        <p className="text-brand-cardinal text-xs mt-1">{validationErrors.organization}</p>
+                      )}
+                      <label>Role / Title</label>
+                      <input
+                        type="text"
+                        value={stepperData.role}
+                        onChange={(e) => {
+                          setStepperData(prev => ({ ...prev, role: e.target.value }))
+                          setValidationErrors(prev => ({ ...prev, role: null }))
+                        }}
+                        onBlur={(e) => validateTextField(e.target.value, 'role')}
+                        placeholder="e.g. Reporter, Editor, Director"
+                        className={validationErrors.role ? 'border-brand-cardinal' : ''}
+                      />
+                      {validationErrors.role && (
+                        <p className="text-brand-cardinal text-xs mt-1">{validationErrors.role}</p>
+                      )}
+                    </Step>
+
+                    <Step>
+                      <h2>CJS attendance history</h2>
+                      <p>Which summits have you attended? (This unlocks badges!)</p>
+                      <div className="mt-3 grid grid-cols-3 gap-2">
+                        {CJS_SUMMITS.map(summit => {
+                          const isAttended = (stepperData.attendedSummits || []).includes(summit.year)
+                          return (
+                            <button
+                              key={summit.year}
+                              type="button"
+                              onClick={() => toggleSummitAttendance(summit.year, true)}
+                              className={`p-2 rounded-lg text-left transition-all border-2
+                                ${isAttended
+                                  ? 'bg-brand-teal/10 border-brand-teal'
+                                  : 'bg-white border-brand-ink/10 hover:border-brand-ink/30'
+                                }`}
+                            >
+                              <p className={`font-heading font-semibold text-sm ${isAttended ? 'text-brand-teal' : 'text-brand-ink'}`}>
+                                {summit.year}
+                              </p>
+                              <p className="text-xs text-brand-ink/50 truncate">
+                                {summit.location}
+                                {summit.note && <span className="text-brand-teal ml-1">({summit.note})</span>}
+                              </p>
+                            </button>
+                          )
+                        })}
+                      </div>
+                      {/* Show earned badges */}
+                      {(stepperData.attendedSummits?.length > 0 || stepperData.attendedSummits?.length === 0) && (
+                        <div className="mt-3 pt-3 border-t border-brand-ink/10">
+                          <p className="text-xs text-brand-ink/50 mb-2">Your attendance badges:</p>
+                          <div className="flex flex-wrap gap-1">
+                            {getAttendanceBadges(stepperData.attendedSummits || []).map(badge => (
+                              <span key={badge.id} className="inline-flex items-center gap-1 px-2 py-1 bg-brand-teal/10 rounded-full text-xs">
+                                <span>{badge.emoji}</span>
+                                <span>{badge.label}</span>
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </Step>
+
+                    <Step>
+                      <h2>Pick your badges</h2>
+                      <p>Optional! Pick up to 1 from each category.</p>
+                      <div className="mt-3 max-h-56 overflow-y-auto space-y-3">
+                        {Object.entries(BADGE_CATEGORIES).map(([key, category]) => {
+                          const categoryBadgeIds = category.badges.map(b => b.id)
+                          const currentPicks = (stepperData.badges || []).filter(id => categoryBadgeIds.includes(id))
+                          let maxPicks = category.maxPicks
+                          if (key === 'role') {
+                            maxPicks = getRoleMaxPicks(stepperData.badges || [])
+                          }
+                          const categoryFull = currentPicks.length >= maxPicks
+                          const customBadges = (stepperData.customBadges || {})[key] || []
+
+                          return (
+                            <div key={key}>
+                              <p className="text-xs font-medium text-brand-ink/50 mb-1">
+                                {category.label}
+                                {key === 'role' && (stepperData.badges || []).includes('role-personality-hire') && (
+                                  <span className="text-brand-teal ml-1">(pick 2!)</span>
+                                )}
+                              </p>
+                              <div className="flex flex-wrap gap-1">
+                                {category.badges.map(badge => {
+                                  const isSelected = stepperData.badges?.includes(badge.id)
+                                  const isDisabled = !isSelected && categoryFull
+                                  return (
+                                    <button
+                                      key={badge.id}
+                                      type="button"
+                                      onClick={() => toggleStepperBadge(badge.id)}
+                                      disabled={isDisabled}
+                                      className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs transition-all
+                                        ${isSelected
+                                          ? 'bg-brand-teal text-white'
+                                          : isDisabled
+                                            ? 'bg-gray-100 text-gray-300 cursor-not-allowed'
+                                            : 'bg-white border border-brand-ink/20 text-brand-ink hover:border-brand-teal'
+                                        }`}
+                                    >
+                                      <span>{badge.emoji}</span>
+                                      <span>{badge.label}</span>
+                                    </button>
+                                  )
+                                })}
+                                {/* Custom badges */}
+                                {customBadges.map(badge => (
+                                  <span
+                                    key={badge.label}
+                                    className="inline-flex items-center gap-1 px-2 py-1 bg-brand-teal text-white rounded-full text-xs"
+                                  >
+                                    <span>{badge.emoji}</span>
+                                    <span>{badge.label}</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => removeCustomBadge(key, badge.label, true)}
+                                      className="ml-1 hover:text-brand-cardinal"
+                                    >
+                                      <X className="w-3 h-3" />
+                                    </button>
+                                  </span>
+                                ))}
+                                {/* Add custom button */}
+                                {category.allowCustom && customBadges.length < 3 && (
+                                  newCustomBadge.category === key ? (
+                                    <div className="flex items-center gap-1">
+                                      <select
+                                        value={newCustomBadge.emoji}
+                                        onChange={(e) => setNewCustomBadge(prev => ({ ...prev, emoji: e.target.value }))}
+                                        className="px-1 py-1 rounded border border-brand-ink/20 text-xs"
+                                      >
+                                        {EMOJI_OPTIONS.map(e => <option key={e} value={e}>{e}</option>)}
+                                      </select>
+                                      <input
+                                        type="text"
+                                        value={newCustomBadge.label}
+                                        onChange={(e) => setNewCustomBadge(prev => ({ ...prev, label: e.target.value.slice(0, 20) }))}
+                                        placeholder="label (20 chars)"
+                                        className="w-24 px-2 py-1 rounded border border-brand-ink/20 text-xs"
+                                        autoFocus
+                                        onKeyDown={(e) => {
+                                          if (e.key === 'Enter') {
+                                            e.preventDefault()
+                                            e.stopPropagation()
+                                            addCustomBadge(key, newCustomBadge.emoji, newCustomBadge.label, true)
+                                          }
+                                        }}
+                                      />
+                                      <button
+                                        type="button"
+                                        onClick={() => addCustomBadge(key, newCustomBadge.emoji, newCustomBadge.label, true)}
+                                        className="px-2 py-1 bg-brand-teal text-white rounded text-xs"
+                                      >
+                                        +
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => setNewCustomBadge({ category: null, emoji: '💡', label: '' })}
+                                        className="px-1 py-1 text-brand-ink/50 text-xs"
+                                      >
+                                        <X className="w-3 h-3" />
+                                      </button>
+                                    </div>
+                                  ) : (
+                                    <button
+                                      type="button"
+                                      onClick={() => setNewCustomBadge({ category: key, emoji: '💡', label: '' })}
+                                      className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs border border-dashed border-brand-ink/30 text-brand-ink/50 hover:border-brand-teal hover:text-brand-teal"
+                                    >
+                                      + custom
+                                    </button>
+                                  )
+                                )}
+                              </div>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </Step>
+
+                    <Step>
+                      <div className="text-center">
+                        {/* Show photo if uploaded, otherwise checkmark */}
+                        {photoPreview ? (
+                          <img
+                            src={photoPreview}
+                            alt="Your profile"
+                            className="w-20 h-20 mx-auto mb-3 rounded-full object-cover border-4 border-brand-teal/20"
+                          />
+                        ) : (
+                          <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-brand-teal/10 flex items-center justify-center">
+                            <CheckCircle className="w-6 h-6 text-brand-teal" />
+                          </div>
+                        )}
+                        <h2>You're all set!</h2>
+                        <p>You can always update your profile later. See you in Chapel Hill!</p>
+                        {/* Show all badges */}
+                        <div className="flex flex-wrap justify-center gap-1 mt-4">
+                          {getAttendanceBadges(stepperData.attendedSummits || []).map(badge => (
+                            <span key={badge.id} className="inline-flex items-center gap-1 px-2 py-1 bg-brand-teal/10 rounded-full text-xs">
+                              <span>{badge.emoji}</span>
+                              <span>{badge.label}</span>
+                            </span>
+                          ))}
+                          {(stepperData.badges || []).map(id => {
+                            const badge = ALL_BADGES.find(b => b.id === id)
+                            return badge ? (
+                              <span key={id} className="inline-flex items-center gap-1 px-2 py-1 bg-brand-teal/10 rounded-full text-xs">
+                                <span>{badge.emoji}</span>
+                                <span>{badge.label}</span>
+                              </span>
+                            ) : null
+                          })}
+                          {Object.entries(stepperData.customBadges || {}).flatMap(([_, badges]) =>
+                            badges.map(badge => (
+                              <span key={badge.label} className="inline-flex items-center gap-1 px-2 py-1 bg-brand-teal/10 rounded-full text-xs">
+                                <span>{badge.emoji}</span>
+                                <span>{badge.label}</span>
+                              </span>
+                            ))
+                          )}
+                        </div>
+                      </div>
+                    </Step>
+                  </Stepper>
+                </motion.div>
               </motion.div>
             )}
           </AnimatePresence>
@@ -409,29 +1126,13 @@ function Dashboard() {
 
             {/* Sidebar */}
             <div className="space-y-6">
-              {/* Profile card with tutorial glow */}
+              {/* Profile card */}
               <motion.div
-                className={`card-sketch p-6 relative ${showTutorial ? 'ring-2 ring-brand-teal ring-offset-2' : ''}`}
+                className="card-sketch p-6 relative"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
               >
-                {/* Pulsing glow effect for tutorial */}
-                {showTutorial && (
-                  <motion.div
-                    className="absolute -inset-1 bg-brand-teal/20 rounded-xl -z-10"
-                    animate={{
-                      opacity: [0.3, 0.6, 0.3],
-                      scale: [1, 1.02, 1],
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      ease: 'easeInOut',
-                    }}
-                  />
-                )}
-
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="font-heading font-semibold text-lg text-brand-ink">
                     Your profile
@@ -516,15 +1217,15 @@ function Dashboard() {
                         </div>
 
                         <div>
-                          <label className="block font-body text-xs text-brand-ink/50 mb-1">Twitter/X</label>
+                          <label className="block font-body text-xs text-brand-ink/50 mb-1">Instagram</label>
                           <div className="flex">
                             <span className="inline-flex items-center px-3 py-2 rounded-l-lg border-2 border-r-0 border-brand-ink/20 bg-brand-ink/5 font-mono text-xs text-brand-ink/50">
                               @
                             </span>
                             <input
                               type="text"
-                              value={editData.twitter}
-                              onChange={(e) => setEditData({ ...editData, twitter: e.target.value.replace(/^@/, '') })}
+                              value={editData.instagram}
+                              onChange={(e) => setEditData({ ...editData, instagram: e.target.value.replace(/^@/, '') })}
                               placeholder="username"
                               className="w-full px-3 py-2 rounded-r-lg border-2 border-brand-ink/20 bg-white font-body text-brand-ink text-sm focus:border-brand-teal focus:outline-none transition-colors"
                             />
@@ -565,10 +1266,46 @@ function Dashboard() {
                       </div>
                     </div>
 
+                    {/* Summit attendance picker */}
+                    <div className="border-t-2 border-brand-ink/10 pt-4 mt-4">
+                      <p className="font-body text-xs text-brand-ink/50 mb-3">CJS attendance history</p>
+                      <div className="grid grid-cols-3 gap-1">
+                        {CJS_SUMMITS.map(summit => {
+                          const isAttended = (editData.attendedSummits || []).includes(summit.year)
+                          return (
+                            <button
+                              key={summit.year}
+                              type="button"
+                              onClick={() => toggleSummitAttendance(summit.year, false)}
+                              className={`p-1.5 rounded text-left transition-all border
+                                ${isAttended
+                                  ? 'bg-brand-teal/10 border-brand-teal'
+                                  : 'bg-white border-brand-ink/10 hover:border-brand-ink/30'
+                                }`}
+                            >
+                              <p className={`font-heading font-semibold text-xs ${isAttended ? 'text-brand-teal' : 'text-brand-ink'}`}>
+                                {summit.year}
+                              </p>
+                              <p className="text-[10px] text-brand-ink/50 truncate">{summit.location}</p>
+                            </button>
+                          )
+                        })}
+                      </div>
+                      {/* Auto-generated attendance badges */}
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        {getAttendanceBadges(editData.attendedSummits || []).map(badge => (
+                          <span key={badge.id} className="inline-flex items-center gap-1 px-2 py-0.5 bg-brand-teal/10 rounded-full text-[10px]">
+                            <span>{badge.emoji}</span>
+                            <span>{badge.label}</span>
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
                     {/* Badge picker */}
                     <div className="border-t-2 border-brand-ink/10 pt-4 mt-4">
                       <div className="flex items-center justify-between mb-3">
-                        <p className="font-body text-xs text-brand-ink/50">Profile badges (choose up to 3)</p>
+                        <p className="font-body text-xs text-brand-ink/50">Profile badges (1 per category)</p>
                         <button
                           type="button"
                           onClick={() => setShowBadgePicker(!showBadgePicker)}
@@ -580,7 +1317,7 @@ function Dashboard() {
                       </div>
 
                       {/* Selected badges preview */}
-                      {selectedBadges.length > 0 && (
+                      {(selectedBadges.length > 0 || Object.values(editData.customBadges || {}).some(arr => arr.length > 0)) && (
                         <div className="flex flex-wrap gap-2 mb-3">
                           {selectedBadges.map(badge => (
                             <span
@@ -598,6 +1335,24 @@ function Dashboard() {
                               </button>
                             </span>
                           ))}
+                          {Object.entries(editData.customBadges || {}).flatMap(([cat, badges]) =>
+                            badges.map(badge => (
+                              <span
+                                key={`${cat}-${badge.label}`}
+                                className="inline-flex items-center gap-1 px-2 py-1 bg-brand-teal/10 rounded-full text-xs font-body text-brand-ink"
+                              >
+                                <span>{badge.emoji}</span>
+                                <span>{badge.label}</span>
+                                <button
+                                  type="button"
+                                  onClick={() => removeCustomBadge(cat, badge.label, false)}
+                                  className="text-brand-ink/40 hover:text-brand-cardinal ml-1"
+                                >
+                                  <X className="w-3 h-3" />
+                                </button>
+                              </span>
+                            ))
+                          )}
                         </div>
                       )}
 
@@ -611,36 +1366,118 @@ function Dashboard() {
                             className="overflow-hidden"
                           >
                             <div className="bg-brand-ink/5 rounded-lg p-3 space-y-4 max-h-64 overflow-y-auto">
-                              {Object.entries(BADGE_CATEGORIES).map(([key, category]) => (
-                                <div key={key}>
-                                  <p className="font-body text-xs font-medium text-brand-ink/60 mb-2">{category.label}</p>
-                                  <div className="flex flex-wrap gap-1">
-                                    {category.badges.map(badge => {
-                                      const isSelected = editData.badges?.includes(badge.id)
-                                      const isDisabled = !isSelected && (editData.badges?.length || 0) >= 3
-                                      return (
-                                        <button
-                                          key={badge.id}
-                                          type="button"
-                                          onClick={() => !isDisabled && toggleBadge(badge.id)}
-                                          disabled={isDisabled}
-                                          title={badge.description}
-                                          className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs transition-all
-                                            ${isSelected
-                                              ? 'bg-brand-teal text-white'
-                                              : isDisabled
-                                                ? 'bg-brand-ink/5 text-brand-ink/30 cursor-not-allowed'
-                                                : 'bg-white border border-brand-ink/20 text-brand-ink hover:border-brand-teal'
-                                            }`}
+                              {Object.entries(BADGE_CATEGORIES).map(([key, category]) => {
+                                const categoryBadgeIds = category.badges.map(b => b.id)
+                                const currentPicks = (editData.badges || []).filter(id => categoryBadgeIds.includes(id))
+                                let maxPicks = category.maxPicks
+                                if (key === 'role') {
+                                  maxPicks = getRoleMaxPicks(editData.badges || [])
+                                }
+                                const categoryFull = currentPicks.length >= maxPicks
+                                const customBadges = (editData.customBadges || {})[key] || []
+
+                                return (
+                                  <div key={key}>
+                                    <p className="font-body text-xs font-medium text-brand-ink/60 mb-2">
+                                      {category.label}
+                                      {key === 'role' && (editData.badges || []).includes('role-personality-hire') && (
+                                        <span className="text-brand-teal ml-1">(pick 2!)</span>
+                                      )}
+                                    </p>
+                                    <div className="flex flex-wrap gap-1">
+                                      {category.badges.map(badge => {
+                                        const isSelected = editData.badges?.includes(badge.id)
+                                        const isDisabled = !isSelected && categoryFull
+                                        return (
+                                          <button
+                                            key={badge.id}
+                                            type="button"
+                                            onClick={() => !isDisabled && toggleBadge(badge.id)}
+                                            disabled={isDisabled}
+                                            title={badge.description}
+                                            className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs transition-all
+                                              ${isSelected
+                                                ? 'bg-brand-teal text-white'
+                                                : isDisabled
+                                                  ? 'bg-brand-ink/5 text-brand-ink/30 cursor-not-allowed'
+                                                  : 'bg-white border border-brand-ink/20 text-brand-ink hover:border-brand-teal'
+                                              }`}
+                                          >
+                                            <span>{badge.emoji}</span>
+                                            <span>{badge.label}</span>
+                                          </button>
+                                        )
+                                      })}
+                                      {/* Custom badges */}
+                                      {customBadges.map(badge => (
+                                        <span
+                                          key={badge.label}
+                                          className="inline-flex items-center gap-1 px-2 py-1 bg-brand-teal text-white rounded-full text-xs"
                                         >
                                           <span>{badge.emoji}</span>
                                           <span>{badge.label}</span>
-                                        </button>
-                                      )
-                                    })}
+                                          <button
+                                            type="button"
+                                            onClick={() => removeCustomBadge(key, badge.label, false)}
+                                            className="ml-1 hover:text-brand-cardinal"
+                                          >
+                                            <X className="w-3 h-3" />
+                                          </button>
+                                        </span>
+                                      ))}
+                                      {/* Add custom button */}
+                                      {category.allowCustom && customBadges.length < 3 && (
+                                        newCustomBadge.category === key ? (
+                                          <div className="flex items-center gap-1">
+                                            <select
+                                              value={newCustomBadge.emoji}
+                                              onChange={(e) => setNewCustomBadge(prev => ({ ...prev, emoji: e.target.value }))}
+                                              className="px-1 py-1 rounded border border-brand-ink/20 text-xs"
+                                            >
+                                              {EMOJI_OPTIONS.map(e => <option key={e} value={e}>{e}</option>)}
+                                            </select>
+                                            <input
+                                              type="text"
+                                              value={newCustomBadge.label}
+                                              onChange={(e) => setNewCustomBadge(prev => ({ ...prev, label: e.target.value.slice(0, 20) }))}
+                                              placeholder="label"
+                                              className="w-20 px-2 py-1 rounded border border-brand-ink/20 text-xs"
+                                              onKeyDown={(e) => {
+                                                if (e.key === 'Enter') {
+                                                  e.preventDefault()
+                                                  addCustomBadge(key, newCustomBadge.emoji, newCustomBadge.label, false)
+                                                }
+                                              }}
+                                            />
+                                            <button
+                                              type="button"
+                                              onClick={() => addCustomBadge(key, newCustomBadge.emoji, newCustomBadge.label, false)}
+                                              className="px-2 py-1 bg-brand-teal text-white rounded text-xs"
+                                            >
+                                              +
+                                            </button>
+                                            <button
+                                              type="button"
+                                              onClick={() => setNewCustomBadge({ category: null, emoji: '💡', label: '' })}
+                                              className="text-brand-ink/50"
+                                            >
+                                              <X className="w-3 h-3" />
+                                            </button>
+                                          </div>
+                                        ) : (
+                                          <button
+                                            type="button"
+                                            onClick={() => setNewCustomBadge({ category: key, emoji: '💡', label: '' })}
+                                            className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs border border-dashed border-brand-ink/30 text-brand-ink/50 hover:border-brand-teal hover:text-brand-teal"
+                                          >
+                                            + custom
+                                          </button>
+                                        )
+                                      )}
+                                    </div>
                                   </div>
-                                </div>
-                              ))}
+                                )
+                              })}
                             </div>
                           </motion.div>
                         )}
@@ -702,8 +1539,20 @@ function Dashboard() {
                     )}
 
                     {/* Display badges */}
-                    {displayBadges.length > 0 && (
+                    {(displayBadges.length > 0 || (userProfile?.attendedSummits?.length >= 0) || Object.values(userProfile?.customBadges || {}).some(arr => arr.length > 0)) && (
                       <div className="flex flex-wrap gap-1 pt-2">
+                        {/* Attendance badges */}
+                        {getAttendanceBadges(userProfile?.attendedSummits || []).map(badge => (
+                          <span
+                            key={badge.id}
+                            title={badge.description}
+                            className="inline-flex items-center gap-1 px-2 py-1 bg-brand-teal/10 rounded-full text-xs font-body text-brand-ink"
+                          >
+                            <span>{badge.emoji}</span>
+                            <span>{badge.label}</span>
+                          </span>
+                        ))}
+                        {/* Category badges */}
                         {displayBadges.map(badge => (
                           <span
                             key={badge.id}
@@ -714,11 +1563,23 @@ function Dashboard() {
                             <span>{badge.label}</span>
                           </span>
                         ))}
+                        {/* Custom badges */}
+                        {Object.entries(userProfile?.customBadges || {}).flatMap(([_, badges]) =>
+                          badges.map(badge => (
+                            <span
+                              key={badge.label}
+                              className="inline-flex items-center gap-1 px-2 py-1 bg-brand-teal/10 rounded-full text-xs font-body text-brand-ink"
+                            >
+                              <span>{badge.emoji}</span>
+                              <span>{badge.label}</span>
+                            </span>
+                          ))
+                        )}
                       </div>
                     )}
 
                     {/* Social links */}
-                    {(userProfile?.website || userProfile?.twitter || userProfile?.linkedin || userProfile?.bluesky) && (
+                    {(userProfile?.website || userProfile?.instagram || userProfile?.linkedin || userProfile?.bluesky) && (
                       <div className="flex gap-2 pt-2 border-t border-brand-ink/10">
                         {userProfile.website && (
                           <a
@@ -730,14 +1591,14 @@ function Dashboard() {
                             <Globe className="w-4 h-4" />
                           </a>
                         )}
-                        {userProfile.twitter && (
+                        {userProfile.instagram && (
                           <a
-                            href={`https://twitter.com/${userProfile.twitter}`}
+                            href={`https://instagram.com/${userProfile.instagram}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="p-2 rounded-lg bg-brand-ink/5 hover:bg-brand-teal/10 text-brand-ink/60 hover:text-brand-teal transition-colors"
                           >
-                            <Twitter className="w-4 h-4" />
+                            <Instagram className="w-4 h-4" />
                           </a>
                         )}
                         {userProfile.linkedin && (

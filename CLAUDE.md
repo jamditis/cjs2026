@@ -2,6 +2,8 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+**Current date context:** December 2025. We are building the website for CJS 2026 (June 2026). The most recent past summit was CJS 2025 in Denver.
+
 ## Project overview
 
 This is the website for the 2026 Collaborative Journalism Summit (CJS2026), the 10th anniversary edition of the annual event hosted by the Center for Cooperative Media and INN (Institute for Nonprofit News). The summit will be held in North Carolina in June 2026.
@@ -282,14 +284,26 @@ Changed auth flow from email/password to **passwordless magic links**:
 | LinkedIn | `linkedin.com/in/` | `username` |
 | Bluesky | `@` | `handle.bsky.social` |
 
-**Badge system (26 badges, max 3 per user):**
-- Experience: Collab Curious, Practitioner, Veteran, Evangelist
-- Role: Reporter, Editor, Leadership, Funder, Academic, Technologist
-- Attendance: First Timer, Returning, Regular, OG
-- Values: Cooperation > Competition, Public Good, Indie Spirit, Local First, Open Source, Solidarity, Disruptor, Bridge Builder
-- Fun: Coffee Powered, Night Owl, Early Bird, Spreadsheet Nerd
+**Badge system (1 per category, custom badges allowed):**
+- Experience: collab curious, practitioner, veteran, evangelist
+- Role: reporter, editor, leadership, funder, academic, technologist, organizer, personality hire
+  - If "personality hire" selected, can pick 2 roles
+- CJS attendance: summit picker (2017-2025) → auto-generates badges based on history
+- Philosophy: 8 predefined + up to 3 custom
+- Misc: 12 predefined + up to 3 custom
 
-Badges stored in Firestore user profile as array of badge IDs.
+**Past summits (for attendance picker):**
+- 2017 Philadelphia (inaugural)
+- 2018 New Orleans
+- 2019 Philadelphia
+- 2020 virtual
+- 2021 virtual
+- 2022 New Orleans
+- 2023 Atlanta
+- 2024 Austin
+- 2025 Denver
+
+Badges stored in Firestore user profile as array of badge IDs + custom badges object.
 
 ### shadcn MCP integration
 
@@ -300,3 +314,67 @@ npx shadcn@latest mcp init --client claude
 ```
 
 Creates `.mcp.json` with shadcn server config. Restart Claude Code to activate. Enables direct access to shadcn/ui component tools.
+
+---
+
+## Updates (2025-12-09 evening)
+
+### Stepper UX improvements
+
+- **More breathing room:** Modal widened to `max-w-lg`, padding increased, scrollable on small screens
+- **Animation direction reversed:** Forward = slide from right, Back = slide from left (more intuitive)
+- **Progress indicators:** Moved to bottom with smaller size for cleaner modal
+
+### Profile photo upload
+
+New step in profile wizard allows photo upload:
+- Max 2MB, JPG/PNG/WebP only
+- Auto-resizes to 800x800px max to save bandwidth/storage
+- Preview with remove button
+- Uploads to Firebase Storage: `profile-photos/{uid}/{timestamp}.jpg`
+
+**Firebase Storage rules needed:**
+```javascript
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /profile-photos/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == userId
+                   && request.resource.size < 2 * 1024 * 1024
+                   && request.resource.contentType.matches('image/.*');
+    }
+  }
+}
+```
+
+### Profanity filter
+
+New utility at `src/utils/profanityFilter.js`:
+- Standard blacklist of profanity and slurs
+- Fuzzy matching for common substitutions (`@` for `a`, `$` for `s`, `1/!` for `i`, etc.)
+- Applied to name, organization, role fields in profile wizard
+- Blocks submission with inline error messages
+
+### Social links update
+
+- Replaced Twitter/X with Instagram in profile social links
+- Field: `instagram` (username without @)
+- URL: `https://instagram.com/{username}`
+
+### Bug fixes
+
+- **getSiteContent 500 error:** Fixed incorrect API key reference in Cloud Function (`AIRTABLE_API_KEY` → `airtableApiKey.value()`)
+- **API key exposure:** App.jsx email signup now uses Cloud Function instead of direct Airtable API (was exposing key client-side)
+
+### Key files changed
+
+| File | Changes |
+|------|---------|
+| `src/pages/Dashboard.jsx` | Photo upload, profanity validation, Instagram field |
+| `src/components/Stepper.jsx` | Reversed animation direction |
+| `src/components/Stepper.css` | More padding, small indicator styles |
+| `src/utils/profanityFilter.js` | New profanity filter utility |
+| `src/firebase.js` | Added Firebase Storage export |
+| `functions/index.js` | Fixed getSiteContent API key bug |
+| `src/App.jsx` | Email signup uses Cloud Function now |

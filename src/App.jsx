@@ -17,10 +17,8 @@ import {
 } from 'lucide-react'
 import { BlurText, ParticlesBackground, AnimatedLogo } from './components'
 
-// Airtable config - API key from environment variable
-const AIRTABLE_BASE_ID = 'appL8Sn87xUotm4jF'
-const AIRTABLE_TABLE_NAME = 'Email signups'
-const AIRTABLE_API_KEY = import.meta.env.VITE_AIRTABLE_API_KEY
+// Cloud Function URL for secure email signup
+const SAVE_EMAIL_URL = 'https://us-central1-cjs2026.cloudfunctions.net/saveEmailSignup'
 
 // ============================================
 // Data
@@ -235,25 +233,16 @@ function EmailSignup({ darkBg = false }) {
     setStatus('loading')
 
     try {
-      const response = await fetch(
-        `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_TABLE_NAME)}`,
-        {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            records: [{
-              fields: {
-                'Email': email,
-                'Source': 'CJS 2026 Website',
-                'Signed up': new Date().toISOString(),
-              }
-            }]
-          })
-        }
-      )
+      const response = await fetch(SAVE_EMAIL_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email,
+          source: 'CJS 2026 Website'
+        })
+      })
 
       if (response.ok) {
         setStatus('success')

@@ -203,7 +203,7 @@ exports.getSiteContent = onRequest({ cors: true, secrets: [airtableApiKey] }, as
 
         const response = await fetch(url.toString(), {
           headers: {
-            "Authorization": `Bearer ${AIRTABLE_API_KEY}`
+            "Authorization": `Bearer ${airtableApiKey.value()}`
           }
         });
 
