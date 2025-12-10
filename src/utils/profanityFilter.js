@@ -1,16 +1,15 @@
-// Profanity filter with fuzzy matching
-// Standard blacklist with common substitutions
+// Profanity filter using comprehensive word list from zautumnz/profane-words
+// https://github.com/zautumnz/profane-words (~2000 words)
 
-const BLACKLIST = [
-  // Standard profanity (keeping this list professional but comprehensive)
-  'fuck', 'shit', 'ass', 'bitch', 'damn', 'crap', 'piss', 'dick', 'cock',
-  'pussy', 'cunt', 'bastard', 'slut', 'whore', 'fag', 'nigger', 'nigga',
-  'retard', 'spic', 'chink', 'kike', 'wetback', 'cracker',
-  // Compound words
-  'asshole', 'bullshit', 'horseshit', 'dumbass', 'jackass', 'dipshit',
-  'motherfucker', 'fucker', 'fuckface', 'fuckhead', 'shithead', 'dickhead',
-  'bitchass', 'cocksucker',
+import PROFANE_WORDS from './profane-words.json'
+
+// Additional slurs to ensure coverage (in case any are missing)
+const ADDITIONAL_WORDS = [
+  'gook', 'homo', 'tranny', 'shemale', 'ladyboy'
 ]
+
+// Combine both lists
+const BLACKLIST = [...new Set([...PROFANE_WORDS, ...ADDITIONAL_WORDS])]
 
 // Character substitutions for fuzzy matching
 const SUBSTITUTIONS = {
@@ -40,18 +39,29 @@ function buildFuzzyPattern(word) {
     if (subs) {
       // Match any of the substitutions, with optional separators between chars
       pattern += `[${subs.map(s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('')}]+[\\s._-]*`
-    } else {
+    } else if (/[a-z0-9]/.test(char)) {
       pattern += char + '[\\s._-]*'
     }
   }
   return pattern
 }
 
-// Pre-build regex patterns for all blacklisted words
-const PATTERNS = BLACKLIST.map(word => ({
+// Pre-build regex patterns for words that need fuzzy matching
+// For efficiency, only build fuzzy patterns for shorter common slurs
+const FUZZY_WORDS = BLACKLIST.filter(w => w.length <= 8 && /^[a-z]+$/.test(w))
+const FUZZY_PATTERNS = FUZZY_WORDS.map(word => ({
   word,
-  regex: new RegExp(buildFuzzyPattern(word), 'gi')
+  regex: new RegExp(`\\b${buildFuzzyPattern(word)}`, 'gi')
 }))
+
+// Normalize text for exact matching
+function normalizeText(text) {
+  return text
+    .toLowerCase()
+    .replace(/[^\w\s]/g, '') // Remove punctuation
+    .replace(/\s+/g, ' ')    // Normalize spaces
+    .trim()
+}
 
 /**
  * Check if text contains profanity
@@ -63,12 +73,31 @@ export function checkProfanity(text) {
     return { hasProfanity: false, matches: [] }
   }
 
-  const normalizedText = text.toLowerCase().replace(/\s+/g, ' ')
+  const normalizedText = normalizeText(text)
   const matches = []
 
-  for (const { word, regex } of PATTERNS) {
+  // Check for exact matches (whole words)
+  const words = normalizedText.split(/\s+/)
+  for (const word of words) {
+    if (BLACKLIST.includes(word)) {
+      matches.push(word)
+    }
+  }
+
+  // Check for partial matches in longer text
+  for (const blackWord of BLACKLIST) {
+    if (blackWord.includes(' ')) {
+      // Multi-word phrases - check if they appear in the normalized text
+      if (normalizedText.includes(blackWord)) {
+        matches.push(blackWord)
+      }
+    }
+  }
+
+  // Check fuzzy patterns for common substitutions
+  for (const { word, regex } of FUZZY_PATTERNS) {
     regex.lastIndex = 0 // Reset regex state
-    if (regex.test(normalizedText)) {
+    if (regex.test(text.toLowerCase())) {
       matches.push(word)
     }
   }
@@ -91,10 +120,19 @@ export function filterProfanity(text, replacement = '*') {
   }
 
   let filtered = text
-  for (const { regex } of PATTERNS) {
+
+  // Replace exact matches
+  for (const blackWord of BLACKLIST) {
+    const regex = new RegExp(`\\b${blackWord.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'gi')
+    filtered = filtered.replace(regex, match => replacement.repeat(match.length))
+  }
+
+  // Replace fuzzy matches
+  for (const { regex } of FUZZY_PATTERNS) {
     regex.lastIndex = 0
     filtered = filtered.replace(regex, match => replacement.repeat(match.length))
   }
+
   return filtered
 }
 

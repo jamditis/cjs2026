@@ -8,6 +8,7 @@ export default function Stepper({
   initialStep = 1,
   onStepChange = () => {},
   onFinalStepCompleted = () => {},
+  validateStep = () => true, // Returns true if step is valid, false to block advancement
   stepCircleContainerClassName = '',
   stepContainerClassName = '',
   contentClassName = '',
@@ -47,12 +48,20 @@ export default function Stepper({
 
   const handleNext = () => {
     if (!isLastStep) {
+      // Validate current step before advancing
+      if (!validateStep(currentStep)) {
+        return; // Block advancement if validation fails
+      }
       setDirection(1);
       updateStep(currentStep + 1);
     }
   };
 
   const handleComplete = () => {
+    // Validate final step before completing
+    if (!validateStep(currentStep)) {
+      return; // Block completion if validation fails
+    }
     setDirection(1);
     updateStep(totalSteps + 1);
   };
@@ -67,7 +76,7 @@ export default function Stepper({
         handleNext();
       }
     }
-  }, [isCompleted, isLastStep]);
+  }, [isCompleted, isLastStep, currentStep]);
 
   useEffect(() => {
     document.addEventListener('keydown', handleKeyDown);

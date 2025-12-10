@@ -420,10 +420,39 @@ function Dashboard() {
     return !error
   }
 
+  // Validate step before advancing (returns true if valid, false to block)
+  function validateStepperStep(stepNumber) {
+    // Step 2: Name validation
+    if (stepNumber === 2) {
+      const { hasProfanity } = checkProfanity(stepperData.displayName)
+      if (hasProfanity) {
+        setValidationErrors({ displayName: 'Name contains inappropriate language' })
+        return false
+      }
+      setValidationErrors(prev => ({ ...prev, displayName: null }))
+    }
+
+    // Step 4: Organization/Role validation
+    if (stepNumber === 4) {
+      const { hasProfanity: orgProfanity } = checkProfanity(stepperData.organization)
+      const { hasProfanity: roleProfanity } = checkProfanity(stepperData.role)
+      if (orgProfanity || roleProfanity) {
+        setValidationErrors({
+          organization: orgProfanity ? 'Organization contains inappropriate language' : null,
+          role: roleProfanity ? 'Role contains inappropriate language' : null
+        })
+        return false
+      }
+      setValidationErrors(prev => ({ ...prev, organization: null, role: null }))
+    }
+
+    return true
+  }
+
   // Handle stepper wizard completion
   async function handleStepperComplete() {
     if (stepperData.displayName) {
-      // Validate for profanity
+      // Final validation for profanity (shouldn't be needed if validateStep works, but just in case)
       const { hasProfanity: nameProfanity } = checkProfanity(stepperData.displayName)
       const { hasProfanity: orgProfanity } = checkProfanity(stepperData.organization)
       const { hasProfanity: roleProfanity } = checkProfanity(stepperData.role)
@@ -569,9 +598,21 @@ function Dashboard() {
     })
   }
 
+  // Custom badge validation error
+  const [customBadgeError, setCustomBadgeError] = useState(null)
+
   // Add custom badge
   function addCustomBadge(category, emoji, label, isStepperData = false) {
     if (!label.trim() || label.length > 20) return
+
+    // Check for profanity
+    const { hasProfanity } = checkProfanity(label)
+    if (hasProfanity) {
+      setCustomBadgeError('Badge contains inappropriate language')
+      return
+    }
+
+    setCustomBadgeError(null)
     const setter = isStepperData ? setStepperData : setEditData
     setter(prev => {
       const current = prev.customBadges || {}
@@ -706,6 +747,7 @@ function Dashboard() {
                   <Stepper
                     initialStep={1}
                     onFinalStepCompleted={handleStepperComplete}
+                    validateStep={validateStepperStep}
                     backButtonText="Back"
                     nextButtonText="Next"
                     disableStepIndicators={false}
@@ -945,7 +987,7 @@ function Dashboard() {
                                 {/* Add custom button */}
                                 {category.allowCustom && customBadges.length < 3 && (
                                   newCustomBadge.category === key ? (
-                                    <div className="flex items-center gap-1">
+                                    <div className="relative flex items-center gap-1">
                                       <select
                                         value={newCustomBadge.emoji}
                                         onChange={(e) => setNewCustomBadge(prev => ({ ...prev, emoji: e.target.value }))}
@@ -956,9 +998,12 @@ function Dashboard() {
                                       <input
                                         type="text"
                                         value={newCustomBadge.label}
-                                        onChange={(e) => setNewCustomBadge(prev => ({ ...prev, label: e.target.value.slice(0, 20) }))}
+                                        onChange={(e) => {
+                                          setNewCustomBadge(prev => ({ ...prev, label: e.target.value.slice(0, 20) }))
+                                          setCustomBadgeError(null)
+                                        }}
                                         placeholder="label (20 chars)"
-                                        className="w-24 px-2 py-1 rounded border border-brand-ink/20 text-xs"
+                                        className={`w-24 px-2 py-1 rounded border text-xs ${customBadgeError ? 'border-brand-cardinal' : 'border-brand-ink/20'}`}
                                         autoFocus
                                         onKeyDown={(e) => {
                                           if (e.key === 'Enter') {
@@ -977,11 +1022,17 @@ function Dashboard() {
                                       </button>
                                       <button
                                         type="button"
-                                        onClick={() => setNewCustomBadge({ category: null, emoji: '💡', label: '' })}
+                                        onClick={() => {
+                                          setNewCustomBadge({ category: null, emoji: '💡', label: '' })
+                                          setCustomBadgeError(null)
+                                        }}
                                         className="px-1 py-1 text-brand-ink/50 text-xs"
                                       >
                                         <X className="w-3 h-3" />
                                       </button>
+                                      {customBadgeError && (
+                                        <p className="absolute top-full left-0 mt-1 text-brand-cardinal text-[10px] whitespace-nowrap">{customBadgeError}</p>
+                                      )}
                                     </div>
                                   ) : (
                                     <button
@@ -1477,7 +1528,7 @@ function Dashboard() {
                                       {/* Add custom button */}
                                       {category.allowCustom && customBadges.length < 3 && (
                                         newCustomBadge.category === key ? (
-                                          <div className="flex items-center gap-1">
+                                          <div className="relative flex items-center gap-1">
                                             <select
                                               value={newCustomBadge.emoji}
                                               onChange={(e) => setNewCustomBadge(prev => ({ ...prev, emoji: e.target.value }))}
@@ -1488,9 +1539,12 @@ function Dashboard() {
                                             <input
                                               type="text"
                                               value={newCustomBadge.label}
-                                              onChange={(e) => setNewCustomBadge(prev => ({ ...prev, label: e.target.value.slice(0, 20) }))}
+                                              onChange={(e) => {
+                                                setNewCustomBadge(prev => ({ ...prev, label: e.target.value.slice(0, 20) }))
+                                                setCustomBadgeError(null)
+                                              }}
                                               placeholder="label"
-                                              className="w-20 px-2 py-1 rounded border border-brand-ink/20 text-xs"
+                                              className={`w-20 px-2 py-1 rounded border text-xs ${customBadgeError ? 'border-brand-cardinal' : 'border-brand-ink/20'}`}
                                               onKeyDown={(e) => {
                                                 if (e.key === 'Enter') {
                                                   e.preventDefault()
@@ -1507,11 +1561,17 @@ function Dashboard() {
                                             </button>
                                             <button
                                               type="button"
-                                              onClick={() => setNewCustomBadge({ category: null, emoji: '💡', label: '' })}
+                                              onClick={() => {
+                                                setNewCustomBadge({ category: null, emoji: '💡', label: '' })
+                                                setCustomBadgeError(null)
+                                              }}
                                               className="text-brand-ink/50"
                                             >
                                               <X className="w-3 h-3" />
                                             </button>
+                                            {customBadgeError && (
+                                              <p className="absolute top-full left-0 mt-1 text-brand-cardinal text-[10px] whitespace-nowrap">{customBadgeError}</p>
+                                            )}
                                           </div>
                                         ) : (
                                           <button
