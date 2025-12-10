@@ -1,15 +1,10 @@
-// Profanity filter using comprehensive word list from zautumnz/profane-words
-// https://github.com/zautumnz/profane-words (~2000 words)
+// Slur filter - blocks hate speech and discriminatory language only
+// Does NOT block general profanity/cursing - only racial, ethnic, religious,
+// disability, and other identity-based slurs
 
-import PROFANE_WORDS from './profane-words.json'
+import SLURS from './profane-words.json'
 
-// Additional slurs to ensure coverage (in case any are missing)
-const ADDITIONAL_WORDS = [
-  'gook', 'homo', 'tranny', 'shemale', 'ladyboy'
-]
-
-// Combine both lists
-const BLACKLIST = [...new Set([...PROFANE_WORDS, ...ADDITIONAL_WORDS])]
+const BLACKLIST = SLURS
 
 // Character substitutions for fuzzy matching
 const SUBSTITUTIONS = {
