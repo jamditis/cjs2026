@@ -406,7 +406,88 @@ Auto-generated based on summit history:
 
 ---
 
+## Updates (2025-12-10)
+
+### Custom domain setup (in progress)
+
+Setting up `summit.collaborativejournalism.org` as custom domain to avoid DNS resolution issues with `.web.app` domain.
+
+**Status:**
+- Custom domain added to Firebase Hosting console
+- Waiting on Marty (Cloudflare admin) to add CNAME record:
+  - Name: `summit`
+  - Target: `cjs2026.web.app`
+  - Proxy status: DNS only (grey cloud)
+- Once DNS propagates, verify domain in Firebase and wait for SSL
+
+### Airtable CMS color fix
+
+Fixed hardcoded colors in Home.jsx so CMS color changes are properly reflected:
+
+**Changes:**
+- `InfoCard` component now accepts `color` prop and uses `getColorClass()` dynamically
+- Updated InfoCard usages to pass color from CMS metadata
+- "What to expect" section now uses dynamic colors from `expect` section in CMS
+- Regenerated content from Airtable to pull latest color changes
+
+**Files changed:**
+- `src/pages/Home.jsx` - Dynamic colors for InfoCard and "What to expect" section
+
+### Attendee profile sync to Airtable
+
+Created Cloud Functions for syncing user profiles to Airtable for networking at the summit:
+
+**New Cloud Functions (in `functions/index.js`):**
+- `syncProfileToAirtable` - Syncs single user profile (upsert pattern)
+- `exportAttendees` - Returns all profiles as JSON (admin only)
+- `syncAllProfilesToAirtable` - Batch sync all users (admin only)
+
+**Admin dashboard (new page):**
+- `src/pages/Admin.jsx` - Admin-only page at `/admin`
+- Table view with search, filter by badge/status, sorting
+- Expandable rows with full profile details
+- CSV export and "Sync to Airtable" button
+- Admin access via email list: amditisj@montclair.edu, jamditis@gmail.com, murrays@montclair.edu
+
+### Airtable Attendees table setup (in progress)
+
+**Base:** 2026 CJS (appL8Sn87xUotm4jF)
+**Table:** Attendees (viw3bQPelgsSvk9QK)
+
+**Required fields:**
+| Field | Type | Status |
+|-------|------|--------|
+| uid | Single line text | Pending |
+| Email | Email | Pending |
+| Name | Single line text | Pending |
+| Organization | Single line text | Pending |
+| Role | Single line text | Pending |
+| Photo URL | URL | Pending |
+| Website | URL | Pending |
+| Instagram | Single line text | Pending |
+| LinkedIn | Single line text | Pending |
+| Bluesky | Single line text | Pending |
+| Badges | Long text | Pending |
+| Attended Summits | Long text | Pending |
+| Custom Badges | Long text | Pending |
+| Registration Status | Single select | ✓ Done |
+| Notify When Tickets Available | Checkbox | ✓ Done |
+| Created At | Date | Pending |
+| Updated At | Date | Pending |
+
+**Helper script:** `node scripts/check-attendees-table.cjs` - Checks table structure
+
+### Next steps
+
+1. Add remaining 15 fields to Attendees table in Airtable
+2. Deploy Cloud Functions: `firebase deploy --only functions`
+3. Wait for Marty to add DNS record, then verify domain
+4. Update meta tags/canonical URLs once domain is verified
+
+---
+
 ## Pending/backlog
 
 - Additional frontend polish (Gemini working on this)
 - Firebase Storage rules need to be deployed (see above for rule config)
+- Deploy profile sync Cloud Functions after Attendees table is set up
