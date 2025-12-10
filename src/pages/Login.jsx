@@ -1,24 +1,18 @@
 import React, { useState } from 'react'
-import { Link, useNavigate, useLocation } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Mail, Lock, Eye, EyeOff, AlertCircle } from 'lucide-react'
+import { Mail, AlertCircle, CheckCircle, Send } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 
 function Login() {
   const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [emailSent, setEmailSent] = useState(false)
 
-  const { login, loginWithGoogle } = useAuth()
-  const navigate = useNavigate()
-  const location = useLocation()
-
-  // Where to redirect after login
-  const from = location.state?.from?.pathname || '/dashboard'
+  const { sendMagicLink, loginWithGoogle } = useAuth()
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -26,16 +20,14 @@ function Login() {
     setLoading(true)
 
     try {
-      await login(email, password)
-      navigate(from, { replace: true })
+      await sendMagicLink(email)
+      setEmailSent(true)
     } catch (err) {
       console.error('Login error:', err)
-      if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') {
-        setError('Invalid email or password')
-      } else if (err.code === 'auth/too-many-requests') {
-        setError('Too many failed attempts. Please try again later.')
+      if (err.code === 'auth/invalid-email') {
+        setError('Invalid email address')
       } else {
-        setError('Failed to sign in. Please try again.')
+        setError('Failed to send sign-in link. Please try again.')
       }
     } finally {
       setLoading(false)
@@ -48,13 +40,71 @@ function Login() {
 
     try {
       await loginWithGoogle()
-      navigate(from, { replace: true })
+      window.location.href = '/dashboard'
     } catch (err) {
       console.error('Google login error:', err)
-      setError('Failed to sign in with Google. Please try again.')
+      if (err.code === 'auth/popup-closed-by-user') {
+        setError('Sign-in cancelled. Please try again.')
+      } else {
+        setError('Failed to sign in with Google. Please try again.')
+      }
     } finally {
       setLoading(false)
     }
+  }
+
+  // Success state - email sent
+  if (emailSent) {
+    return (
+      <>
+        <Navbar />
+        <div className="min-h-screen bg-paper pt-24 pb-16 flex items-center justify-center px-6">
+          <motion.div
+            className="w-full max-w-md text-center"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <div className="card-sketch p-8">
+              <div className="w-16 h-16 rounded-full bg-brand-teal/10 flex items-center justify-center mx-auto mb-6">
+                <CheckCircle className="w-8 h-8 text-brand-teal" />
+              </div>
+              <h1 className="editorial-headline text-2xl md:text-3xl text-brand-ink mb-4">
+                Check your inbox
+              </h1>
+              <p className="font-body text-brand-ink/70 mb-6">
+                We sent a sign-in link to <strong className="text-brand-ink">{email}</strong>
+              </p>
+              <p className="font-body text-brand-ink/50 text-sm mb-4">
+                Click the link in the email to sign in. The link expires in 1 hour.
+              </p>
+              <div className="bg-brand-ink/5 rounded-lg p-3 text-left">
+                <p className="font-body text-xs text-brand-ink/60 mb-1">
+                  <strong>Check your spam folder</strong> — the email comes from:
+                </p>
+                <p className="font-mono text-xs text-brand-ink/50">
+                  noreply@cjs2026.firebaseapp.com
+                </p>
+                <p className="font-body text-xs text-brand-ink/50 mt-1">
+                  Subject line: "Sign in to cjs2026"
+                </p>
+              </div>
+              <div className="border-t-2 border-brand-ink/10 pt-6">
+                <p className="font-body text-brand-ink/50 text-sm">
+                  Didn't receive the email?{' '}
+                  <button
+                    onClick={() => setEmailSent(false)}
+                    className="text-brand-teal hover:underline"
+                  >
+                    Try again
+                  </button>
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+        <Footer />
+      </>
+    )
   }
 
   return (
@@ -106,49 +156,20 @@ function Login() {
                 </div>
               </div>
 
-              <div>
-                <label htmlFor="password" className="block font-body font-medium text-brand-ink mb-2">
-                  Password
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-brand-ink/40" />
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    id="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    className="w-full pl-12 pr-12 py-3 rounded-lg border-2 border-brand-ink/20 bg-white font-body text-brand-ink placeholder:text-brand-ink/40 focus:border-brand-teal focus:outline-none transition-colors"
-                    placeholder="••••••••"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-brand-ink/40 hover:text-brand-ink transition-colors"
-                  >
-                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                  </button>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <Link
-                  to="/forgot-password"
-                  className="font-body text-sm text-brand-teal hover:underline"
-                >
-                  Forgot password?
-                </Link>
-              </div>
-
               <motion.button
                 type="submit"
                 disabled={loading}
-                className="btn-primary w-full disabled:opacity-50"
+                className="btn-primary w-full disabled:opacity-50 flex items-center justify-center gap-2"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                {loading ? 'Signing in...' : 'Sign in'}
+                <Send className="w-4 h-4" />
+                {loading ? 'Sending link...' : 'Send sign-in link'}
               </motion.button>
+
+              <p className="text-center font-body text-xs text-brand-ink/50">
+                We'll email you a magic link to sign in. No password needed.
+              </p>
             </form>
 
             <div className="relative my-8">
@@ -177,10 +198,9 @@ function Login() {
             </motion.button>
           </div>
 
-          <p className="text-center mt-6 font-body text-brand-ink/60">
-            Don't have an account?{' '}
-            <Link to="/register" className="text-brand-teal hover:underline font-medium">
-              Create one
+          <p className="text-center mt-6 font-body text-brand-ink/50 text-sm">
+            <Link to="/privacy" className="text-brand-ink/50 hover:text-brand-teal hover:underline">
+              Privacy policy
             </Link>
           </p>
         </motion.div>

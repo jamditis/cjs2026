@@ -1,16 +1,22 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import {
   onAuthStateChanged,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
   signOut,
-  sendPasswordResetEmail,
   updateProfile,
   GoogleAuthProvider,
-  signInWithPopup
+  signInWithPopup,
+  sendSignInLinkToEmail,
+  isSignInWithEmailLink,
+  signInWithEmailLink
 } from 'firebase/auth'
 import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore'
 import { auth, db } from '../firebase'
+
+// Email link settings
+const actionCodeSettings = {
+  url: window.location.origin + '/auth/callback',
+  handleCodeInApp: true,
+}
 
 const AuthContext = createContext()
 
@@ -69,26 +75,40 @@ export function AuthProvider({ children }) {
     return getUserProfile(uid)
   }
 
-  // Sign up with email/password
-  async function signup(email, password, displayName, additionalData = {}) {
-    const { user } = await createUserWithEmailAndPassword(auth, email, password)
+  // Send magic link to email
+  async function sendMagicLink(email) {
+    // Store email for use after callback
+    window.localStorage.setItem('emailForSignIn', email)
+    await sendSignInLinkToEmail(auth, email, actionCodeSettings)
+  }
 
-    // Update display name in Firebase Auth
-    if (displayName) {
-      await updateProfile(user, { displayName })
+  // Complete sign-in after clicking magic link
+  async function completeSignInWithEmailLink(url) {
+    if (!isSignInWithEmailLink(auth, url)) {
+      throw new Error('Invalid sign-in link')
     }
 
-    // Create Firestore profile
-    await createUserProfile(user, { displayName, ...additionalData })
+    // Get email from localStorage
+    let email = window.localStorage.getItem('emailForSignIn')
+    if (!email) {
+      // If email is missing, prompt user (edge case: different device/browser)
+      email = window.prompt('Please provide your email for confirmation')
+    }
+
+    const { user } = await signInWithEmailLink(auth, email, url)
+
+    // Create Firestore profile if new user (with empty fields to fill later)
+    await createUserProfile(user)
+
+    // Clean up localStorage
+    window.localStorage.removeItem('emailForSignIn')
 
     return user
   }
 
-  // Sign in with email/password
-  async function login(email, password) {
-    const { user } = await signInWithEmailAndPassword(auth, email, password)
-    await getUserProfile(user.uid)
-    return user
+  // Check if URL is a sign-in link
+  function isEmailLink(url) {
+    return isSignInWithEmailLink(auth, url)
   }
 
   // Sign in with Google
@@ -105,10 +125,6 @@ export function AuthProvider({ children }) {
     return signOut(auth)
   }
 
-  // Reset password
-  async function resetPassword(email) {
-    return sendPasswordResetEmail(auth, email)
-  }
 
   // Listen to auth state changes
   useEffect(() => {
@@ -129,11 +145,11 @@ export function AuthProvider({ children }) {
     currentUser,
     userProfile,
     loading,
-    signup,
-    login,
+    sendMagicLink,
+    completeSignInWithEmailLink,
+    isEmailLink,
     loginWithGoogle,
     logout,
-    resetPassword,
     updateUserProfile,
     getUserProfile,
   }

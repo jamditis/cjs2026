@@ -250,3 +250,53 @@ npm run update-content    # Generate + build + deploy (all-in-one)
 ### Saved for later
 
 - `src/components/ParticlesBackground.connected.jsx` - Connected particles animation (floating geometry effect)
+
+---
+
+## Updates (2025-12-09)
+
+### Passwordless authentication
+
+Changed auth flow from email/password to **passwordless magic links**:
+- `/login` - Email input sends magic link, or use Google OAuth
+- `/auth/callback` - Handles magic link verification
+- `/privacy` - Privacy policy page
+- Removed `/register` and `/forgot-password` (not needed with magic links)
+
+**Key changes:**
+- `AuthContext.jsx` now uses `sendSignInLinkToEmail` and `signInWithEmailLink`
+- Login page shows spam folder warning after email sent
+- Profile completion happens in dashboard after sign-in
+
+### Dashboard enhancements
+
+**Tutorial animation:**
+- Pulsing teal glow on profile card when profile incomplete
+- Two dismiss options: "I'll do this later" (session) / "I know what I'm doing" (permanent)
+
+**Input validation with forced prefixes:**
+| Field | Prefix | User enters |
+|-------|--------|-------------|
+| Website | `https://` | `yoursite.com` |
+| Twitter/X | `@` | `username` |
+| LinkedIn | `linkedin.com/in/` | `username` |
+| Bluesky | `@` | `handle.bsky.social` |
+
+**Badge system (26 badges, max 3 per user):**
+- Experience: Collab Curious, Practitioner, Veteran, Evangelist
+- Role: Reporter, Editor, Leadership, Funder, Academic, Technologist
+- Attendance: First Timer, Returning, Regular, OG
+- Values: Cooperation > Competition, Public Good, Indie Spirit, Local First, Open Source, Solidarity, Disruptor, Bridge Builder
+- Fun: Coffee Powered, Night Owl, Early Bird, Spreadsheet Nerd
+
+Badges stored in Firestore user profile as array of badge IDs.
+
+### shadcn MCP integration
+
+Initialized shadcn MCP server for Claude Code integration:
+
+```bash
+npx shadcn@latest mcp init --client claude
+```
+
+Creates `.mcp.json` with shadcn server config. Restart Claude Code to activate. Enables direct access to shadcn/ui component tools.

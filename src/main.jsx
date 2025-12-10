@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { Home, Schedule, Sponsors, CodeOfConduct, Contact, Login, Register, ForgotPassword, Dashboard, EditRequest } from './pages'
+import { Home, Schedule, Sponsors, CodeOfConduct, Contact, Login, AuthCallback, Dashboard, EditRequest, PrivacyPolicy } from './pages'
 import { SplashScreen, ProtectedRoute } from './components'
 import { AuthProvider } from './contexts/AuthContext'
 import { ContentProvider } from './contexts/ContentContext'
@@ -22,8 +22,8 @@ function App() {
             <Route path="/code-of-conduct" element={<CodeOfConduct />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/auth/callback" element={<AuthCallback />} />
+            <Route path="/privacy" element={<PrivacyPolicy />} />
             <Route path="/dashboard" element={
               <ProtectedRoute>
                 <Dashboard />
