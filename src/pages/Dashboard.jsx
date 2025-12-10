@@ -535,8 +535,18 @@ function Dashboard() {
     e.preventDefault()
     setSaving(true)
     try {
-      await updateUserProfile(currentUser.uid, editData)
+      // Upload photo if selected
+      let photoURL = editData.photoURL
+      if (photoFile) {
+        photoURL = await uploadPhoto()
+      }
+
+      await updateUserProfile(currentUser.uid, {
+        ...editData,
+        ...(photoURL !== undefined && { photoURL })
+      })
       setEditing(false)
+      clearPhoto() // Reset photo state
       if (editData.displayName) {
         completeTutorial()
       }
@@ -1249,6 +1259,66 @@ function Dashboard() {
 
                 {editing ? (
                   <form onSubmit={handleSaveProfile} className="space-y-4">
+                    {/* Profile photo */}
+                    <div className="flex items-center gap-4">
+                      <div className="relative">
+                        <div className="w-16 h-16 rounded-full bg-brand-teal/10 flex items-center justify-center overflow-hidden">
+                          {photoPreview ? (
+                            <img src={photoPreview} alt="" className="w-full h-full object-cover" />
+                          ) : currentUser?.photoURL ? (
+                            <img src={currentUser.photoURL} alt="" className="w-full h-full object-cover" />
+                          ) : (
+                            <User className="w-8 h-8 text-brand-teal" />
+                          )}
+                        </div>
+                        {photoUploading && (
+                          <div className="absolute inset-0 bg-white/70 rounded-full flex items-center justify-center">
+                            <div className="w-5 h-5 border-2 border-brand-teal border-t-transparent rounded-full animate-spin" />
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <input
+                          type="file"
+                          id="edit-photo-input"
+                          accept={PHOTO_CONFIG.allowedTypes.join(',')}
+                          onChange={handlePhotoSelect}
+                          className="hidden"
+                        />
+                        <label
+                          htmlFor="edit-photo-input"
+                          className="inline-flex items-center gap-2 px-3 py-1.5 bg-brand-teal/10 hover:bg-brand-teal/20 text-brand-teal rounded-lg cursor-pointer transition-colors text-sm font-body"
+                        >
+                          <Camera className="w-4 h-4" />
+                          {currentUser?.photoURL || photoPreview ? 'Change photo' : 'Add photo'}
+                        </label>
+                        {(photoPreview || currentUser?.photoURL) && !photoPreview && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setEditData({ ...editData, photoURL: null })
+                              clearPhoto()
+                            }}
+                            className="ml-2 text-xs text-brand-cardinal hover:underline"
+                          >
+                            Remove
+                          </button>
+                        )}
+                        {photoPreview && (
+                          <button
+                            type="button"
+                            onClick={clearPhoto}
+                            className="ml-2 text-xs text-brand-cardinal hover:underline"
+                          >
+                            Cancel
+                          </button>
+                        )}
+                        {photoError && (
+                          <p className="mt-1 text-xs text-brand-cardinal">{photoError}</p>
+                        )}
+                      </div>
+                    </div>
+
                     <div>
                       <label className="block font-body text-sm text-brand-ink/70 mb-1">
                         Name <span className="text-brand-cardinal">*</span>
