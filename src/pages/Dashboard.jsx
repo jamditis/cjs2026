@@ -1265,8 +1265,8 @@ function Dashboard() {
                         <div className="w-16 h-16 rounded-full bg-brand-teal/10 flex items-center justify-center overflow-hidden">
                           {photoPreview ? (
                             <img src={photoPreview} alt="" className="w-full h-full object-cover" />
-                          ) : currentUser?.photoURL ? (
-                            <img src={currentUser.photoURL} alt="" className="w-full h-full object-cover" />
+                          ) : userProfile?.photoURL || currentUser?.photoURL ? (
+                            <img src={userProfile?.photoURL || currentUser?.photoURL} alt="" className="w-full h-full object-cover" />
                           ) : (
                             <User className="w-8 h-8 text-brand-teal" />
                           )}
@@ -1290,9 +1290,9 @@ function Dashboard() {
                           className="inline-flex items-center gap-2 px-3 py-1.5 bg-brand-teal/10 hover:bg-brand-teal/20 text-brand-teal rounded-lg cursor-pointer transition-colors text-sm font-body"
                         >
                           <Camera className="w-4 h-4" />
-                          {currentUser?.photoURL || photoPreview ? 'Change photo' : 'Add photo'}
+                          {userProfile?.photoURL || currentUser?.photoURL || photoPreview ? 'Change photo' : 'Add photo'}
                         </label>
-                        {(photoPreview || currentUser?.photoURL) && !photoPreview && (
+                        {(photoPreview || userProfile?.photoURL || currentUser?.photoURL) && !photoPreview && (
                           <button
                             type="button"
                             onClick={() => {
@@ -1685,12 +1685,12 @@ function Dashboard() {
                 ) : (
                   <div className="space-y-3">
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-full bg-brand-teal/10 flex items-center justify-center">
-                        {currentUser?.photoURL ? (
+                      <div className="w-12 h-12 rounded-full bg-brand-teal/10 flex items-center justify-center overflow-hidden">
+                        {userProfile?.photoURL || currentUser?.photoURL ? (
                           <img
-                            src={currentUser.photoURL}
+                            src={userProfile?.photoURL || currentUser?.photoURL}
                             alt=""
-                            className="w-12 h-12 rounded-full"
+                            className="w-12 h-12 rounded-full object-cover"
                           />
                         ) : (
                           <User className="w-6 h-6 text-brand-teal" />
