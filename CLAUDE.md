@@ -348,13 +348,14 @@ service firebase.storage {
 }
 ```
 
-### Profanity filter
+### Slur filter (hate speech only)
 
-New utility at `src/utils/profanityFilter.js`:
-- Standard blacklist of profanity and slurs
-- Fuzzy matching for common substitutions (`@` for `a`, `$` for `s`, `1/!` for `i`, etc.)
-- Applied to name, organization, role fields in profile wizard
-- Blocks submission with inline error messages
+`src/utils/profanityFilter.js` + `src/utils/profane-words.json`:
+- ~170 slurs (racial, ethnic, religious, disability, anti-LGBTQ)
+- Does NOT block general profanity (fuck, shit, etc.) - only hate speech
+- Fuzzy matching for common substitutions (`@` for `a`, `$` for `s`, etc.)
+- Applied to name, organization, role, custom badges in profile wizard
+- Stepper blocks advancement if slurs detected (validateStep prop)
 
 ### Social links update
 
@@ -362,19 +363,50 @@ New utility at `src/utils/profanityFilter.js`:
 - Field: `instagram` (username without @)
 - URL: `https://instagram.com/{username}`
 
+### CJS summit history (corrected)
+
+| Year | Location | Note |
+|------|----------|------|
+| 2017 | Montclair, NJ | inaugural 🎓 |
+| 2018 | Montclair, NJ | 🎓 |
+| 2019 | Philadelphia, PA | 🔔 |
+| 2020 | virtual | pandemic 🏠 |
+| 2021 | virtual | pandemic 💻 |
+| 2022 | Chicago, IL | 🌆 |
+| 2023 | Washington D.C. | 🏛️ |
+| 2024 | Detroit, MI | 🚗 |
+| 2025 | Denver, CO | 🏔️ |
+
+### Attendance badges
+
+Auto-generated based on summit history:
+- **OG** - attended inaugural 2017
+- **COVID badges** - pandemic pioneer (2020), lockdown loyalist (2021), zoom veteran (both)
+- **Streak badges** - back-to-back (2 consecutive), three-peat (3), N-year streak (4+)
+- **City badges** - for single in-person summit attendance
+
 ### Bug fixes
 
-- **getSiteContent 500 error:** Fixed incorrect API key reference in Cloud Function (`AIRTABLE_API_KEY` → `airtableApiKey.value()`)
-- **API key exposure:** App.jsx email signup now uses Cloud Function instead of direct Airtable API (was exposing key client-side)
+- **getSiteContent 500 error:** Fixed incorrect API key reference in Cloud Function
+- **API key exposure:** App.jsx email signup now uses Cloud Function
+- **Stepper modal close:** Fixed modal squashing instead of closing
+- **Spam folder message:** Centered, teal background, larger text
 
 ### Key files changed
 
 | File | Changes |
 |------|---------|
-| `src/pages/Dashboard.jsx` | Photo upload, profanity validation, Instagram field |
-| `src/components/Stepper.jsx` | Reversed animation direction |
+| `src/pages/Dashboard.jsx` | Photo upload, slur validation, Instagram, attendance badges |
+| `src/components/Stepper.jsx` | Reversed animation, validateStep prop |
 | `src/components/Stepper.css` | More padding, small indicator styles |
-| `src/utils/profanityFilter.js` | New profanity filter utility |
+| `src/utils/profanityFilter.js` | Slur filter (hate speech only) |
+| `src/utils/profane-words.json` | ~170 slurs list |
 | `src/firebase.js` | Added Firebase Storage export |
-| `functions/index.js` | Fixed getSiteContent API key bug |
-| `src/App.jsx` | Email signup uses Cloud Function now |
+| `src/pages/Login.jsx` | Spam folder warning styling |
+
+---
+
+## Pending/backlog
+
+- Additional frontend polish (Gemini working on this)
+- Firebase Storage rules need to be deployed (see above for rule config)

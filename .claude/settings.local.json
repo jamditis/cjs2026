@@ -30,7 +30,24 @@
       "Bash(git push)",
       "WebFetch(domain:reactbits.dev)",
       "WebFetch(domain:github.com)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(git fetch:*)",
+      "Bash(git merge:*)",
+      "Bash(findstr:*)",
+      "Bash(npm run dev:*)",
+      "Bash(start http://localhost:3000/privacy)",
+      "Bash(start http://localhost:3000/login)",
+      "WebFetch(domain:firebase.google.com)",
+      "Bash(npx firebase deploy:*)",
+      "Bash(npx firebase:*)",
+      "Bash(start:*)",
+      "Bash(npx shadcn@latest mcp init:*)",
+      "Bash(npx shadcn@latest add \"https://reactbits.dev/r/star-border\")",
+      "Bash(npx jsrepo:*)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(curl:*)",
+      "Bash(git push:*)",
+      "Bash(git checkout:*)"
     ]
   }
 }
