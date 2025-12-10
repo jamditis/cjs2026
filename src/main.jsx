@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { Home, Schedule, Sponsors, CodeOfConduct, Contact, Login, AuthCallback, Dashboard, EditRequest, PrivacyPolicy } from './pages'
+import { Home, Schedule, Sponsors, CodeOfConduct, Contact, Login, AuthCallback, Dashboard, EditRequest, PrivacyPolicy, Admin } from './pages'
 import { SplashScreen, ProtectedRoute } from './components'
 import { AuthProvider } from './contexts/AuthContext'
 import { ContentProvider } from './contexts/ContentContext'
@@ -30,6 +30,11 @@ function App() {
               </ProtectedRoute>
             } />
             <Route path="/edit-request" element={<EditRequest />} />
+            <Route path="/admin" element={
+              <ProtectedRoute>
+                <Admin />
+              </ProtectedRoute>
+            } />
             </Routes>
           </AuthProvider>
         </ContentProvider>

@@ -133,7 +133,10 @@ function Countdown({ targetDate }) {
 // ============================================
 // Info card with sketch aesthetic
 // ============================================
-function InfoCard({ icon: Icon, title, children, delay = 0 }) {
+function InfoCard({ icon: Icon, title, children, delay = 0, color = 'teal' }) {
+  const bgClass = getColorClass(color, 'bg')
+  const textClass = getColorClass(color, 'text')
+
   return (
     <motion.div
       className="card-sketch p-6"
@@ -143,8 +146,8 @@ function InfoCard({ icon: Icon, title, children, delay = 0 }) {
       transition={{ delay, duration: 0.5 }}
     >
       <div className="flex items-start gap-4">
-        <div className="w-12 h-12 rounded-full bg-brand-teal/10 flex items-center justify-center flex-shrink-0">
-          <Icon className="w-6 h-6 text-brand-teal" />
+        <div className={`w-12 h-12 rounded-full ${bgClass}/10 flex items-center justify-center flex-shrink-0`}>
+          <Icon className={`w-6 h-6 ${textClass}`} />
         </div>
         <div>
           <h3 className="font-heading font-semibold text-xl text-brand-ink mb-2">{title}</h3>
@@ -372,20 +375,20 @@ function Home() {
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-6 mb-16">
-            <InfoCard icon={Calendar} title="When" delay={0}>
+            <InfoCard icon={Calendar} title="When" delay={0} color={getContentMeta('details', 'when_day1_description')?.color || 'teal'}>
               <p><strong>{getContent('details', 'when_day1_title', 'Monday, June 8')}</strong></p>
               <p className="text-sm">{getContent('details', 'when_day1_description', 'Full day of sessions + dinner')}</p>
               <p className="mt-2"><strong>{getContent('details', 'when_day2_title', 'Tuesday, June 9')}</strong></p>
               <p className="text-sm">{getContent('details', 'when_day2_description', 'Morning workshops')}</p>
             </InfoCard>
 
-            <InfoCard icon={MapPin} title="Where" delay={0.1}>
+            <InfoCard icon={MapPin} title="Where" delay={0.1} color={getContentMeta('details', 'venue_name')?.color || 'teal'}>
               <p><strong>{getContent('details', 'venue_name', 'UNC Friday Center')}</strong></p>
               <p className="text-sm">{getContent('details', 'venue_location', 'Chapel Hill, North Carolina')}</p>
               <p className="text-sm mt-2 text-brand-ink/50">{getContent('details', 'venue_note', 'Co-located with INN Days')}</p>
             </InfoCard>
 
-            <InfoCard icon={Users} title="Who" delay={0.2}>
+            <InfoCard icon={Users} title="Who" delay={0.2} color={getContentMeta('details', 'who_count')?.color || 'teal'}>
               <p><strong>{getContent('details', 'who_count', '130–150 attendees')}</strong></p>
               <p className="text-sm">{getContent('details', 'who_description', 'Journalists, media leaders, funders, and academics')}</p>
             </InfoCard>
@@ -401,8 +404,8 @@ function Home() {
             <h3 className="font-heading font-semibold text-2xl text-brand-ink mb-8">{getContent('expect', 'section_headline', 'What to expect')}</h3>
             <div className="grid md:grid-cols-2 gap-8">
               <div>
-                <h4 className="font-heading font-semibold text-lg mb-4 text-brand-teal flex items-center gap-2">
-                  <span className="w-8 h-8 rounded-full bg-brand-teal/10 flex items-center justify-center text-sm">1</span>
+                <h4 className={`font-heading font-semibold text-lg mb-4 ${getColorClass(getContentMeta('expect', 'monday_label')?.color || 'teal', 'text')} flex items-center gap-2`}>
+                  <span className={`w-8 h-8 rounded-full ${getColorClass(getContentMeta('expect', 'monday_label')?.color || 'teal', 'bg')}/10 flex items-center justify-center text-sm`}>1</span>
                   {getContent('expect', 'monday_label', 'Monday: Main summit')}
                 </h4>
                 <ul className="space-y-2 text-brand-ink/70 font-body ml-10">
@@ -412,8 +415,8 @@ function Home() {
                 </ul>
               </div>
               <div>
-                <h4 className="font-heading font-semibold text-lg mb-4 text-brand-teal flex items-center gap-2">
-                  <span className="w-8 h-8 rounded-full bg-brand-teal/10 flex items-center justify-center text-sm">2</span>
+                <h4 className={`font-heading font-semibold text-lg mb-4 ${getColorClass(getContentMeta('expect', 'tuesday_label')?.color || 'cardinal', 'text')} flex items-center gap-2`}>
+                  <span className={`w-8 h-8 rounded-full ${getColorClass(getContentMeta('expect', 'tuesday_label')?.color || 'cardinal', 'bg')}/10 flex items-center justify-center text-sm`}>2</span>
                   {getContent('expect', 'tuesday_label', 'Tuesday: Workshops')}
                 </h4>
                 <ul className="space-y-2 text-brand-ink/70 font-body ml-10">

@@ -351,3 +351,289 @@ exports.invalidateCache = onRequest({ cors: true }, async (req, res) => {
     res.status(200).json({ success: true, message: "Cache invalidated" });
   });
 });
+
+// ============================================
+// Attendee Profile Management
+// ============================================
+
+const AIRTABLE_ATTENDEES_TABLE = "Attendees";
+
+// Admin email addresses (can edit this list as needed)
+const ADMIN_EMAILS = [
+  "amditisj@montclair.edu",
+  "jamditis@gmail.com",
+  "murrays@montclair.edu", // Stefanie
+];
+
+/**
+ * Sync a single user profile to Airtable
+ * Called when a user updates their profile
+ */
+exports.syncProfileToAirtable = onRequest({ cors: true, secrets: [airtableApiKey] }, async (req, res) => {
+  cors(req, res, async () => {
+    if (req.method !== "POST") {
+      res.status(405).send("Method Not Allowed");
+      return;
+    }
+
+    const { uid } = req.body;
+
+    if (!uid) {
+      res.status(400).json({ error: "User ID required" });
+      return;
+    }
+
+    try {
+      // Get user profile from Firestore
+      const userDoc = await db.collection("users").doc(uid).get();
+      if (!userDoc.exists) {
+        res.status(404).json({ error: "User not found" });
+        return;
+      }
+
+      const profile = userDoc.data();
+
+      // Check if record already exists in Airtable (by uid)
+      const searchUrl = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_ATTENDEES_TABLE)}?filterByFormula={uid}="${uid}"`;
+      const searchResponse = await fetch(searchUrl, {
+        headers: {
+          "Authorization": `Bearer ${airtableApiKey.value()}`
+        }
+      });
+
+      if (!searchResponse.ok) {
+        throw new Error(`Airtable search failed: ${searchResponse.status}`);
+      }
+
+      const searchData = await searchResponse.json();
+      const existingRecord = searchData.records?.[0];
+
+      // Prepare fields for Airtable
+      const airtableFields = {
+        "uid": uid,
+        "Email": profile.email || "",
+        "Name": profile.displayName || "",
+        "Organization": profile.organization || "",
+        "Role": profile.role || "",
+        "Photo URL": profile.photoURL || "",
+        "Website": profile.website ? `https://${profile.website}` : "",
+        "Instagram": profile.instagram || "",
+        "LinkedIn": profile.linkedin || "",
+        "Bluesky": profile.bluesky || "",
+        "Badges": JSON.stringify(profile.badges || []),
+        "Attended Summits": JSON.stringify(profile.attendedSummits || []),
+        "Custom Badges": JSON.stringify(profile.customBadges || {}),
+        "Registration Status": profile.registrationStatus || "pending",
+        "Notify When Tickets Available": profile.notifyWhenTicketsAvailable || false,
+        "Updated At": new Date().toISOString(),
+      };
+
+      let airtableResponse;
+
+      if (existingRecord) {
+        // Update existing record
+        airtableResponse = await fetch(
+          `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_ATTENDEES_TABLE)}/${existingRecord.id}`,
+          {
+            method: "PATCH",
+            headers: {
+              "Authorization": `Bearer ${airtableApiKey.value()}`,
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ fields: airtableFields })
+          }
+        );
+      } else {
+        // Create new record
+        airtableFields["Created At"] = new Date().toISOString();
+        airtableResponse = await fetch(
+          `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_ATTENDEES_TABLE)}`,
+          {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${airtableApiKey.value()}`,
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ records: [{ fields: airtableFields }] })
+          }
+        );
+      }
+
+      if (!airtableResponse.ok) {
+        const errorText = await airtableResponse.text();
+        console.error("Airtable sync failed:", errorText);
+        throw new Error(`Airtable sync failed: ${airtableResponse.status}`);
+      }
+
+      res.status(200).json({ success: true, message: "Profile synced to Airtable" });
+    } catch (error) {
+      console.error("Error syncing profile:", error);
+      res.status(500).json({ error: "Failed to sync profile", details: error.message });
+    }
+  });
+});
+
+/**
+ * Export all user profiles (admin only)
+ * Returns all profiles with badge data for networking purposes
+ */
+exports.exportAttendees = onRequest({ cors: true }, async (req, res) => {
+  cors(req, res, async () => {
+    if (req.method !== "GET") {
+      res.status(405).send("Method Not Allowed");
+      return;
+    }
+
+    // Check admin authorization via query param (simple auth for internal use)
+    // In production, you'd use Firebase Auth tokens
+    const adminEmail = req.query.adminEmail;
+    if (!adminEmail || !ADMIN_EMAILS.includes(adminEmail)) {
+      res.status(403).json({ error: "Unauthorized. Admin access required." });
+      return;
+    }
+
+    try {
+      const snapshot = await db.collection("users").get();
+      const attendees = [];
+
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        attendees.push({
+          uid: doc.id,
+          email: data.email || "",
+          displayName: data.displayName || "",
+          organization: data.organization || "",
+          role: data.role || "",
+          photoURL: data.photoURL || "",
+          website: data.website || "",
+          instagram: data.instagram || "",
+          linkedin: data.linkedin || "",
+          bluesky: data.bluesky || "",
+          badges: data.badges || [],
+          attendedSummits: data.attendedSummits || [],
+          customBadges: data.customBadges || {},
+          registrationStatus: data.registrationStatus || "pending",
+          notifyWhenTicketsAvailable: data.notifyWhenTicketsAvailable || false,
+          createdAt: data.createdAt?.toDate?.()?.toISOString() || null,
+          updatedAt: data.updatedAt?.toDate?.()?.toISOString() || null,
+        });
+      });
+
+      // Sort by name
+      attendees.sort((a, b) => (a.displayName || "").localeCompare(b.displayName || ""));
+
+      res.status(200).json({
+        success: true,
+        count: attendees.length,
+        attendees,
+        exportedAt: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error("Error exporting attendees:", error);
+      res.status(500).json({ error: "Failed to export attendees", details: error.message });
+    }
+  });
+});
+
+/**
+ * Sync ALL user profiles to Airtable (admin batch operation)
+ * Use sparingly - for initial sync or recovery
+ */
+exports.syncAllProfilesToAirtable = onRequest({ cors: true, secrets: [airtableApiKey] }, async (req, res) => {
+  cors(req, res, async () => {
+    if (req.method !== "POST") {
+      res.status(405).send("Method Not Allowed");
+      return;
+    }
+
+    const adminEmail = req.body.adminEmail;
+    if (!adminEmail || !ADMIN_EMAILS.includes(adminEmail)) {
+      res.status(403).json({ error: "Unauthorized. Admin access required." });
+      return;
+    }
+
+    try {
+      const snapshot = await db.collection("users").get();
+      let synced = 0;
+      let errors = 0;
+
+      for (const doc of snapshot.docs) {
+        const profile = doc.data();
+        const uid = doc.id;
+
+        try {
+          // Check if record exists
+          const searchUrl = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_ATTENDEES_TABLE)}?filterByFormula={uid}="${uid}"`;
+          const searchResponse = await fetch(searchUrl, {
+            headers: { "Authorization": `Bearer ${airtableApiKey.value()}` }
+          });
+          const searchData = await searchResponse.json();
+          const existingRecord = searchData.records?.[0];
+
+          const airtableFields = {
+            "uid": uid,
+            "Email": profile.email || "",
+            "Name": profile.displayName || "",
+            "Organization": profile.organization || "",
+            "Role": profile.role || "",
+            "Photo URL": profile.photoURL || "",
+            "Website": profile.website ? `https://${profile.website}` : "",
+            "Instagram": profile.instagram || "",
+            "LinkedIn": profile.linkedin || "",
+            "Bluesky": profile.bluesky || "",
+            "Badges": JSON.stringify(profile.badges || []),
+            "Attended Summits": JSON.stringify(profile.attendedSummits || []),
+            "Custom Badges": JSON.stringify(profile.customBadges || {}),
+            "Registration Status": profile.registrationStatus || "pending",
+            "Notify When Tickets Available": profile.notifyWhenTicketsAvailable || false,
+            "Updated At": new Date().toISOString(),
+          };
+
+          if (existingRecord) {
+            await fetch(
+              `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_ATTENDEES_TABLE)}/${existingRecord.id}`,
+              {
+                method: "PATCH",
+                headers: {
+                  "Authorization": `Bearer ${airtableApiKey.value()}`,
+                  "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ fields: airtableFields })
+              }
+            );
+          } else {
+            airtableFields["Created At"] = new Date().toISOString();
+            await fetch(
+              `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_ATTENDEES_TABLE)}`,
+              {
+                method: "POST",
+                headers: {
+                  "Authorization": `Bearer ${airtableApiKey.value()}`,
+                  "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ records: [{ fields: airtableFields }] })
+              }
+            );
+          }
+
+          synced++;
+          // Rate limit: Airtable allows 5 requests/second
+          await new Promise(resolve => setTimeout(resolve, 250));
+        } catch (err) {
+          console.error(`Error syncing ${uid}:`, err);
+          errors++;
+        }
+      }
+
+      res.status(200).json({
+        success: true,
+        message: `Synced ${synced} profiles, ${errors} errors`,
+        synced,
+        errors
+      });
+    } catch (error) {
+      console.error("Error in batch sync:", error);
+      res.status(500).json({ error: "Batch sync failed", details: error.message });
+    }
+  });
+});
