@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Calendar, MapPin, Filter, X } from 'lucide-react'
+import { Calendar, MapPin, Filter, X, Clock, Mail } from 'lucide-react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import SessionCard from '../components/SessionCard'
@@ -47,6 +47,9 @@ function Schedule() {
   const hasActiveFilters = activeFilters.types.length > 0 || activeFilters.tracks.length > 0
   const filteredMonday = filterSessions(sessionsByDay.monday || [])
   const filteredTuesday = filterSessions(sessionsByDay.tuesday || [])
+
+  // Check if there are any sessions at all (not just filtered)
+  const hasAnySessions = (sessionsByDay.monday?.length || 0) + (sessionsByDay.tuesday?.length || 0) > 0
 
   return (
     <>
@@ -105,166 +108,200 @@ function Schedule() {
             </motion.div>
           </div>
 
-          {/* Filters */}
-          {(sessionTypes.length > 1 || sessionTracks.length > 0) && (
+          {/* Coming soon state - when no sessions are published yet */}
+          {!hasAnySessions && (
             <motion.div
-              className="mb-8"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              className="card-sketch p-8 md:p-12 text-center mb-12"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
             >
-              <button
-                onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center gap-2 font-body text-sm text-brand-ink/60 hover:text-brand-teal transition-colors"
-              >
-                <Filter className="w-4 h-4" />
-                {showFilters ? 'Hide filters' : 'Filter sessions'}
-                {hasActiveFilters && (
-                  <span className="bg-brand-teal text-white text-xs px-2 py-0.5 rounded-full">
-                    {activeFilters.types.length + activeFilters.tracks.length}
-                  </span>
-                )}
-              </button>
-
-              {showFilters && (
-                <div className="mt-4 p-4 card-sketch bg-white/50">
-                  {/* Type filters */}
-                  {sessionTypes.length > 1 && (
-                    <div className="mb-4">
-                      <p className="font-body text-xs text-brand-ink/50 uppercase tracking-wide mb-2">Session type</p>
-                      <div className="flex flex-wrap gap-2">
-                        {sessionTypes.map(type => (
-                          <button
-                            key={type}
-                            onClick={() => toggleFilter('types', type)}
-                            className={`px-3 py-1.5 rounded-full text-sm font-body transition-colors ${
-                              activeFilters.types.includes(type)
-                                ? 'bg-brand-teal text-white'
-                                : 'bg-brand-ink/5 text-brand-ink/60 hover:bg-brand-ink/10'
-                            }`}
-                          >
-                            {type}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Track filters */}
-                  {sessionTracks.length > 0 && (
-                    <div className="mb-4">
-                      <p className="font-body text-xs text-brand-ink/50 uppercase tracking-wide mb-2">Track</p>
-                      <div className="flex flex-wrap gap-2">
-                        {sessionTracks.map(track => (
-                          <button
-                            key={track}
-                            onClick={() => toggleFilter('tracks', track)}
-                            className={`px-3 py-1.5 rounded-full text-sm font-body transition-colors ${
-                              activeFilters.tracks.includes(track)
-                                ? 'bg-brand-teal text-white'
-                                : 'bg-brand-ink/5 text-brand-ink/60 hover:bg-brand-ink/10'
-                            }`}
-                          >
-                            {track}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {hasActiveFilters && (
-                    <button
-                      onClick={clearFilters}
-                      className="flex items-center gap-1 text-sm text-brand-cardinal hover:underline"
-                    >
-                      <X className="w-3 h-3" />
-                      Clear all filters
-                    </button>
-                  )}
+              <div className="w-16 h-16 rounded-full bg-brand-teal/10 flex items-center justify-center mx-auto mb-6">
+                <Clock className="w-8 h-8 text-brand-teal" />
+              </div>
+              <h2 className="font-heading font-semibold text-2xl text-brand-ink mb-4">
+                Schedule coming soon
+              </h2>
+              <p className="font-body text-brand-ink/70 max-w-md mx-auto mb-6">
+                We're putting together an incredible lineup of sessions, workshops, and speakers for CJS 2026. Check back soon for the full schedule.
+              </p>
+              <div className="bg-brand-teal/5 border-2 border-brand-teal/20 rounded-lg p-6 max-w-md mx-auto">
+                <div className="flex items-center justify-center gap-2 mb-3">
+                  <Mail className="w-5 h-5 text-brand-teal" />
+                  <p className="font-body font-medium text-brand-ink">Get notified when it's live</p>
                 </div>
+                <p className="font-body text-sm text-brand-ink/60">
+                  Sign up for updates from the <a href="https://centerforcooperativemedia.org" target="_blank" rel="noopener noreferrer" className="text-brand-teal hover:underline">Center for Cooperative Media</a> to be the first to know when the schedule is released.
+                </p>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Show schedule content only when sessions exist */}
+          {hasAnySessions && (
+            <>
+              {/* Filters */}
+              {(sessionTypes.length > 1 || sessionTracks.length > 0) && (
+                <motion.div
+                  className="mb-8"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  <button
+                    onClick={() => setShowFilters(!showFilters)}
+                    className="flex items-center gap-2 font-body text-sm text-brand-ink/60 hover:text-brand-teal transition-colors"
+                  >
+                    <Filter className="w-4 h-4" />
+                    {showFilters ? 'Hide filters' : 'Filter sessions'}
+                    {hasActiveFilters && (
+                      <span className="bg-brand-teal text-white text-xs px-2 py-0.5 rounded-full">
+                        {activeFilters.types.length + activeFilters.tracks.length}
+                      </span>
+                    )}
+                  </button>
+
+                  {showFilters && (
+                    <div className="mt-4 p-4 card-sketch bg-white/50">
+                      {/* Type filters */}
+                      {sessionTypes.length > 1 && (
+                        <div className="mb-4">
+                          <p className="font-body text-xs text-brand-ink/50 uppercase tracking-wide mb-2">Session type</p>
+                          <div className="flex flex-wrap gap-2">
+                            {sessionTypes.map(type => (
+                              <button
+                                key={type}
+                                onClick={() => toggleFilter('types', type)}
+                                className={`px-3 py-1.5 rounded-full text-sm font-body transition-colors ${
+                                  activeFilters.types.includes(type)
+                                    ? 'bg-brand-teal text-white'
+                                    : 'bg-brand-ink/5 text-brand-ink/60 hover:bg-brand-ink/10'
+                                }`}
+                              >
+                                {type}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Track filters */}
+                      {sessionTracks.length > 0 && (
+                        <div className="mb-4">
+                          <p className="font-body text-xs text-brand-ink/50 uppercase tracking-wide mb-2">Track</p>
+                          <div className="flex flex-wrap gap-2">
+                            {sessionTracks.map(track => (
+                              <button
+                                key={track}
+                                onClick={() => toggleFilter('tracks', track)}
+                                className={`px-3 py-1.5 rounded-full text-sm font-body transition-colors ${
+                                  activeFilters.tracks.includes(track)
+                                    ? 'bg-brand-teal text-white'
+                                    : 'bg-brand-ink/5 text-brand-ink/60 hover:bg-brand-ink/10'
+                                }`}
+                              >
+                                {track}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {hasActiveFilters && (
+                        <button
+                          onClick={clearFilters}
+                          className="flex items-center gap-1 text-sm text-brand-cardinal hover:underline"
+                        >
+                          <X className="w-3 h-3" />
+                          Clear all filters
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </motion.div>
               )}
-            </motion.div>
-          )}
 
-          {/* Preliminary notice */}
-          <motion.div
-            className="bg-brand-cardinal/10 border-2 border-brand-cardinal/20 rounded-lg p-6 mb-12 text-center"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-          >
-            <p className="font-accent text-xl text-brand-cardinal mb-2">Preliminary schedule</p>
-            <p className="font-body text-brand-ink/70">
-              Session topics and speakers will be announced in spring 2026. Sign up for updates to be the first to know.
-            </p>
-          </motion.div>
-
-          {/* Monday */}
-          {filteredMonday.length > 0 && (
-            <motion.div
-              className="mb-12"
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-            >
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-12 h-12 rounded-full bg-brand-teal flex items-center justify-center">
-                  <span className="font-accent text-xl text-white">1</span>
-                </div>
-                <div>
-                  <h2 className="font-heading font-bold text-2xl text-brand-ink">Monday, June 8</h2>
-                  <p className="font-body text-brand-ink/60">Main summit day</p>
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                {filteredMonday.map((session, index) => (
-                  <SessionCard key={session.id} session={session} index={index} />
-                ))}
-              </div>
-            </motion.div>
-          )}
-
-          {/* Tuesday */}
-          {filteredTuesday.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-            >
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-12 h-12 rounded-full bg-brand-teal flex items-center justify-center">
-                  <span className="font-accent text-xl text-white">2</span>
-                </div>
-                <div>
-                  <h2 className="font-heading font-bold text-2xl text-brand-ink">Tuesday, June 9</h2>
-                  <p className="font-body text-brand-ink/60">Workshop day</p>
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                {filteredTuesday.map((session, index) => (
-                  <SessionCard key={session.id} session={session} index={index} />
-                ))}
-              </div>
-            </motion.div>
-          )}
-
-          {/* No results message */}
-          {filteredMonday.length === 0 && filteredTuesday.length === 0 && (
-            <motion.div
-              className="text-center py-12"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-            >
-              <p className="font-body text-brand-ink/60 mb-4">No sessions match your filters.</p>
-              <button
-                onClick={clearFilters}
-                className="btn-secondary text-sm"
+              {/* Preliminary notice */}
+              <motion.div
+                className="bg-brand-cardinal/10 border-2 border-brand-cardinal/20 rounded-lg p-6 mb-12 text-center"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
               >
-                Clear filters
-              </button>
-            </motion.div>
+                <p className="font-accent text-xl text-brand-cardinal mb-2">Preliminary schedule</p>
+                <p className="font-body text-brand-ink/70">
+                  Session topics and speakers will be announced in spring 2026. Sign up for updates to be the first to know.
+                </p>
+              </motion.div>
+
+              {/* Monday */}
+              {filteredMonday.length > 0 && (
+                <motion.div
+                  className="mb-12"
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                >
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="w-12 h-12 rounded-full bg-brand-teal flex items-center justify-center">
+                      <span className="font-accent text-xl text-white">1</span>
+                    </div>
+                    <div>
+                      <h2 className="font-heading font-bold text-2xl text-brand-ink">Monday, June 8</h2>
+                      <p className="font-body text-brand-ink/60">Main summit day</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    {filteredMonday.map((session, index) => (
+                      <SessionCard key={session.id} session={session} index={index} />
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Tuesday */}
+              {filteredTuesday.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                >
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="w-12 h-12 rounded-full bg-brand-teal flex items-center justify-center">
+                      <span className="font-accent text-xl text-white">2</span>
+                    </div>
+                    <div>
+                      <h2 className="font-heading font-bold text-2xl text-brand-ink">Tuesday, June 9</h2>
+                      <p className="font-body text-brand-ink/60">Workshop day</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    {filteredTuesday.map((session, index) => (
+                      <SessionCard key={session.id} session={session} index={index} />
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+
+              {/* No results message - only when filters are active */}
+              {hasActiveFilters && filteredMonday.length === 0 && filteredTuesday.length === 0 && (
+                <motion.div
+                  className="text-center py-12"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                >
+                  <p className="font-body text-brand-ink/60 mb-4">No sessions match your filters.</p>
+                  <button
+                    onClick={clearFilters}
+                    className="btn-secondary text-sm"
+                  >
+                    Clear filters
+                  </button>
+                </motion.div>
+              )}
+            </>
           )}
 
           {/* INN Days note */}
