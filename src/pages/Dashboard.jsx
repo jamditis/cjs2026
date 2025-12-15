@@ -671,11 +671,11 @@ function Dashboard() {
 
   const statusConfig = {
     pending: {
-      label: 'Registration pending',
-      bgClass: 'bg-brand-cardinal/10',
-      textClass: 'text-brand-cardinal',
-      icon: AlertCircle,
-      description: 'Registration opens in early 2026',
+      label: 'Tickets available',
+      bgClass: 'bg-brand-teal/10',
+      textClass: 'text-brand-teal',
+      icon: Ticket,
+      description: 'Get your ticket on Eventbrite',
     },
     registered: {
       label: 'Registered',
