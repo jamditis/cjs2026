@@ -241,7 +241,7 @@ def create_record(section, field, content, page, component, color, order, visibl
     return payload
 
 def get_existing_records():
-    """Fetch all existing records and return a dict keyed by Field name"""
+    """Fetch all existing records and return a dict keyed by Section|Page|Field"""
     existing = {}
     offset = None
 
@@ -258,8 +258,12 @@ def get_existing_records():
         data = response.json()
         for record in data.get("records", []):
             field_name = record["fields"].get("Field", "")
+            section = record["fields"].get("Section", "")
+            page = record["fields"].get("Page", "")
             if field_name:
-                existing[field_name] = record["id"]
+                # Key by Section|Page|Field to handle same Field in different contexts
+                key = f"{section}|{page}|{field_name}"
+                existing[key] = record["id"]
 
         offset = data.get("offset")
         if not offset:
@@ -282,12 +286,15 @@ def batch_upsert_records(records_data):
     for record in records_data:
         payload = create_record(*record)
         field_name = payload["fields"]["Field"]
+        section = payload["fields"]["Section"]
+        page = payload["fields"]["Page"]
+        key = f"{section}|{page}|{field_name}"
 
-        if field_name in existing:
+        if key in existing:
             # Update existing record - only update editable content fields
             editable_fields = ["Content", "Color", "Visible"]
             update_payload = {
-                "id": existing[field_name],
+                "id": existing[key],
                 "fields": {k: v for k, v in payload["fields"].items() if k in editable_fields}
             }
             to_update.append(update_payload)
