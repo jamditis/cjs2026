@@ -413,7 +413,7 @@ function App() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1.2 }}
               >
-                <p className="text-brand-ink/50 text-sm font-body">Registration opens soon</p>
+                <p className="text-brand-ink/50 text-sm font-body">Tickets now available</p>
                 <EmailSignup />
               </motion.div>
             </div>
