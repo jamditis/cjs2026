@@ -24,8 +24,6 @@ import {
   Camera,
   Upload,
   Loader2,
-  Bell,
-  BellRing
 } from 'lucide-react'
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import { useAuth } from '../contexts/AuthContext'
@@ -275,7 +273,6 @@ function Dashboard() {
 
   // Toast notification state
   const [toast, setToast] = useState(null)
-  const [notifyLoading, setNotifyLoading] = useState(false)
 
   // Auto-hide toast after 5 seconds
   useEffect(() => {
@@ -326,31 +323,6 @@ function Dashboard() {
     const newState = { dismissed: true, completed: true, skipUntilComplete: false }
     setTutorialState(newState)
     localStorage.setItem('cjs2026_profile_tutorial', JSON.stringify(newState))
-  }
-
-  // Sign up for ticket availability notifications
-  async function handleNotifyMe() {
-    if (!currentUser) return
-
-    setNotifyLoading(true)
-    try {
-      await updateUserProfile(currentUser.uid, {
-        notifyWhenTicketsAvailable: true,
-        notifyRequestedAt: new Date().toISOString()
-      })
-      setToast({
-        type: 'success',
-        message: "You're on the list! We'll email you when tickets go on sale."
-      })
-    } catch (error) {
-      console.error('Error saving notification preference:', error)
-      setToast({
-        type: 'error',
-        message: 'Something went wrong. Please try again.'
-      })
-    } finally {
-      setNotifyLoading(false)
-    }
   }
 
   // Resize image to reduce file size
@@ -1174,35 +1146,18 @@ function Dashboard() {
 
                     {registrationStatus === 'pending' && (
                       <div className="bg-white rounded-lg p-4 border border-brand-ink/10">
-                        {userProfile?.notifyWhenTicketsAvailable ? (
-                          <>
-                            <div className="flex items-center gap-2 text-brand-teal mb-2">
-                              <BellRing className="w-4 h-4" />
-                              <span className="font-body font-medium text-sm">Notifications enabled</span>
-                            </div>
-                            <p className="font-body text-sm text-brand-ink/60">
-                              We'll email you at <span className="font-medium">{currentUser?.email}</span> when registration opens.
-                            </p>
-                          </>
-                        ) : (
-                          <>
-                            <p className="font-body text-sm text-brand-ink/70 mb-3">
-                              Want to know when tickets go on sale?
-                            </p>
-                            <button
-                              onClick={handleNotifyMe}
-                              disabled={notifyLoading}
-                              className="btn-primary py-2 px-4 text-sm inline-flex items-center gap-2 disabled:opacity-50"
-                            >
-                              {notifyLoading ? (
-                                <Loader2 className="w-4 h-4 animate-spin" />
-                              ) : (
-                                <Bell className="w-4 h-4" />
-                              )}
-                              {notifyLoading ? 'Saving...' : 'Notify me'}
-                            </button>
-                          </>
-                        )}
+                        <p className="font-body text-sm text-brand-ink/70 mb-3">
+                          Tickets are now available on Eventbrite!
+                        </p>
+                        <a
+                          href="https://www.eventbrite.com/e/2026-collaborative-journalism-summit-tickets-1977919688031?aff=oddtdtcreator"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="btn-primary py-2 px-4 text-sm inline-flex items-center gap-2"
+                        >
+                          <Ticket className="w-4 h-4" />
+                          Get tickets
+                        </a>
                       </div>
                     )}
 
