@@ -528,8 +528,8 @@ function Home() {
       <footer id="updates" className="py-16 px-6 bg-parchment">
         <div className="max-w-4xl mx-auto text-center">
           <div className="mb-10">
-            <h3 className="font-heading font-semibold text-2xl text-brand-ink mb-2">{getContent('footer', 'signup_headline', 'Stay connected')}</h3>
-            <p className="text-brand-ink/60 mb-6 font-body">{getContent('footer', 'signup_description', 'Get updates on programming, registration, and more.')}</p>
+            <h3 className="font-heading font-semibold text-2xl text-brand-ink mb-2">{getContent('footer', 'signup_headline', 'Join us in Chapel Hill')}</h3>
+            <p className="text-brand-ink/60 mb-6 font-body">{getContent('footer', 'signup_description', 'Secure your spot at the 10th anniversary summit.')}</p>
             <EmailSignup />
           </div>
 
