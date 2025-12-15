@@ -220,15 +220,15 @@ export function getPageContent(pageName) {
   return byPage[pageName] ?? {};
 }
 
-// Color class mapping
+// Color class mapping - includes light/accent variants for Tailwind compatibility
 const colorClasses = {
-  teal: { text: 'text-brand-teal', bg: 'bg-brand-teal', border: 'border-brand-teal' },
-  cardinal: { text: 'text-brand-cardinal', bg: 'bg-brand-cardinal', border: 'border-brand-cardinal' },
-  'green-dark': { text: 'text-brand-green-dark', bg: 'bg-brand-green-dark', border: 'border-brand-green-dark' },
-  ink: { text: 'text-brand-ink', bg: 'bg-brand-ink', border: 'border-brand-ink' },
-  cream: { text: 'text-brand-cream', bg: 'bg-brand-cream', border: 'border-brand-cream' },
-  gold: { text: 'text-brand-gold', bg: 'bg-brand-gold', border: 'border-brand-gold' },
-  white: { text: 'text-white', bg: 'bg-white', border: 'border-white' },
+  teal: { text: 'text-brand-teal', bg: 'bg-brand-teal', border: 'border-brand-teal', bgLight: 'bg-brand-teal/10', bgAccent: 'bg-brand-teal/5' },
+  cardinal: { text: 'text-brand-cardinal', bg: 'bg-brand-cardinal', border: 'border-brand-cardinal', bgLight: 'bg-brand-cardinal/10', bgAccent: 'bg-brand-cardinal/5' },
+  'green-dark': { text: 'text-brand-green-dark', bg: 'bg-brand-green-dark', border: 'border-brand-green-dark', bgLight: 'bg-brand-green-dark/10', bgAccent: 'bg-brand-green-dark/5' },
+  ink: { text: 'text-brand-ink', bg: 'bg-brand-ink', border: 'border-brand-ink', bgLight: 'bg-brand-ink/10', bgAccent: 'bg-brand-ink/5' },
+  cream: { text: 'text-brand-cream', bg: 'bg-brand-cream', border: 'border-brand-cream', bgLight: 'bg-brand-cream/10', bgAccent: 'bg-brand-cream/5' },
+  gold: { text: 'text-brand-gold', bg: 'bg-brand-gold', border: 'border-brand-gold', bgLight: 'bg-brand-gold/10', bgAccent: 'bg-brand-gold/5' },
+  white: { text: 'text-white', bg: 'bg-white', border: 'border-white', bgLight: 'bg-white/10', bgAccent: 'bg-white/5' },
 };
 
 export function getColorClass(colorName, type = 'text') {
