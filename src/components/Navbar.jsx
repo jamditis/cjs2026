@@ -24,7 +24,6 @@ function Navbar() {
   ]
 
   const homeLinks = [
-    { name: 'About', href: '#about' },
     { name: 'History', href: '#history' },
     { name: 'Partners', href: '#partners' },
   ]
