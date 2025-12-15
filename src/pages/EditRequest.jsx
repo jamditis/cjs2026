@@ -94,7 +94,7 @@ function EditRequest() {
                 Request a copy edit
               </h1>
               <p className="font-body text-brand-ink/60">
-                Use this form to request changes to the CJS 2026 website copy
+                Use this form to request changes to the CJS2026 website copy
               </p>
             </div>
 

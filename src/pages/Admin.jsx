@@ -249,7 +249,7 @@ function Admin() {
               Admin access required
             </h1>
             <p className="font-body text-brand-ink/60">
-              This page is restricted to CJS 2026 administrators.
+              This page is restricted to CJS2026 administrators.
               {currentUser && (
                 <span className="block mt-2 text-sm">
                   Logged in as: {currentUser.email}

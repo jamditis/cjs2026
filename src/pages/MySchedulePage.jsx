@@ -39,7 +39,7 @@ function MySchedulePage() {
                 </h1>
                 <p className="font-body text-brand-ink/60">
                   {savedCount > 0
-                    ? `You've saved ${savedCount} session${savedCount !== 1 ? 's' : ''} for CJS 2026.`
+                    ? `You've saved ${savedCount} session${savedCount !== 1 ? 's' : ''} for CJS2026.`
                     : 'Bookmark sessions from the schedule to build your personal agenda.'}
                 </p>
               </div>

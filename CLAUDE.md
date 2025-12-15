@@ -2,7 +2,11 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-**Current date context:** December 2025. We are building the website for CJS 2026 (June 2026). The most recent past summit was CJS 2025 in Denver.
+**Current date context:** December 2025. We are building the website for CJS2026 (June 2026). The most recent past summit was CJS 2025 in Denver.
+
+## Style rules
+
+- **CJS2026 is one word** - Always write "CJS2026" without a space, not "CJS 2026". This applies to all copy, code, comments, and documentation.
 
 ## Project overview
 

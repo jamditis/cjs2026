@@ -123,7 +123,7 @@ function Schedule() {
                 Schedule coming soon
               </h2>
               <p className="font-body text-brand-ink/70 max-w-md mx-auto mb-6">
-                We're putting together an incredible lineup of sessions, workshops, and speakers for CJS 2026. Check back soon for the full schedule.
+                We're putting together an incredible lineup of sessions, workshops, and speakers for CJS2026. Check back soon for the full schedule.
               </p>
               <a
                 href="https://collaborativejournalism.us5.list-manage.com/subscribe?u=7f46611cb324e9e193acda7cc&id=2e8bb60c9c"
@@ -136,7 +136,7 @@ function Schedule() {
                   <p className="font-body font-medium text-brand-ink">Stay in the loop</p>
                 </div>
                 <p className="font-body text-sm text-brand-ink/60">
-                  Sign up for the Collaborative Journalism Newsletter for updates on CJS 2026 and all things collaboration.
+                  Sign up for the Collaborative Journalism Newsletter for updates on CJS2026 and all things collaboration.
                 </p>
               </a>
             </motion.div>

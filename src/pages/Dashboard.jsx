@@ -66,7 +66,7 @@ function getAttendanceBadges(attendedYears = []) {
   const count = attendedYears.length
 
   if (count === 0) {
-    badges.push({ id: 'cjs-first-timer', label: 'first timer', emoji: '👋', description: 'CJS 2026 will be my first!' })
+    badges.push({ id: 'cjs-first-timer', label: 'first timer', emoji: '👋', description: 'CJS2026 will be my first!' })
     return badges
   }
 
@@ -685,7 +685,7 @@ function Dashboard() {
       bgClass: 'bg-brand-teal/10',
       textClass: 'text-brand-teal',
       icon: Ticket,
-      description: "Secure your spot at CJS 2026",
+      description: "Secure your spot at CJS2026",
     },
     registered: {
       label: 'Registered',
@@ -790,7 +790,7 @@ function Dashboard() {
                         <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-brand-teal/10 flex items-center justify-center">
                           <Sparkles className="w-6 h-6 text-brand-teal" />
                         </div>
-                        <h2>Welcome to CJS 2026!</h2>
+                        <h2>Welcome to CJS2026!</h2>
                         <p>Let's set up your attendee profile so others can connect with you at the summit.</p>
                       </div>
                     </Step>

@@ -83,7 +83,7 @@ export function SplashScreen({
                     ease: 'easeInOut'
                   }}
                 >
-                  CJS 2026
+                  CJS2026
                 </motion.h1>
                 <motion.p
                   className="text-brand-ink/60 text-lg mt-1 font-accent"
@@ -166,7 +166,7 @@ export function SimpleSplash({
         >
           <motion.img
             src="/cjs-logo-iso.png"
-            alt="CJS 2026"
+            alt="CJS2026"
             className="w-20 h-20 logo-glow"
             initial={{ opacity: 0, scale: 0.5 }}
             animate={{ opacity: 1, scale: 1 }}

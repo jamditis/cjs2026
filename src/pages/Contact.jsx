@@ -16,7 +16,7 @@ function Contact() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     // For now, open email client with pre-filled info
-    const subject = encodeURIComponent(`[CJS 2026] ${formData.subject}: ${formData.name}`)
+    const subject = encodeURIComponent(`[CJS2026] ${formData.subject}: ${formData.name}`)
     const body = encodeURIComponent(`Name: ${formData.name}\nEmail: ${formData.email}\n\n${formData.message}`)
     window.location.href = `mailto:summit@collaborativejournalism.org?subject=${subject}&body=${body}`
     setStatus('sent')
