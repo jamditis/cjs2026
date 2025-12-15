@@ -24,6 +24,8 @@ import {
   Camera,
   Upload,
   Loader2,
+  RefreshCw,
+  Shield,
 } from 'lucide-react'
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import { useAuth } from '../contexts/AuthContext'
@@ -33,6 +35,13 @@ import Footer from '../components/Footer'
 import Stepper, { Step } from '../components/Stepper'
 import MySchedule from '../components/MySchedule'
 import { checkProfanity, validateNoProfanity } from '../utils/profanityFilter'
+
+// Admin email addresses (must match Cloud Functions)
+const ADMIN_EMAILS = [
+  "amditisj@montclair.edu",
+  "jamditis@gmail.com",
+  "murrays@montclair.edu",
+]
 
 // ============================================
 // Badge Definitions
@@ -1892,6 +1901,32 @@ function Dashboard() {
                   Sign out
                 </button>
               </motion.div>
+
+              {/* Admin tools - only visible to admins */}
+              {currentUser && ADMIN_EMAILS.includes(currentUser.email) && (
+                <motion.div
+                  className="card-sketch p-4 border-brand-cardinal/30 bg-brand-cardinal/5"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                >
+                  <div className="flex items-center gap-2 mb-3">
+                    <Shield className="w-4 h-4 text-brand-cardinal" />
+                    <span className="font-body text-xs font-medium text-brand-cardinal">Admin tools</span>
+                  </div>
+                  <button
+                    onClick={async () => {
+                      if (window.confirm('Reset ticketsPurchased flag? This will show the ticket CTA again.')) {
+                        await updateUserProfile(currentUser.uid, { ticketsPurchased: false })
+                      }
+                    }}
+                    className="w-full py-2 px-4 rounded-lg border-2 border-brand-cardinal/30 font-body text-sm text-brand-cardinal hover:bg-brand-cardinal/10 transition-colors flex items-center justify-center gap-2"
+                  >
+                    <RefreshCw className="w-4 h-4" />
+                    Reset ticket status
+                  </button>
+                </motion.div>
+              )}
             </div>
           </div>
         </div>
