@@ -1,15 +1,15 @@
 import React from 'react'
 import { motion } from 'framer-motion'
-import { Heart, Star, Award, Sparkles, Mail, ExternalLink } from 'lucide-react'
+import { Sparkles, Plane, Calendar, Mic, UtensilsCrossed, Gift, ShieldCheck, Cookie, Tag, Mail } from 'lucide-react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 
-// Sponsorship tier information with explicit Tailwind classes
+// Main sponsorship packages with explicit Tailwind classes
 // (dynamic classes like `bg-${color}` don't work with Tailwind's JIT compiler)
-const sponsorshipTiers = [
+const sponsorshipPackages = [
   {
     name: 'Presenting sponsor',
-    price: '$15,000',
+    price: '$10,000',
     icon: Sparkles,
     textClass: 'text-brand-cardinal',
     bgClass: 'bg-brand-cardinal',
@@ -17,111 +17,159 @@ const sponsorshipTiers = [
     bgAccentClass: 'bg-brand-cardinal/5',
     borderClass: 'border-brand-cardinal/30',
     benefits: [
-      'Logo on all event materials and website',
-      'Speaking opportunity during opening session',
-      'Premium booth placement',
       'Full-page ad in program',
-      '10 complimentary registrations',
-      'Social media recognition',
-      'First right of refusal for 2027',
+      '8 conference tickets',
+      'Logo on website',
+      'Logo on registration page',
+      'Ad in email to attendees',
+      'Items on swag table',
+      'Sponsored session',
+      '10 min. speaking opportunity',
     ],
     available: 1,
   },
   {
-    name: 'Gold sponsor',
-    price: '$7,500',
-    icon: Award,
+    name: 'Travel scholarships',
+    price: '$10,000',
+    icon: Plane,
     textClass: 'text-brand-teal',
     bgClass: 'bg-brand-teal',
     bgLightClass: 'bg-brand-teal/10',
     bgAccentClass: 'bg-brand-teal/5',
     borderClass: 'border-brand-teal/30',
     benefits: [
-      'Logo on event materials and website',
-      'Booth at networking reception',
-      'Half-page ad in program',
-      '5 complimentary registrations',
-      'Social media recognition',
+      'Full-page ad in program',
+      '8 conference tickets',
+      'Logo on website',
+      'Logo on registration page',
+      'Ad in email to attendees',
+      'Items on swag table',
     ],
-    available: 3,
+    available: 1,
   },
   {
-    name: 'Silver sponsor',
-    price: '$3,500',
-    icon: Star,
+    name: 'Day 1 or 2 sponsor',
+    price: '$7,500',
+    icon: Calendar,
     textClass: 'text-brand-green-dark',
     bgClass: 'bg-brand-green-dark',
     bgLightClass: 'bg-brand-green-dark/10',
     bgAccentClass: 'bg-brand-green-dark/5',
     borderClass: 'border-brand-green-dark/30',
     benefits: [
-      'Logo on event materials and website',
-      'Quarter-page ad in program',
-      '3 complimentary registrations',
-      'Social media recognition',
+      'Half-page ad in program',
+      '4 conference tickets',
+      'Logo on website',
+      'Logo on registration page',
+      'Ad in email to attendees',
+      'Items on swag table',
+      '5 min. speaking opportunity',
     ],
-    available: 5,
+    available: 2,
   },
   {
-    name: 'Community supporter',
-    price: '$1,000',
-    icon: Heart,
-    textClass: 'text-brand-ink',
-    bgClass: 'bg-brand-ink',
-    bgLightClass: 'bg-brand-ink/10',
-    bgAccentClass: 'bg-brand-ink/5',
-    borderClass: 'border-brand-ink/30',
+    name: 'Sponsored session',
+    price: '$5,000',
+    icon: Mic,
+    textClass: 'text-brand-gold',
+    bgClass: 'bg-brand-gold',
+    bgLightClass: 'bg-brand-gold/10',
+    bgAccentClass: 'bg-brand-gold/5',
+    borderClass: 'border-brand-gold/30',
     benefits: [
+      'Half-page ad in program',
+      '2 conference tickets',
       'Logo on website',
-      'Listing in program',
-      '1 complimentary registration',
+      'Logo on registration page',
+      'Ad in email to attendees',
+      'Items on swag table',
+      'Sponsored session*',
     ],
-    available: 'Unlimited',
+    available: 'Multiple',
+    note: '*Sessions must be mutually agreed upon and may take place before or after a day\'s programming.',
+  },
+]
+
+// Additional sponsorship opportunities
+const additionalOpportunities = [
+  {
+    name: 'Dinner and recognition event',
+    price: '$8,000',
+    icon: UtensilsCrossed,
+    description: 'Underwrite our Monday dinner with keynote speaker and recognition for top collaborations. Includes a speaking slot if desired.',
+  },
+  {
+    name: 'North Carolina welcome gift',
+    price: '$5,000',
+    icon: Gift,
+    description: 'Welcome participants with NC BBQ sauce and locally-handcrafted wooden utensils. Your name included on the gift bags!',
+  },
+  {
+    name: 'Mini safety kits',
+    price: '$3,000',
+    icon: ShieldCheck,
+    description: 'Your logo on an item in a mini-safety kit we\'ll provide to journalists on site.',
+  },
+  {
+    name: 'Sweet treats',
+    price: '$1,500',
+    icon: Cookie,
+    description: 'Provide a sweet treat for attendees — locally-made candy, cookies, or cupcakes!',
+  },
+  {
+    name: 'Lanyards',
+    price: '$1,500',
+    icon: Tag,
+    description: 'Your organization\'s logo and branding on all Summit lanyards and name badges.',
   },
 ]
 
 // Placeholder for current sponsors - will be populated as sponsors are confirmed
 const currentSponsors = {
   presenting: [],
-  gold: [],
-  silver: [],
-  community: [],
+  travel: [],
+  day: [],
+  session: [],
 }
 
-function SponsorTierCard({ tier, index }) {
-  const Icon = tier.icon
+function SponsorPackageCard({ pkg, index }) {
+  const Icon = pkg.icon
 
   return (
     <motion.div
-      className={`card-sketch p-6 border-2 ${tier.borderClass} ${tier.bgAccentClass}`}
+      className={`card-sketch p-6 border-2 ${pkg.borderClass} ${pkg.bgAccentClass}`}
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay: index * 0.1 }}
     >
       <div className="flex items-start justify-between mb-4">
-        <div className={`w-12 h-12 rounded-full ${tier.bgLightClass} flex items-center justify-center`}>
-          <Icon className={`w-6 h-6 ${tier.textClass}`} />
+        <div className={`w-12 h-12 rounded-full ${pkg.bgLightClass} flex items-center justify-center`}>
+          <Icon className={`w-6 h-6 ${pkg.textClass}`} />
         </div>
-        <span className={`font-accent text-2xl ${tier.textClass}`}>{tier.price}</span>
+        <span className={`font-accent text-2xl ${pkg.textClass}`}>{pkg.price}</span>
       </div>
 
-      <h3 className="font-heading font-bold text-xl text-brand-ink mb-4">{tier.name}</h3>
+      <h3 className="font-heading font-bold text-xl text-brand-ink mb-4">{pkg.name}</h3>
 
-      <ul className="space-y-2 mb-6">
-        {tier.benefits.map((benefit, i) => (
+      <ul className="space-y-2 mb-4">
+        {pkg.benefits.map((benefit, i) => (
           <li key={i} className="font-body text-sm text-brand-ink/70 flex items-start gap-2">
-            <span className={`${tier.textClass} mt-1`}>•</span>
+            <span className={`${pkg.textClass} mt-1`}>•</span>
             {benefit}
           </li>
         ))}
       </ul>
 
+      {pkg.note && (
+        <p className="font-body text-xs text-brand-ink/50 italic mb-4">{pkg.note}</p>
+      )}
+
       <div className="pt-4 border-t border-brand-ink/10">
         <p className="font-body text-xs text-brand-ink/50">
-          {typeof tier.available === 'number'
-            ? `${tier.available} available`
-            : tier.available}
+          {typeof pkg.available === 'number'
+            ? `${pkg.available} available`
+            : pkg.available}
         </p>
       </div>
     </motion.div>
@@ -216,47 +264,55 @@ function Sponsors() {
           </div>
         </motion.section>
 
-        {/* Sponsorship tiers */}
+        {/* Main sponsorship packages */}
         <section className="mb-16">
           <h2 className="font-heading font-semibold text-2xl text-brand-ink text-center mb-8">
-            Sponsorship opportunities
+            Sponsorship packages
           </h2>
 
           <div className="grid md:grid-cols-2 gap-6">
-            {sponsorshipTiers.map((tier, index) => (
-              <SponsorTierCard key={tier.name} tier={tier} index={index} />
+            {sponsorshipPackages.map((pkg, index) => (
+              <SponsorPackageCard key={pkg.name} pkg={pkg} index={index} />
             ))}
           </div>
         </section>
 
-        {/* Custom sponsorships */}
+        {/* Additional sponsorship opportunities */}
         <motion.section
           className="mb-16"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
         >
-          <div className="card-sketch p-8 bg-parchment">
-            <h2 className="font-heading font-semibold text-xl text-brand-ink mb-4 text-center">
-              Custom sponsorship opportunities
-            </h2>
-            <p className="font-body text-brand-ink/70 text-center mb-6">
-              Interested in sponsoring a specific element of the summit? We offer custom packages for:
-            </p>
-            <div className="grid md:grid-cols-3 gap-4 text-center">
-              <div className="p-4">
-                <p className="font-heading font-semibold text-brand-ink">Reception sponsor</p>
-                <p className="font-body text-sm text-brand-ink/60">Monday networking event</p>
-              </div>
-              <div className="p-4">
-                <p className="font-heading font-semibold text-brand-ink">Workshop sponsor</p>
-                <p className="font-body text-sm text-brand-ink/60">Tuesday training sessions</p>
-              </div>
-              <div className="p-4">
-                <p className="font-heading font-semibold text-brand-ink">Anniversary dinner</p>
-                <p className="font-body text-sm text-brand-ink/60">10th anniversary celebration</p>
-              </div>
-            </div>
+          <h2 className="font-heading font-semibold text-2xl text-brand-ink text-center mb-8">
+            Additional sponsorship opportunities
+          </h2>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {additionalOpportunities.map((opp, index) => {
+              const Icon = opp.icon
+              return (
+                <motion.div
+                  key={opp.name}
+                  className="card-sketch p-5"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.05 }}
+                >
+                  <div className="flex items-start gap-3 mb-3">
+                    <div className="w-10 h-10 rounded-full bg-brand-teal/10 flex items-center justify-center flex-shrink-0">
+                      <Icon className="w-5 h-5 text-brand-teal" />
+                    </div>
+                    <div>
+                      <h3 className="font-heading font-semibold text-brand-ink">{opp.name}</h3>
+                      <span className="font-accent text-lg text-brand-teal">{opp.price}</span>
+                    </div>
+                  </div>
+                  <p className="font-body text-sm text-brand-ink/70">{opp.description}</p>
+                </motion.div>
+              )
+            })}
           </div>
         </motion.section>
 
