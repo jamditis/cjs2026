@@ -26,7 +26,7 @@ jobs:
         run: npm ci
 
       - name: Generate content from Airtable
-        run: npm run generate-content
+        run: npm run generate-all
         env:
           AIRTABLE_API_KEY: ${{ secrets.AIRTABLE_API_KEY }}
 

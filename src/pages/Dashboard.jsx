@@ -31,6 +31,7 @@ import { storage } from '../firebase'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import Stepper, { Step } from '../components/Stepper'
+import MySchedule from '../components/MySchedule'
 import { checkProfanity, validateNoProfanity } from '../utils/profanityFilter'
 
 // ============================================
@@ -1239,6 +1240,27 @@ function Dashboard() {
                     <p className="font-body text-sm text-brand-ink/60">Community guidelines</p>
                   </div>
                 </Link>
+              </motion.div>
+
+              {/* My Schedule section */}
+              <motion.div
+                className="card-sketch p-6"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="font-heading font-semibold text-xl text-brand-ink">
+                    My schedule
+                  </h2>
+                  <Link
+                    to="/my-schedule"
+                    className="text-brand-teal hover:underline text-sm font-body"
+                  >
+                    View all
+                  </Link>
+                </div>
+                <MySchedule compact={true} maxSessions={5} showViewAll={false} />
               </motion.div>
             </div>
 

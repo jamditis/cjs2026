@@ -68,6 +68,32 @@ Before completing any task that touches user-visible text or content:
 
 *When you complete an Airtable update, change status to ✅ DONE and add the date.*
 
+### Schedule table (for Personal Schedule Builder feature)
+
+**Table:** Schedule (in same base: appL8Sn87xUotm4jF)
+
+**Current fields:** Session title, Type, Last modified (29 records exist)
+
+**Required fields to add:**
+
+| Field | Type | Description | Required |
+|-------|------|-------------|----------|
+| `session_id` | Formula/Text | Unique ID (e.g., "mon-session-1") | Yes |
+| `description` | Long text | Full session description | No |
+| `day` | Single select | "Monday" / "Tuesday" | Yes |
+| `start_time` | Single line text | "9:00 AM" format | Yes |
+| `end_time` | Single line text | "10:00 AM" format | No |
+| `track` | Single select | Track name for parallel sessions | No |
+| `room` | Single line text | Location/room | No |
+| `speakers` | Long text | Speaker names | No |
+| `speaker_orgs` | Long text | Speaker organizations | No |
+| `is_bookmarkable` | Checkbox | Can users save this? (false for breaks) | Yes |
+| `order` | Number | Display order within day | Yes |
+| `visible` | Checkbox | Show on public schedule? | Yes |
+| `color` | Single select | teal, cardinal, green-dark | No |
+
+**Note:** The generate-schedule.cjs script will work with whatever fields exist, using defaults for missing fields.
+
 ---
 
 ## Design & Aesthetics (Frontend Expert Notes)
@@ -536,8 +562,87 @@ Created Cloud Functions for syncing user profiles to Airtable for networking at 
 
 ---
 
+## Personal schedule builder (added 2025-12-15)
+
+**Full personal schedule feature allowing users to save and share sessions:**
+
+### Features
+
+- **Save sessions:** Logged-in users can bookmark sessions from the Schedule page
+- **My Schedule view:** Dashboard widget + dedicated /my-schedule page
+- **Sharing:** Three visibility levels (private, attendees-only, public)
+- **Shared schedule page:** View another user's schedule at /schedule/user/:uid
+
+### Architecture
+
+**Data flow:**
+1. Session data generated from Airtable Schedule table at build time
+2. User's saved sessions stored as array of session IDs in Firestore
+3. Sessions looked up from static data at runtime (fast, no API calls)
+
+**Firestore user fields (added):**
+- `savedSessions: string[]` - Array of session IDs
+- `scheduleVisibility: 'private' | 'attendees_only' | 'public'`
+
+### Key files
+
+| File | Purpose |
+|------|---------|
+| `scripts/generate-schedule.cjs` | Pulls from Airtable Schedule table |
+| `src/content/scheduleData.js` | Auto-generated session data (DO NOT EDIT) |
+| `src/components/SessionCard.jsx` | Session display with save/unsave button |
+| `src/components/MySchedule.jsx` | Reusable personal schedule component |
+| `src/components/ShareScheduleModal.jsx` | Visibility settings modal |
+| `src/pages/Schedule.jsx` | Updated to use dynamic data + filtering |
+| `src/pages/MySchedulePage.jsx` | Full /my-schedule page |
+| `src/pages/SharedSchedule.jsx` | View shared schedule at /schedule/user/:uid |
+| `src/contexts/AuthContext.jsx` | Added saveSession, unsaveSession, isSessionSaved, updateScheduleVisibility |
+
+### Routes
+
+| Route | Component | Auth |
+|-------|-----------|------|
+| `/schedule` | Schedule.jsx | No |
+| `/my-schedule` | MySchedulePage.jsx | Yes |
+| `/schedule/user/:uid` | SharedSchedule.jsx | Depends on visibility |
+
+### Airtable Schedule table
+
+**Base:** 2026 CJS (appL8Sn87xUotm4jF)
+**Table:** Schedule
+
+**Fields (current):**
+- `Session title` - Session name
+- `Type` - session, workshop, break, special, lightning
+- `day` / `Day` - Monday or Tuesday
+- `start_time` / `Start time` - Start time
+- `end_time` / `End time` - End time
+- `description` / `Description` - Session description
+- `room` / `Room` - Location
+- `speakers` / `Speakers` - Speaker names
+- `speaker_orgs` / `Speaker orgs` - Speaker organizations
+- `track` / `Track` - Track name (for parallel sessions)
+- `order` / `Order` - Display order
+- `visible` / `Visible` - Show on schedule
+- `is_bookmarkable` - Can users save this session
+- `session_id` - Unique ID for the session
+
+### NPM scripts
+
+```bash
+npm run generate-schedule    # Pull sessions from Airtable
+npm run generate-all         # Generate both content and schedule
+```
+
+### Deploy workflow integration
+
+The deploy workflow now runs `npm run generate-all` which generates both site content and schedule data from Airtable before building.
+
+---
+
 ## Pending/backlog
 
 - Additional frontend polish (Gemini working on this)
 - Firebase Storage rules need to be deployed (see above for rule config)
 - Deploy profile sync Cloud Functions after Attendees table is set up
+- Firestore security rules for schedule sharing (allow read based on scheduleVisibility)

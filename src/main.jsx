@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { Home, Schedule, Sponsors, CodeOfConduct, Contact, Login, AuthCallback, Dashboard, EditRequest, PrivacyPolicy, Admin } from './pages'
+import { Home, Schedule, Sponsors, CodeOfConduct, Contact, Login, AuthCallback, Dashboard, EditRequest, PrivacyPolicy, Admin, MySchedulePage, SharedSchedule } from './pages'
 import { SplashScreen, ProtectedRoute } from './components'
 import { AuthProvider } from './contexts/AuthContext'
 import { ContentProvider } from './contexts/ContentContext'
@@ -35,6 +35,12 @@ function App() {
                 <Admin />
               </ProtectedRoute>
             } />
+            <Route path="/my-schedule" element={
+              <ProtectedRoute>
+                <MySchedulePage />
+              </ProtectedRoute>
+            } />
+            <Route path="/schedule/user/:uid" element={<SharedSchedule />} />
             </Routes>
           </AuthProvider>
         </ContentProvider>

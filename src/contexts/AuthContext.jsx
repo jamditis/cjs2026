@@ -9,7 +9,7 @@ import {
   isSignInWithEmailLink,
   signInWithEmailLink
 } from 'firebase/auth'
-import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore'
+import { doc, setDoc, getDoc, serverTimestamp, arrayUnion, arrayRemove } from 'firebase/firestore'
 import { auth, db } from '../firebase'
 
 // Email link settings
@@ -73,6 +73,59 @@ export function AuthProvider({ children }) {
       updatedAt: serverTimestamp()
     }, { merge: true })
     return getUserProfile(uid)
+  }
+
+  // Save a session to user's personal schedule
+  async function saveSession(sessionId) {
+    if (!currentUser) return false
+    const userRef = doc(db, 'users', currentUser.uid)
+    await setDoc(userRef, {
+      savedSessions: arrayUnion(sessionId),
+      updatedAt: serverTimestamp()
+    }, { merge: true })
+    // Update local state
+    setUserProfile(prev => ({
+      ...prev,
+      savedSessions: [...(prev?.savedSessions || []), sessionId]
+    }))
+    return true
+  }
+
+  // Remove a session from user's personal schedule
+  async function unsaveSession(sessionId) {
+    if (!currentUser) return false
+    const userRef = doc(db, 'users', currentUser.uid)
+    await setDoc(userRef, {
+      savedSessions: arrayRemove(sessionId),
+      updatedAt: serverTimestamp()
+    }, { merge: true })
+    // Update local state
+    setUserProfile(prev => ({
+      ...prev,
+      savedSessions: (prev?.savedSessions || []).filter(id => id !== sessionId)
+    }))
+    return true
+  }
+
+  // Check if a session is saved
+  function isSessionSaved(sessionId) {
+    return userProfile?.savedSessions?.includes(sessionId) || false
+  }
+
+  // Update schedule visibility setting
+  async function updateScheduleVisibility(visibility) {
+    if (!currentUser) return false
+    const userRef = doc(db, 'users', currentUser.uid)
+    await setDoc(userRef, {
+      scheduleVisibility: visibility,
+      updatedAt: serverTimestamp()
+    }, { merge: true })
+    // Update local state
+    setUserProfile(prev => ({
+      ...prev,
+      scheduleVisibility: visibility
+    }))
+    return true
   }
 
   // Send magic link to email
@@ -152,6 +205,11 @@ export function AuthProvider({ children }) {
     logout,
     updateUserProfile,
     getUserProfile,
+    // Schedule builder helpers
+    saveSession,
+    unsaveSession,
+    isSessionSaved,
+    updateScheduleVisibility,
   }
 
   return (
