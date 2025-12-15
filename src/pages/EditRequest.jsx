@@ -17,9 +17,9 @@ const SECTIONS = [
 ]
 
 const PRIORITY_LEVELS = [
-  { id: 'low', label: 'Low - whenever convenient', color: 'brand-teal' },
-  { id: 'medium', label: 'Medium - within a few days', color: 'brand-gold' },
-  { id: 'high', label: 'High - needs attention soon', color: 'brand-cardinal' },
+  { id: 'low', label: 'Low - whenever convenient', borderClass: 'border-brand-teal', bgClass: 'bg-brand-teal', bgLightClass: 'bg-brand-teal/5' },
+  { id: 'medium', label: 'Medium - within a few days', borderClass: 'border-brand-gold', bgClass: 'bg-brand-gold', bgLightClass: 'bg-brand-gold/5' },
+  { id: 'high', label: 'High - needs attention soon', borderClass: 'border-brand-cardinal', bgClass: 'bg-brand-cardinal', bgLightClass: 'bg-brand-cardinal/5' },
 ]
 
 function EditRequest() {
@@ -183,7 +183,7 @@ function EditRequest() {
                             key={level.id}
                             className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-colors ${
                               formData.priority === level.id
-                                ? `border-${level.color} bg-${level.color}/5`
+                                ? `${level.borderClass} ${level.bgLightClass}`
                                 : 'border-brand-ink/10 hover:border-brand-ink/20'
                             }`}
                           >
@@ -197,7 +197,7 @@ function EditRequest() {
                             />
                             <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
                               formData.priority === level.id
-                                ? `border-${level.color} bg-${level.color}`
+                                ? `${level.borderClass} ${level.bgClass}`
                                 : 'border-brand-ink/30'
                             }`}>
                               {formData.priority === level.id && (

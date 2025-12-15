@@ -134,7 +134,7 @@ function Countdown({ targetDate }) {
 // Info card with sketch aesthetic
 // ============================================
 function InfoCard({ icon: Icon, title, children, delay = 0, color = 'teal' }) {
-  const bgClass = getColorClass(color, 'bg')
+  const bgLightClass = getColorClass(color, 'bgLight')
   const textClass = getColorClass(color, 'text')
 
   return (
@@ -146,7 +146,7 @@ function InfoCard({ icon: Icon, title, children, delay = 0, color = 'teal' }) {
       transition={{ delay, duration: 0.5 }}
     >
       <div className="flex items-start gap-4">
-        <div className={`w-12 h-12 rounded-full ${bgClass}/10 flex items-center justify-center flex-shrink-0`}>
+        <div className={`w-12 h-12 rounded-full ${bgLightClass} flex items-center justify-center flex-shrink-0`}>
           <Icon className={`w-6 h-6 ${textClass}`} />
         </div>
         <div>
@@ -409,7 +409,7 @@ function Home() {
             <div className="grid md:grid-cols-2 gap-8">
               <div>
                 <h4 className={`font-heading font-semibold text-lg mb-4 ${getColorClass(getContentMeta('expect', 'monday_label')?.color || 'teal', 'text')} flex items-center gap-2`}>
-                  <span className={`w-8 h-8 rounded-full ${getColorClass(getContentMeta('expect', 'monday_label')?.color || 'teal', 'bg')}/10 flex items-center justify-center text-sm`}>1</span>
+                  <span className={`w-8 h-8 rounded-full ${getColorClass(getContentMeta('expect', 'monday_label')?.color || 'teal', 'bgLight')} flex items-center justify-center text-sm`}>1</span>
                   {getContent('expect', 'monday_label', 'Monday: Main summit')}
                 </h4>
                 <ul className="space-y-2 text-brand-ink/70 font-body ml-10">
@@ -420,7 +420,7 @@ function Home() {
               </div>
               <div>
                 <h4 className={`font-heading font-semibold text-lg mb-4 ${getColorClass(getContentMeta('expect', 'tuesday_label')?.color || 'cardinal', 'text')} flex items-center gap-2`}>
-                  <span className={`w-8 h-8 rounded-full ${getColorClass(getContentMeta('expect', 'tuesday_label')?.color || 'cardinal', 'bg')}/10 flex items-center justify-center text-sm`}>2</span>
+                  <span className={`w-8 h-8 rounded-full ${getColorClass(getContentMeta('expect', 'tuesday_label')?.color || 'cardinal', 'bgLight')} flex items-center justify-center text-sm`}>2</span>
                   {getContent('expect', 'tuesday_label', 'Tuesday: Workshops')}
                 </h4>
                 <ul className="space-y-2 text-brand-ink/70 font-body ml-10">

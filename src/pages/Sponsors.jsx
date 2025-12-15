@@ -4,13 +4,18 @@ import { Heart, Star, Award, Sparkles, Mail, ExternalLink } from 'lucide-react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 
-// Sponsorship tier information
+// Sponsorship tier information with explicit Tailwind classes
+// (dynamic classes like `bg-${color}` don't work with Tailwind's JIT compiler)
 const sponsorshipTiers = [
   {
     name: 'Presenting sponsor',
     price: '$15,000',
     icon: Sparkles,
-    color: 'brand-cardinal',
+    textClass: 'text-brand-cardinal',
+    bgClass: 'bg-brand-cardinal',
+    bgLightClass: 'bg-brand-cardinal/10',
+    bgAccentClass: 'bg-brand-cardinal/5',
+    borderClass: 'border-brand-cardinal/30',
     benefits: [
       'Logo on all event materials and website',
       'Speaking opportunity during opening session',
@@ -26,7 +31,11 @@ const sponsorshipTiers = [
     name: 'Gold sponsor',
     price: '$7,500',
     icon: Award,
-    color: 'brand-teal',
+    textClass: 'text-brand-teal',
+    bgClass: 'bg-brand-teal',
+    bgLightClass: 'bg-brand-teal/10',
+    bgAccentClass: 'bg-brand-teal/5',
+    borderClass: 'border-brand-teal/30',
     benefits: [
       'Logo on event materials and website',
       'Booth at networking reception',
@@ -40,7 +49,11 @@ const sponsorshipTiers = [
     name: 'Silver sponsor',
     price: '$3,500',
     icon: Star,
-    color: 'brand-green-dark',
+    textClass: 'text-brand-green-dark',
+    bgClass: 'bg-brand-green-dark',
+    bgLightClass: 'bg-brand-green-dark/10',
+    bgAccentClass: 'bg-brand-green-dark/5',
+    borderClass: 'border-brand-green-dark/30',
     benefits: [
       'Logo on event materials and website',
       'Quarter-page ad in program',
@@ -53,7 +66,11 @@ const sponsorshipTiers = [
     name: 'Community supporter',
     price: '$1,000',
     icon: Heart,
-    color: 'brand-ink',
+    textClass: 'text-brand-ink',
+    bgClass: 'bg-brand-ink',
+    bgLightClass: 'bg-brand-ink/10',
+    bgAccentClass: 'bg-brand-ink/5',
+    borderClass: 'border-brand-ink/30',
     benefits: [
       'Logo on website',
       'Listing in program',
@@ -76,17 +93,17 @@ function SponsorTierCard({ tier, index }) {
 
   return (
     <motion.div
-      className={`card-sketch p-6 border-2 border-${tier.color}/30 bg-${tier.color}/5`}
+      className={`card-sketch p-6 border-2 ${tier.borderClass} ${tier.bgAccentClass}`}
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay: index * 0.1 }}
     >
       <div className="flex items-start justify-between mb-4">
-        <div className={`w-12 h-12 rounded-full bg-${tier.color}/10 flex items-center justify-center`}>
-          <Icon className={`w-6 h-6 text-${tier.color}`} />
+        <div className={`w-12 h-12 rounded-full ${tier.bgLightClass} flex items-center justify-center`}>
+          <Icon className={`w-6 h-6 ${tier.textClass}`} />
         </div>
-        <span className={`font-accent text-2xl text-${tier.color}`}>{tier.price}</span>
+        <span className={`font-accent text-2xl ${tier.textClass}`}>{tier.price}</span>
       </div>
 
       <h3 className="font-heading font-bold text-xl text-brand-ink mb-4">{tier.name}</h3>
@@ -94,7 +111,7 @@ function SponsorTierCard({ tier, index }) {
       <ul className="space-y-2 mb-6">
         {tier.benefits.map((benefit, i) => (
           <li key={i} className="font-body text-sm text-brand-ink/70 flex items-start gap-2">
-            <span className={`text-${tier.color} mt-1`}>•</span>
+            <span className={`${tier.textClass} mt-1`}>•</span>
             {benefit}
           </li>
         ))}
