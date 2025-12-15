@@ -886,7 +886,7 @@ function Dashboard() {
                           setValidationErrors(prev => ({ ...prev, organization: null }))
                         }}
                         onBlur={(e) => validateTextField(e.target.value, 'organization')}
-                        placeholder="Your news organization"
+                        placeholder="Your organization or company"
                         className={validationErrors.organization ? 'border-brand-cardinal' : ''}
                       />
                       {validationErrors.organization && (
@@ -1426,7 +1426,7 @@ function Dashboard() {
                           type="text"
                           value={editData.organization}
                           onChange={(e) => setEditData({ ...editData, organization: e.target.value })}
-                          placeholder="Your news organization"
+                          placeholder="Your organization or company"
                           className="w-full pl-10 pr-3 py-2 rounded-lg border-2 border-brand-ink/20 bg-white font-body text-brand-ink text-sm focus:border-brand-teal focus:outline-none transition-colors"
                         />
                       </div>

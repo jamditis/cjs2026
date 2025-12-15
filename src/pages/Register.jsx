@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Mail, Lock, Eye, EyeOff, User, Building, AlertCircle } from 'lucide-react'
+import { Mail, User, Building, AlertCircle, CheckCircle, Send } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
@@ -10,16 +10,13 @@ function Register() {
   const [formData, setFormData] = useState({
     displayName: '',
     email: '',
-    password: '',
-    confirmPassword: '',
     organization: '',
   })
-  const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [emailSent, setEmailSent] = useState(false)
 
-  const { signup, loginWithGoogle } = useAuth()
-  const navigate = useNavigate()
+  const { sendMagicLink, loginWithGoogle } = useAuth()
 
   function handleChange(e) {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -28,33 +25,20 @@ function Register() {
   async function handleSubmit(e) {
     e.preventDefault()
     setError('')
-
-    // Validation
-    if (formData.password !== formData.confirmPassword) {
-      return setError('Passwords do not match')
-    }
-
-    if (formData.password.length < 6) {
-      return setError('Password must be at least 6 characters')
-    }
-
     setLoading(true)
 
     try {
-      await signup(formData.email, formData.password, formData.displayName, {
+      await sendMagicLink(formData.email, {
+        displayName: formData.displayName,
         organization: formData.organization,
       })
-      navigate('/dashboard')
+      setEmailSent(true)
     } catch (err) {
       console.error('Registration error:', err)
-      if (err.code === 'auth/email-already-in-use') {
-        setError('An account with this email already exists')
-      } else if (err.code === 'auth/invalid-email') {
+      if (err.code === 'auth/invalid-email') {
         setError('Invalid email address')
-      } else if (err.code === 'auth/weak-password') {
-        setError('Password is too weak')
       } else {
-        setError('Failed to create account. Please try again.')
+        setError('Failed to send sign-in link. Please try again.')
       }
     } finally {
       setLoading(false)
@@ -67,13 +51,61 @@ function Register() {
 
     try {
       await loginWithGoogle()
-      navigate('/dashboard')
+      // Google auth redirects automatically via AuthContext
+      window.location.href = '/dashboard'
     } catch (err) {
       console.error('Google signup error:', err)
-      setError('Failed to sign up with Google. Please try again.')
+      if (err.code === 'auth/popup-closed-by-user') {
+        setError('Sign-in cancelled. Please try again.')
+      } else {
+        setError('Failed to sign up with Google. Please try again.')
+      }
     } finally {
       setLoading(false)
     }
+  }
+
+  // Success state - email sent
+  if (emailSent) {
+    return (
+      <>
+        <Navbar />
+        <div className="min-h-screen bg-paper pt-24 pb-16 flex items-center justify-center px-6">
+          <motion.div
+            className="w-full max-w-md text-center"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <div className="card-sketch p-8">
+              <div className="w-16 h-16 rounded-full bg-brand-teal/10 flex items-center justify-center mx-auto mb-6">
+                <CheckCircle className="w-8 h-8 text-brand-teal" />
+              </div>
+              <h1 className="editorial-headline text-2xl md:text-3xl text-brand-ink mb-4">
+                Check your inbox
+              </h1>
+              <p className="font-body text-brand-ink/70 mb-6">
+                We sent a sign-in link to <strong className="text-brand-ink">{formData.email}</strong>
+              </p>
+              <p className="font-body text-brand-ink/50 text-sm mb-6">
+                Click the link in the email to complete your registration. The link expires in 1 hour.
+              </p>
+              <div className="border-t-2 border-brand-ink/10 pt-6">
+                <p className="font-body text-brand-ink/50 text-sm">
+                  Didn't receive the email?{' '}
+                  <button
+                    onClick={() => setEmailSent(false)}
+                    className="text-brand-teal hover:underline"
+                  >
+                    Try again
+                  </button>
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+        <Footer />
+      </>
+    )
   }
 
   return (
@@ -87,7 +119,7 @@ function Register() {
         >
           <div className="text-center mb-8">
             <h1 className="editorial-headline text-3xl md:text-4xl text-brand-ink mb-2">
-              Create an account
+              Get started
             </h1>
             <p className="font-body text-brand-ink/60">
               Join us for the 10th anniversary summit
@@ -127,24 +159,6 @@ function Register() {
               </div>
 
               <div>
-                <label htmlFor="organization" className="block font-body font-medium text-brand-ink mb-2">
-                  Organization <span className="text-brand-ink/40">(optional)</span>
-                </label>
-                <div className="relative">
-                  <Building className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-brand-ink/40" />
-                  <input
-                    type="text"
-                    id="organization"
-                    name="organization"
-                    value={formData.organization}
-                    onChange={handleChange}
-                    className="w-full pl-12 pr-4 py-3 rounded-lg border-2 border-brand-ink/20 bg-white font-body text-brand-ink placeholder:text-brand-ink/40 focus:border-brand-teal focus:outline-none transition-colors"
-                    placeholder="Your news organization"
-                  />
-                </div>
-              </div>
-
-              <div>
                 <label htmlFor="email" className="block font-body font-medium text-brand-ink mb-2">
                   Email address
                 </label>
@@ -164,48 +178,19 @@ function Register() {
               </div>
 
               <div>
-                <label htmlFor="password" className="block font-body font-medium text-brand-ink mb-2">
-                  Password
+                <label htmlFor="organization" className="block font-body font-medium text-brand-ink mb-2">
+                  Organization <span className="text-brand-ink/40">(optional)</span>
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-brand-ink/40" />
+                  <Building className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-brand-ink/40" />
                   <input
-                    type={showPassword ? 'text' : 'password'}
-                    id="password"
-                    name="password"
-                    value={formData.password}
+                    type="text"
+                    id="organization"
+                    name="organization"
+                    value={formData.organization}
                     onChange={handleChange}
-                    required
-                    minLength={6}
-                    className="w-full pl-12 pr-12 py-3 rounded-lg border-2 border-brand-ink/20 bg-white font-body text-brand-ink placeholder:text-brand-ink/40 focus:border-brand-teal focus:outline-none transition-colors"
-                    placeholder="••••••••"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-brand-ink/40 hover:text-brand-ink transition-colors"
-                  >
-                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                  </button>
-                </div>
-                <p className="font-body text-xs text-brand-ink/50 mt-1">At least 6 characters</p>
-              </div>
-
-              <div>
-                <label htmlFor="confirmPassword" className="block font-body font-medium text-brand-ink mb-2">
-                  Confirm password
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-brand-ink/40" />
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    required
                     className="w-full pl-12 pr-4 py-3 rounded-lg border-2 border-brand-ink/20 bg-white font-body text-brand-ink placeholder:text-brand-ink/40 focus:border-brand-teal focus:outline-none transition-colors"
-                    placeholder="••••••••"
+                    placeholder="Your organization or company"
                   />
                 </div>
               </div>
@@ -213,12 +198,17 @@ function Register() {
               <motion.button
                 type="submit"
                 disabled={loading}
-                className="btn-primary w-full disabled:opacity-50"
+                className="btn-primary w-full disabled:opacity-50 flex items-center justify-center gap-2"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                {loading ? 'Creating account...' : 'Create account'}
+                <Send className="w-4 h-4" />
+                {loading ? 'Sending link...' : 'Send sign-in link'}
               </motion.button>
+
+              <p className="text-center font-body text-xs text-brand-ink/50">
+                We'll email you a magic link to sign in. No password needed.
+              </p>
             </form>
 
             <div className="relative my-6">
