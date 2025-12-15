@@ -675,7 +675,7 @@ function Dashboard() {
       bgClass: 'bg-brand-teal/10',
       textClass: 'text-brand-teal',
       icon: Ticket,
-      description: 'Get your ticket on Eventbrite',
+      description: "Secure your spot at CJS 2026",
     },
     registered: {
       label: 'Registered',
@@ -1145,20 +1145,15 @@ function Dashboard() {
                     </p>
 
                     {registrationStatus === 'pending' && (
-                      <div className="bg-white rounded-lg p-4 border border-brand-ink/10">
-                        <p className="font-body text-sm text-brand-ink/70 mb-3">
-                          Tickets are now available on Eventbrite!
-                        </p>
-                        <a
-                          href="https://www.eventbrite.com/e/2026-collaborative-journalism-summit-tickets-1977919688031?aff=oddtdtcreator"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="btn-primary py-2 px-4 text-sm inline-flex items-center gap-2"
-                        >
-                          <Ticket className="w-4 h-4" />
-                          Get tickets
-                        </a>
-                      </div>
+                      <a
+                        href="https://www.eventbrite.com/e/2026-collaborative-journalism-summit-tickets-1977919688031?aff=oddtdtcreator"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn-primary py-2 px-4 text-sm inline-flex items-center gap-2"
+                      >
+                        <Ticket className="w-4 h-4" />
+                        Get tickets on Eventbrite
+                      </a>
                     )}
 
                     {registrationStatus === 'registered' && (
