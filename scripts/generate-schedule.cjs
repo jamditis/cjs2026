@@ -95,7 +95,8 @@ function processRecords(records) {
       speakerOrgs: fields.speaker_orgs || fields['Speaker orgs'] || fields.speakerOrgs || '',
       isBookmarkable: fields.is_bookmarkable !== false && fields.Type !== 'break',
       order: fields.order || fields.Order || index + 1,
-      visible: fields.visible !== false && fields.Visible !== false,
+      // Check visible, Visible, public, or Public fields (checkbox = true means show)
+      visible: fields.visible === true || fields.Visible === true || fields.public === true || fields.Public === true,
       color: fields.color || fields.Color || 'teal',
     };
   });
