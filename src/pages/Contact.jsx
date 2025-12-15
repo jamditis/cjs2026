@@ -117,29 +117,32 @@ function Contact() {
               </a>
             </div>
 
-            {/* Hosting organizations */}
+            {/* Hosting organization */}
             <div className="mt-10">
               <h3 className="font-heading font-semibold text-lg text-brand-ink mb-4">Hosted by</h3>
-              <div className="space-y-4">
-                <a
-                  href="https://centerforcooperativemedia.org"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block card-sketch p-4 hover:border-brand-teal/50 transition-colors"
-                >
-                  <p className="font-heading font-semibold text-brand-ink">Center for Cooperative Media</p>
-                  <p className="font-body text-sm text-brand-ink/60">Montclair State University</p>
-                </a>
-                <a
-                  href="https://inn.org"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block card-sketch p-4 hover:border-brand-teal/50 transition-colors"
-                >
-                  <p className="font-heading font-semibold text-brand-ink">Institute for Nonprofit News</p>
-                  <p className="font-body text-sm text-brand-ink/60">inn.org</p>
-                </a>
-              </div>
+              <a
+                href="https://centerforcooperativemedia.org"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block card-sketch p-4 hover:border-brand-teal/50 transition-colors"
+              >
+                <p className="font-heading font-semibold text-brand-ink">Center for Cooperative Media</p>
+                <p className="font-body text-sm text-brand-ink/60">Montclair State University</p>
+              </a>
+            </div>
+
+            {/* Co-located event */}
+            <div className="mt-6">
+              <h3 className="font-heading font-semibold text-lg text-brand-ink mb-4">Co-located with</h3>
+              <a
+                href="https://inn.org"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block card-sketch p-4 hover:border-brand-teal/50 transition-colors"
+              >
+                <p className="font-heading font-semibold text-brand-ink">INN Days</p>
+                <p className="font-body text-sm text-brand-ink/60">Institute for Nonprofit News</p>
+              </a>
             </div>
           </motion.div>
 
