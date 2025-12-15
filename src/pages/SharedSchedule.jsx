@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Calendar, User, Lock, ArrowLeft, AlertCircle } from 'lucide-react'
+import { Calendar, User, Lock, ArrowLeft, AlertCircle, ExternalLink } from 'lucide-react'
 import { doc, getDoc } from 'firebase/firestore'
 import { db } from '../firebase'
 import Navbar from '../components/Navbar'
@@ -148,31 +148,40 @@ function SharedSchedule() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
               >
-                <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 rounded-full bg-brand-teal/10 flex items-center justify-center overflow-hidden">
-                    {userData?.photoURL ? (
-                      <img
-                        src={userData.photoURL}
-                        alt=""
-                        className="w-16 h-16 rounded-full object-cover"
-                      />
-                    ) : (
-                      <User className="w-8 h-8 text-brand-teal" />
-                    )}
-                  </div>
-                  <div>
-                    <h1 className="font-heading font-semibold text-2xl text-brand-ink">
-                      {userData?.displayName}'s schedule
-                    </h1>
-                    {userData?.organization && (
-                      <p className="font-body text-brand-ink/60">
-                        {userData.organization}
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-4">
+                    <div className="w-16 h-16 rounded-full bg-brand-teal/10 flex items-center justify-center overflow-hidden">
+                      {userData?.photoURL ? (
+                        <img
+                          src={userData.photoURL}
+                          alt=""
+                          className="w-16 h-16 rounded-full object-cover"
+                        />
+                      ) : (
+                        <User className="w-8 h-8 text-brand-teal" />
+                      )}
+                    </div>
+                    <div>
+                      <h1 className="font-heading font-semibold text-2xl text-brand-ink">
+                        {userData?.displayName}'s schedule
+                      </h1>
+                      {userData?.organization && (
+                        <p className="font-body text-brand-ink/60">
+                          {userData.organization}
+                        </p>
+                      )}
+                      <p className="font-body text-sm text-brand-ink/50 mt-1">
+                        {savedSessions.length} session{savedSessions.length !== 1 ? 's' : ''} saved
                       </p>
-                    )}
-                    <p className="font-body text-sm text-brand-ink/50 mt-1">
-                      {savedSessions.length} session{savedSessions.length !== 1 ? 's' : ''} saved
-                    </p>
+                    </div>
                   </div>
+                  <Link
+                    to={`/attendee/${uid}`}
+                    className="btn-secondary text-sm flex items-center gap-2"
+                  >
+                    <User className="w-4 h-4" />
+                    View profile
+                  </Link>
                 </div>
               </motion.div>
 

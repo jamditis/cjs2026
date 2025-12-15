@@ -1127,46 +1127,87 @@ function Dashboard() {
             {/* Main content */}
             <div className="lg:col-span-2 space-y-6">
               {/* Registration status card */}
-              <motion.div
-                className="card-sketch p-6"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-              >
-                <div className="flex items-start gap-4">
-                  <div className={`w-12 h-12 rounded-full ${status.bgClass} flex items-center justify-center`}>
-                    <StatusIcon className={`w-6 h-6 ${status.textClass}`} />
+              {userProfile?.ticketsPurchased ? (
+                <motion.div
+                  className="card-sketch p-6 bg-brand-green-dark/5 border-brand-green-dark/20"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 }}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-full bg-brand-green-dark/10 flex items-center justify-center">
+                      <CheckCircle className="w-6 h-6 text-brand-green-dark" />
+                    </div>
+                    <div className="flex-1">
+                      <h2 className="font-heading font-semibold text-xl text-brand-green-dark">
+                        Tickets purchased
+                      </h2>
+                      <p className="font-body text-brand-ink/60">
+                        See you in Chapel Hill!
+                      </p>
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <h2 className="font-heading font-semibold text-xl text-brand-ink mb-1">
-                      {status.label}
-                    </h2>
-                    <p className="font-body text-brand-ink/60 mb-4">
-                      {status.description}
-                    </p>
+                </motion.div>
+              ) : (
+                <motion.div
+                  className="card-sketch p-6"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 }}
+                >
+                  <div className="flex items-start gap-4">
+                    <div className={`w-12 h-12 rounded-full ${status.bgClass} flex items-center justify-center`}>
+                      <StatusIcon className={`w-6 h-6 ${status.textClass}`} />
+                    </div>
+                    <div className="flex-1">
+                      <h2 className="font-heading font-semibold text-xl text-brand-ink mb-1">
+                        {status.label}
+                      </h2>
+                      <p className="font-body text-brand-ink/60 mb-4">
+                        {status.description}
+                      </p>
 
-                    {registrationStatus === 'pending' && (
-                      <a
-                        href="https://www.eventbrite.com/e/2026-collaborative-journalism-summit-tickets-1977919688031?aff=oddtdtcreator"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="btn-primary py-2 px-4 text-sm inline-flex items-center gap-2"
-                      >
-                        <Ticket className="w-4 h-4" />
-                        Get tickets on Eventbrite
-                      </a>
-                    )}
+                      {registrationStatus === 'pending' && (
+                        <div className="space-y-4">
+                          <a
+                            href="https://www.eventbrite.com/e/2026-collaborative-journalism-summit-tickets-1977919688031?aff=oddtdtcreator"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="btn-primary py-2 px-4 text-sm inline-flex items-center gap-2"
+                          >
+                            <Ticket className="w-4 h-4" />
+                            Get tickets on Eventbrite
+                          </a>
+                          <div className="border-t border-brand-ink/10 pt-4">
+                            <label className="flex items-center gap-3 cursor-pointer group">
+                              <input
+                                type="checkbox"
+                                onChange={async (e) => {
+                                  if (e.target.checked) {
+                                    await updateUserProfile(currentUser.uid, { ticketsPurchased: true })
+                                  }
+                                }}
+                                className="w-4 h-4 rounded border-2 border-brand-ink/20 text-brand-teal focus:ring-brand-teal"
+                              />
+                              <span className="font-body text-sm text-brand-ink/60 group-hover:text-brand-ink">
+                                I've already purchased my tickets
+                              </span>
+                            </label>
+                          </div>
+                        </div>
+                      )}
 
-                    {registrationStatus === 'registered' && (
-                      <div className="bg-white rounded-lg p-4 border border-brand-ink/10">
-                        <p className="font-body text-sm text-brand-ink/70">
-                          Complete your registration by paying the registration fee.
-                        </p>
-                      </div>
-                    )}
+                      {registrationStatus === 'registered' && (
+                        <div className="bg-white rounded-lg p-4 border border-brand-ink/10">
+                          <p className="font-body text-sm text-brand-ink/70">
+                            Complete your registration by paying the registration fee.
+                          </p>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              </motion.div>
+                </motion.div>
+              )}
 
               {/* Event details */}
               <motion.div
