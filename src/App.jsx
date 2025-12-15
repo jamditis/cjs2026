@@ -612,7 +612,7 @@ function App() {
             ============================================ */}
         <section id="partners" className="py-16 px-6 bg-paper">
           <div className="max-w-4xl mx-auto text-center">
-            <p className="text-brand-ink/40 text-sm mb-8 font-body">Hosted by</p>
+            <p className="text-brand-ink/40 text-sm mb-8 font-body">Co-located with</p>
             <motion.div
               className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16"
               initial={{ opacity: 0, y: 20 }}
