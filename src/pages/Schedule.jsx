@@ -125,15 +125,20 @@ function Schedule() {
               <p className="font-body text-brand-ink/70 max-w-md mx-auto mb-6">
                 We're putting together an incredible lineup of sessions, workshops, and speakers for CJS 2026. Check back soon for the full schedule.
               </p>
-              <div className="bg-brand-teal/5 border-2 border-brand-teal/20 rounded-lg p-6 max-w-md mx-auto">
-                <div className="flex items-center justify-center gap-2 mb-3">
+              <a
+                href="https://collaborativejournalism.us5.list-manage.com/subscribe?u=7f46611cb324e9e193acda7cc&id=2e8bb60c9c"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block bg-brand-teal/5 border-2 border-brand-teal/20 rounded-lg p-6 max-w-md mx-auto hover:border-brand-teal/40 hover:bg-brand-teal/10 transition-colors"
+              >
+                <div className="flex items-center justify-center gap-2 mb-2">
                   <Mail className="w-5 h-5 text-brand-teal" />
-                  <p className="font-body font-medium text-brand-ink">Get notified when it's live</p>
+                  <p className="font-body font-medium text-brand-ink">Stay in the loop</p>
                 </div>
                 <p className="font-body text-sm text-brand-ink/60">
-                  Sign up for updates from the <a href="https://centerforcooperativemedia.org" target="_blank" rel="noopener noreferrer" className="text-brand-teal hover:underline">Center for Cooperative Media</a> to be the first to know when the schedule is released.
+                  Sign up for the Collaborative Journalism Newsletter for updates on CJS 2026 and all things collaboration.
                 </p>
-              </div>
+              </a>
             </motion.div>
           )}
 
