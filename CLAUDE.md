@@ -38,6 +38,7 @@ Before completing any task that touches user-visible text or content:
 2. **If CMS-controlled:** The Airtable "Site Content" table MUST be updated to match
 3. **If hardcoded:** Document it clearly so editors know it can't be changed in Airtable
 4. **Log pending updates:** Add any required Airtable changes to the "Pending Airtable updates" section below
+5. **CHECK IN WITH USER:** Before making any change that would impact the Airtable CMS workflow, alert the user and get confirmation
 
 ### What IS controlled by Airtable CMS
 
