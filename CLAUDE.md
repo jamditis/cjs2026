@@ -62,9 +62,9 @@ Before completing any task that touches user-visible text or content:
 
 | Field | Section | Current value | Required value | Status |
 |-------|---------|---------------|----------------|--------|
-| `registration_note` | details | "Registration opens soon!" | "Tickets now available" | ⏳ PENDING |
-| `signup_headline` | footer | "Stay connected" | "Join us in Chapel Hill" | ⏳ PENDING |
-| `signup_description` | footer | "Get updates on programming, registration, and more." | "Secure your spot at the 10th anniversary summit." | ⏳ PENDING |
+| `registration_note` | details | "Registration opens soon!" | "Tickets now available" | ✅ DONE 2025-12-15 |
+| `signup_headline` | footer | "Stay connected" | "Join us in Chapel Hill" | ✅ DONE 2025-12-15 |
+| `signup_description` | footer | "Get updates on programming, registration, and more." | "Secure your spot at the 10th anniversary summit." | ✅ DONE 2025-12-15 |
 
 *When you complete an Airtable update, change status to ✅ DONE and add the date.*
 

@@ -21,7 +21,9 @@ function loadLocalEnv() {
     const envPath = path.join(__dirname, '..', '.env');
     if (fs.existsSync(envPath)) {
       const content = fs.readFileSync(envPath, 'utf-8');
-      const match = content.match(/AIRTABLE_API_KEY=(.+)/);
+      // Try both possible key names
+      let match = content.match(/AIRTABLE_API_KEY=(.+)/);
+      if (!match) match = content.match(/VITE_AIRTABLE_KEY=(.+)/);
       if (match) return { AIRTABLE_API_KEY: match[1].trim() };
     }
   } catch (e) {}
