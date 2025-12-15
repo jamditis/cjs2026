@@ -228,12 +228,14 @@ const ALL_BADGES = Object.values(BADGE_CATEGORIES).flatMap(cat => cat.badges)
 const EMOJI_OPTIONS = ['💡', '🎯', '🚀', '⚡', '🌟', '💪', '🎨', '📰', '🗞️', '✍️', '🔗', '🌐', '💬', '🎤', '📸', '🎬']
 
 // Photo upload constraints
+// Firebase extension handles resizing to: 200x200, 256x256, 400x400, 512x512, 1024x768
+// Resized images stored in 'resize/' path, original deleted on success
 const PHOTO_CONFIG = {
-  maxSizeBytes: 2 * 1024 * 1024, // 2MB max
-  maxSizeMB: 2,
+  maxSizeBytes: 5 * 1024 * 1024, // 5MB max (extension handles optimization)
+  maxSizeMB: 5,
   allowedTypes: ['image/jpeg', 'image/png', 'image/webp'],
   allowedExtensions: ['.jpg', '.jpeg', '.png', '.webp'],
-  maxDimension: 800, // Will resize to max 800x800
+  resizedSize: '400x400', // Size to use for profile display
 }
 
 function Dashboard() {
@@ -335,40 +337,8 @@ function Dashboard() {
     localStorage.setItem('cjs2026_profile_tutorial', JSON.stringify(newState))
   }
 
-  // Resize image to reduce file size
-  function resizeImage(file, maxDimension) {
-    return new Promise((resolve, reject) => {
-      const img = new Image()
-      const canvas = document.createElement('canvas')
-      const ctx = canvas.getContext('2d')
-
-      img.onload = () => {
-        let { width, height } = img
-        if (width > maxDimension || height > maxDimension) {
-          if (width > height) {
-            height = (height / width) * maxDimension
-            width = maxDimension
-          } else {
-            width = (width / height) * maxDimension
-            height = maxDimension
-          }
-        }
-        canvas.width = width
-        canvas.height = height
-        ctx.drawImage(img, 0, 0, width, height)
-        canvas.toBlob(
-          blob => resolve(blob),
-          'image/jpeg',
-          0.85 // Quality
-        )
-      }
-      img.onerror = reject
-      img.src = URL.createObjectURL(file)
-    })
-  }
-
-  // Handle photo selection
-  async function handlePhotoSelect(e) {
+  // Handle photo selection (no client-side resize - Firebase extension handles it)
+  function handlePhotoSelect(e) {
     const file = e.target.files?.[0]
     if (!file) return
 
@@ -386,32 +356,44 @@ function Dashboard() {
       return
     }
 
-    try {
-      // Resize image to reduce storage/bandwidth
-      const resizedBlob = await resizeImage(file, PHOTO_CONFIG.maxDimension)
-      const resizedFile = new File([resizedBlob], file.name, { type: 'image/jpeg' })
-
-      setPhotoFile(resizedFile)
-      setPhotoPreview(URL.createObjectURL(resizedBlob))
-    } catch (err) {
-      console.error('Error processing image:', err)
-      setPhotoError('Failed to process image. Please try another.')
-    }
+    setPhotoFile(file)
+    setPhotoPreview(URL.createObjectURL(file))
   }
 
   // Upload photo to Firebase Storage
+  // Firebase extension automatically resizes and stores in 'resize/' path
   async function uploadPhoto() {
     if (!photoFile || !currentUser) return null
 
     setPhotoUploading(true)
     try {
-      const fileExt = 'jpg'
-      const fileName = `profile-photos/${currentUser.uid}/${Date.now()}.${fileExt}`
+      const timestamp = Date.now()
+      const fileName = `profile-photos/${currentUser.uid}/${timestamp}.jpg`
       const storageRef = ref(storage, fileName)
 
-      await uploadBytes(storageRef, photoFile)
-      const downloadURL = await getDownloadURL(storageRef)
-      return downloadURL
+      // Upload with explicit content-type for the extension to process
+      await uploadBytes(storageRef, photoFile, {
+        contentType: photoFile.type,
+      })
+
+      // Construct the URL for the resized image (400x400)
+      // Extension stores resized images at: resize/{original-path}_{size}.jpeg
+      const resizedFileName = `resize/profile-photos/${currentUser.uid}/${timestamp}_${PHOTO_CONFIG.resizedSize}.jpeg`
+      const resizedRef = ref(storage, resizedFileName)
+
+      // Wait a moment for the extension to process, then get the resized URL
+      // The extension makes resized images public, so we can construct the URL directly
+      await new Promise(resolve => setTimeout(resolve, 2000)) // Wait for extension processing
+
+      try {
+        const downloadURL = await getDownloadURL(resizedRef)
+        return downloadURL
+      } catch {
+        // If resized image not ready yet, fall back to constructing public URL
+        // Format: https://storage.googleapis.com/{bucket}/resize/...
+        const publicURL = `https://storage.googleapis.com/cjs2026.firebasestorage.app/${resizedFileName}`
+        return publicURL
+      }
     } catch (err) {
       console.error('Error uploading photo:', err)
       setPhotoError('Failed to upload photo. Please try again.')
