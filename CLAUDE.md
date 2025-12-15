@@ -20,6 +20,54 @@ The project is a **modern Vite + React** application.
 
 **⚠️ IMPORTANT:** Do NOT use `web/index-new` or `web/index.html`. These are legacy files from a previous prototype. Work exclusively within `src/` and the root-level configuration files (`tailwind.config.js`, `vite.config.js`).
 
+---
+
+## 🚨 CRITICAL: Airtable CMS sync protocol
+
+**This is a mandatory workflow rule. Failure to follow will cause the site to break when editors use Airtable.**
+
+### The problem
+
+The site uses Airtable as a headless CMS. When the deploy workflow runs, it pulls content from Airtable and overwrites `src/content/siteContent.js`. If code changes reference content that doesn't match Airtable, or if Airtable has outdated values, the site will show incorrect content or break.
+
+### Mandatory protocol for ANY content-related change
+
+Before completing any task that touches user-visible text or content:
+
+1. **Identify CMS-controlled content:** Check if the text uses `getContent()` in the code
+2. **If CMS-controlled:** The Airtable "Site Content" table MUST be updated to match
+3. **If hardcoded:** Document it clearly so editors know it can't be changed in Airtable
+4. **Log pending updates:** Add any required Airtable changes to the "Pending Airtable updates" section below
+
+### What IS controlled by Airtable CMS
+
+- Home.jsx hero text (headline, tagline, dates, registration_note)
+- Timeline data (years, locations, themes)
+- Stats (summits count, cities, attendees, mission)
+- Info cards content and colors
+- Footer content
+- Any field accessed via `getContent()`, `getContentMeta()`, `timeline`, or `stats`
+
+### What is NOT controlled by Airtable CMS
+
+- React components (EmailSignup, Navbar, Dashboard, etc.)
+- Component logic and functionality
+- Auth system and user profiles
+- Styling and layout (Tailwind classes)
+- App.jsx (legacy landing page, mostly unused now)
+
+### Pending Airtable updates
+
+**These changes MUST be made in Airtable to keep the CMS in sync:**
+
+| Field | Section | Current value | Required value | Status |
+|-------|---------|---------------|----------------|--------|
+| `registration_note` | details | "Registration opens soon!" | "Tickets now available" | ⏳ PENDING |
+
+*When you complete an Airtable update, change status to ✅ DONE and add the date.*
+
+---
+
 ## Design & Aesthetics (Frontend Expert Notes)
 
 The visual identity has shifted from the legacy "Red/Montserrat" tech conference look to a bespoke **"Sketch & Parchment"** aesthetic.
