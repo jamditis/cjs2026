@@ -170,6 +170,9 @@ function HistoryTimeline() {
       {SummitHistory.map((item, index) => {
         const isEven = index % 2 === 0
         const Icon = item.icon
+        const colorClass = getColorClass(item.color || 'teal', 'text')
+        const bgColorClass = getColorClass(item.color || 'teal', 'bg') + '/10'
+        const borderColorClass = getColorClass(item.color || 'teal', 'border')
 
         return (
           <motion.div
@@ -184,7 +187,7 @@ function HistoryTimeline() {
             <div className="hidden md:block md:w-1/2" />
 
             {/* Timeline Dot */}
-            <div className="absolute left-4 md:left-1/2 w-4 h-4 bg-brand-cream border-2 border-brand-green-dark rounded-full -translate-x-1.5 md:-translate-x-2 mt-6 z-10 shadow-[0_0_0_4px_var(--cream)]"></div>
+            <div className={`absolute left-4 md:left-1/2 w-4 h-4 bg-brand-cream border-2 ${borderColorClass} rounded-full -translate-x-1.5 md:-translate-x-2 mt-6 z-10 shadow-[0_0_0_4px_var(--cream)]`}></div>
 
             {/* Content Card */}
             <div className="ml-10 md:ml-0 md:w-1/2 md:px-8">
@@ -193,27 +196,27 @@ function HistoryTimeline() {
                   href={item.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`block card-sketch p-6 hover:border-brand-teal/50 transition-all duration-300 group ${item.year === '2026' ? 'bg-brand-teal/5 border-brand-teal' : 'hover:-translate-y-1'}`}
+                  className={`block card-sketch p-6 hover:${borderColorClass}/50 transition-all duration-300 group ${item.year === '2026' ? `bg-brand-${item.color || 'teal'}/5 ${borderColorClass}` : 'hover:-translate-y-1'}`}
                 >
                   <div className="flex items-center gap-3 mb-2">
-                    <div className="p-2 bg-brand-teal/10 rounded-full text-brand-teal">
+                    <div className={`p-2 bg-brand-${item.color || 'teal'}/10 rounded-full ${colorClass}`}>
                       <Icon className="w-4 h-4" />
                     </div>
-                    <span className={`font-accent text-2xl font-bold ${item.year === '2026' ? 'text-brand-teal' : 'text-brand-ink/40'}`}>
+                    <span className={`font-accent text-2xl font-bold ${item.year === '2026' ? colorClass : 'text-brand-ink/40'}`}>
                       {item.year}
                     </span>
-                    <ExternalLink className="w-3 h-3 text-brand-ink/20 ml-auto group-hover:text-brand-teal transition-colors" />
+                    <ExternalLink className={`w-3 h-3 text-brand-ink/20 ml-auto group-hover:${colorClass} transition-colors`} />
                   </div>
-                  <h4 className="font-heading font-bold text-lg text-brand-ink mb-1 group-hover:text-brand-teal transition-colors">{item.location}</h4>
+                  <h4 className={`font-heading font-bold text-lg text-brand-ink mb-1 group-hover:${colorClass} transition-colors`}>{item.location}</h4>
                   <p className="font-body text-brand-ink/60 text-sm italic">{item.theme}</p>
                 </a>
               ) : (
-                <div className={`card-sketch p-6 hover:border-brand-teal/50 transition-colors group ${item.year === '2026' ? 'bg-brand-teal/5 border-brand-teal' : ''}`}>
+                <div className={`card-sketch p-6 hover:${borderColorClass}/50 transition-colors group ${item.year === '2026' ? `bg-brand-${item.color || 'teal'}/5 ${borderColorClass}` : ''}`}>
                   <div className="flex items-center gap-3 mb-2">
-                    <div className="p-2 bg-brand-teal/10 rounded-full text-brand-teal">
+                    <div className={`p-2 bg-brand-${item.color || 'teal'}/10 rounded-full ${colorClass}`}>
                       <Icon className="w-4 h-4" />
                     </div>
-                    <span className={`font-accent text-2xl font-bold ${item.year === '2026' ? 'text-brand-teal' : 'text-brand-ink/40'}`}>
+                    <span className={`font-accent text-2xl font-bold ${item.year === '2026' ? colorClass : 'text-brand-ink/40'}`}>
                       {item.year}
                     </span>
                   </div>
