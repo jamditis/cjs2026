@@ -90,10 +90,31 @@ function Login() {
               <p className="font-body text-brand-ink/50 text-sm mb-4">
                 Click the link in the email to sign in. The link expires in 1 hour.
               </p>
-              <div className="bg-brand-teal/10 border-2 border-brand-teal/30 rounded-lg p-4 text-center">
-                <p className="font-body text-base text-brand-teal font-semibold mb-2">
-                  Check your spam folder!
-                </p>
+              <motion.div
+                className="bg-brand-teal/10 border-2 border-brand-teal/30 rounded-lg p-4 text-center"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{
+                  opacity: 1,
+                  scale: 1,
+                  boxShadow: [
+                    '0 0 0 0 rgba(42, 157, 143, 0)',
+                    '0 0 20px 4px rgba(42, 157, 143, 0.3)',
+                    '0 0 0 0 rgba(42, 157, 143, 0)'
+                  ]
+                }}
+                transition={{
+                  opacity: { duration: 0.3 },
+                  scale: { duration: 0.3 },
+                  boxShadow: { duration: 2, repeat: Infinity, ease: 'easeInOut' }
+                }}
+              >
+                <motion.p
+                  className="font-body text-base text-brand-teal font-semibold mb-2"
+                  animate={{ scale: [1, 1.02, 1] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                >
+                  📬 Check your spam folder!
+                </motion.p>
                 <p className="font-body text-sm text-brand-ink/60 mb-1">
                   The email comes from:
                 </p>
@@ -103,7 +124,7 @@ function Login() {
                 <p className="font-body text-sm text-brand-ink/60">
                   Subject: "Sign in to cjs2026"
                 </p>
-              </div>
+              </motion.div>
               <div className="border-t-2 border-brand-ink/10 pt-6">
                 <p className="font-body text-brand-ink/50 text-sm">
                   Didn't receive the email?{' '}
@@ -220,14 +241,28 @@ function Login() {
               </div>
 
               {/* Prominent spam warning */}
-              <div className="bg-brand-gold/15 border-2 border-brand-gold/40 rounded-lg p-4">
-                <p className="font-body text-sm text-brand-ink font-semibold mb-1">
+              <motion.div
+                className="bg-brand-gold/15 border-2 border-brand-gold/40 rounded-lg p-4"
+                animate={{
+                  boxShadow: [
+                    '0 0 0 0 rgba(234, 179, 8, 0)',
+                    '0 0 12px 2px rgba(234, 179, 8, 0.25)',
+                    '0 0 0 0 rgba(234, 179, 8, 0)'
+                  ]
+                }}
+                transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+              >
+                <motion.p
+                  className="font-body text-sm text-brand-ink font-semibold mb-1"
+                  animate={{ opacity: [1, 0.7, 1] }}
+                  transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+                >
                   ⚠️ Check your spam folder
-                </p>
+                </motion.p>
                 <p className="font-body text-xs text-brand-ink/70">
                   Sign-in emails often land in spam. Look for an email from <span className="font-mono text-brand-ink/80">noreply@cjs2026.firebaseapp.com</span>
                 </p>
-              </div>
+              </motion.div>
 
               <motion.button
                 type="submit"
