@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { Sparkles, Plane, Calendar, Mic, UtensilsCrossed, Gift, ShieldCheck, Cookie, Tag, Mail } from 'lucide-react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
+import { sponsors, hasSponsors, sponsorsByTier, tierDisplayNames } from '../content/organizationsData'
 
 // Main sponsorship packages with explicit Tailwind classes
 // (dynamic classes like `bg-${color}` don't work with Tailwind's JIT compiler)
@@ -124,13 +125,7 @@ const additionalOpportunities = [
   },
 ]
 
-// Placeholder for current sponsors - will be populated as sponsors are confirmed
-const currentSponsors = {
-  presenting: [],
-  travel: [],
-  day: [],
-  session: [],
-}
+// Sponsors are now pulled from Airtable via organizationsData.js
 
 function SponsorPackageCard({ pkg, index }) {
   const Icon = pkg.icon
@@ -177,8 +172,6 @@ function SponsorPackageCard({ pkg, index }) {
 }
 
 function Sponsors() {
-  const hasSponsors = Object.values(currentSponsors).some(arr => arr.length > 0)
-
   return (
     <>
       <Navbar />
@@ -199,12 +192,50 @@ function Sponsors() {
         </motion.div>
 
         {/* Current sponsors section */}
-        {hasSponsors ? (
+        {hasSponsors() ? (
           <section className="mb-16">
             <h2 className="font-heading font-semibold text-2xl text-brand-ink text-center mb-8">
               Thank you to our sponsors
             </h2>
-            {/* Sponsor logos will go here once confirmed */}
+            {/* Sponsor logos grouped by tier */}
+            {Object.entries(sponsorsByTier).map(([tier, tierSponsors]) => (
+              <motion.div
+                key={tier}
+                className="mb-10 last:mb-0"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                {/* Tier label */}
+                <p className="text-brand-ink/50 text-sm uppercase tracking-wider mb-4 text-center font-body">
+                  {tierDisplayNames[tier] || tier}
+                </p>
+                {/* Sponsor logos for this tier */}
+                <div className="flex flex-wrap items-center justify-center gap-8 md:gap-12">
+                  {tierSponsors.map((sponsor) => (
+                    <a
+                      key={sponsor.id}
+                      href={sponsor.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:opacity-70 transition-opacity"
+                      title={sponsor.name}
+                    >
+                      <img
+                        src={sponsor.logoUrl || sponsor.localLogoPath}
+                        alt={sponsor.name}
+                        className="h-20 md:h-24 max-w-[220px] object-contain"
+                        onError={(e) => {
+                          if (e.target.src !== sponsor.localLogoPath) {
+                            e.target.src = sponsor.localLogoPath
+                          }
+                        }}
+                      />
+                    </a>
+                  ))}
+                </div>
+              </motion.div>
+            ))}
           </section>
         ) : (
           <motion.div
