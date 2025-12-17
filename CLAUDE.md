@@ -105,7 +105,7 @@ Before completing any task that touches user-visible text or content:
 
 **Table:** Organizations (in same base: appL8Sn87xUotm4jF)
 
-**Purpose:** Organizations with the "Sponsor" checkbox checked will display in the "Supported by" section on the homepage.
+**Purpose:** Organizations with the "Sponsor" checkbox checked will display as sponsors on both the homepage ("Supported by" section) and the Sponsors page ("Thank you to our sponsors" section).
 
 **Current fields:**
 
@@ -125,9 +125,10 @@ Before completing any task that touches user-visible text or content:
 1. Add organization to the "Organizations" table in Airtable
 2. Upload logo as an attachment
 3. Check the "Sponsor" checkbox
-4. Optionally set tier and order for sorting
-5. Deploy triggers `npm run generate-organizations` which updates `src/content/organizationsData.js`
-6. Homepage dynamically displays all sponsors with checked "Sponsor" field
+4. Set "Sponsor tier" (e.g., "Presenting sponsor", "Lead sponsor", "Supporting sponsor")
+5. Optionally set "Sponsor order" for sorting within tier
+6. Deploy triggers `npm run generate-organizations` which updates `src/content/organizationsData.js`
+7. Sponsors display on both Homepage and Sponsors page, grouped by tier with tier labels
 
 **NPM scripts:**
 ```bash
@@ -173,16 +174,27 @@ The visual identity has shifted from the legacy "Red/Montserrat" tech conference
 
 ## Content files
 
-- `src/content/timeline-data.json` - Data for the history timeline.
-- `src/content/` - Markdown or JSON content for sections.
+**Auto-generated from Airtable (DO NOT EDIT):**
+- `src/content/siteContent.js` - Homepage content, stats, timeline
+- `src/content/scheduleData.js` - Schedule sessions
+- `src/content/organizationsData.js` - Sponsors data
+
+**Static:**
+- `src/content/timeline-data.json` - Legacy timeline data (now in Airtable)
 
 ## Development
 
 ```bash
-npm install
-npm run dev
-npm run build
-npm run deploy
+npm install                    # Install dependencies
+npm run dev                    # Start dev server
+npm run build                  # Build for production
+npm run deploy                 # Build and deploy to Firebase
+
+# Content generation (pulls from Airtable)
+npm run generate-content       # Site content
+npm run generate-schedule      # Schedule sessions
+npm run generate-organizations # Sponsors
+npm run generate-all           # All three
 ```
 
 ## Brand guidelines
@@ -195,7 +207,7 @@ Refers to `CJS_WEB_STYLE_GUIDE.md` for the single source of truth.
 
 ---
 
-## Project status (updated 2025-12-09)
+## Project status (updated 2025-12-17)
 
 ### Completed
 
@@ -212,9 +224,14 @@ Refers to `CJS_WEB_STYLE_GUIDE.md` for the single source of truth.
 - Save-the-date landing page live
 - Countdown timer to June 8, 2026
 - 10th anniversary timeline with all past summit locations
-- Sticky navbar with scroll effect
+- Sticky navbar with scroll effect (consistent links on all pages)
 - OG image configured for social sharing
 - Mobile responsive
+- Dynamic sponsor display on Homepage and Sponsors page
+- User authentication with magic links
+- Attendee dashboard with profile wizard
+- Personal schedule builder
+- User-facing ticket reset
 
 **Content:**
 - Announcement materials drafted in `planning/announcement-materials.md`
@@ -236,15 +253,31 @@ Refers to `CJS_WEB_STYLE_GUIDE.md` for the single source of truth.
 | `src/index.css` | Custom CSS and Tailwind utilities |
 | `src/firebase.js` | Firebase SDK config |
 | `functions/index.js` | Cloud Functions code |
-| `planning/announcement-materials.md` | Launch announcement copy |
+| `scripts/generate-content.cjs` | Pull site content from Airtable |
+| `scripts/generate-schedule.cjs` | Pull schedule from Airtable |
+| `scripts/generate-organizations.cjs` | Pull sponsors from Airtable |
+| `src/content/siteContent.js` | Auto-generated site content (DO NOT EDIT) |
+| `src/content/scheduleData.js` | Auto-generated schedule data (DO NOT EDIT) |
+| `src/content/organizationsData.js` | Auto-generated sponsor data (DO NOT EDIT) |
+| `src/pages/Home.jsx` | Homepage with dynamic content |
+| `src/pages/Sponsors.jsx` | Sponsors page with dynamic sponsors |
+| `src/pages/Dashboard.jsx` | User dashboard |
+| `src/components/Navbar.jsx` | Navigation (consistent across all pages) |
 | `CJS_WEB_STYLE_GUIDE.md` | Design system reference |
 | `GEMINI.md` | Notes for Gemini (frontend) |
 
 ### Airtable integration
 
-- Base: "2026 CJS" (appL8Sn87xUotm4jF)
-- Table: "Email signups"
-- Fields: Email, Source, Signed up
+**Base:** 2026 CJS (appL8Sn87xUotm4jF)
+
+**Tables:**
+| Table | Purpose | Script |
+|-------|---------|--------|
+| Site Content | Homepage text, stats, timeline | `generate-content.cjs` |
+| Schedule | Session data for schedule page | `generate-schedule.cjs` |
+| Organizations | Sponsors (checkbox-based) | `generate-organizations.cjs` |
+| Email signups | Newsletter signups | Cloud Function |
+| Attendees | User profiles (sync from Firestore) | Cloud Function |
 
 ### Cloud Function endpoints
 
@@ -687,3 +720,83 @@ The deploy workflow now runs `npm run generate-all` which generates both site co
 - Firebase Storage rules need to be deployed (see above for rule config)
 - Deploy profile sync Cloud Functions after Attendees table is set up
 - Firestore security rules for schedule sharing (allow read based on scheduleVisibility)
+
+---
+
+## Updates (2025-12-17)
+
+### Organizations CMS integration for sponsors
+
+Implemented full CMS-driven sponsor display system:
+
+**What was built:**
+- `scripts/generate-organizations.cjs` - Pulls organizations from Airtable, filters by "Sponsor" checkbox
+- `src/content/organizationsData.js` - Auto-generated sponsor data (DO NOT EDIT)
+- Homepage "Supported by" section now uses dynamic data
+- Sponsors page "Thank you to our sponsors" section now uses dynamic data
+- Sponsors grouped by tier with tier labels (e.g., "Presenting sponsor")
+
+**Airtable setup:**
+- Table: Organizations (in base appL8Sn87xUotm4jF)
+- Key fields: Name, Logo (attachment), Website, Sponsor (checkbox), Sponsor tier (single select)
+- Current sponsor: Knight Foundation (Presenting sponsor)
+
+**Files changed:**
+| File | Changes |
+|------|---------|
+| `scripts/generate-organizations.cjs` | New - pulls sponsors from Airtable |
+| `src/content/organizationsData.js` | New - auto-generated sponsor data |
+| `src/pages/Home.jsx` | Dynamic sponsor display with tier grouping |
+| `src/pages/Sponsors.jsx` | Dynamic sponsor display at top of page |
+| `package.json` | Added generate-organizations script |
+
+### Navbar consistency fix
+
+Fixed navigation links disappearing on non-homepage routes:
+
+**Before:** History and Partners links only showed on homepage
+**After:** All nav links show on all pages, using `/#history` and `/#partners` format
+
+**Files changed:**
+- `src/components/Navbar.jsx` - Removed `isHome` conditional, changed to `homeSectionLinks` with hash URLs
+
+### User-facing ticket reset
+
+Added ability for users to reset their ticket purchase status:
+
+**Before:** Only admins could reset ticket status
+**After:** Users see "Not correct? Reset status" link under "Tickets purchased" confirmation
+
+**Files changed:**
+- `src/pages/Dashboard.jsx` - Added reset button in ticket confirmation card
+
+### Key files summary
+
+| File | Purpose |
+|------|---------|
+| `scripts/generate-organizations.cjs` | Pull sponsors from Airtable Organizations table |
+| `src/content/organizationsData.js` | Auto-generated sponsor data (DO NOT EDIT) |
+| `src/pages/Home.jsx` | Homepage with dynamic sponsors |
+| `src/pages/Sponsors.jsx` | Sponsors page with dynamic sponsors |
+| `src/components/Navbar.jsx` | Consistent navigation across all pages |
+| `src/pages/Dashboard.jsx` | User dashboard with ticket reset |
+
+### NPM scripts (updated)
+
+```bash
+npm run generate-content       # Pull site content from Airtable
+npm run generate-schedule      # Pull schedule from Airtable
+npm run generate-organizations # Pull sponsors from Airtable
+npm run generate-all           # Run all three generators
+npm run dev                    # Start dev server
+npm run build                  # Build for production
+npm run deploy                 # Build and deploy to Firebase
+```
+
+### Current sponsors
+
+| Organization | Tier | Status |
+|--------------|------|--------|
+| Knight Foundation | Presenting sponsor | ✅ Live |
+
+*To add sponsors: Go to Airtable Organizations table → Check "Sponsor" checkbox → Set tier → Deploy*
