@@ -7,7 +7,6 @@ function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const location = useLocation()
-  const isHome = location.pathname === '/'
   const { currentUser } = useAuth()
 
   useEffect(() => {
@@ -23,9 +22,10 @@ function Navbar() {
     { name: 'Contact', path: '/contact' },
   ]
 
-  const homeLinks = [
-    { name: 'History', href: '#history' },
-    { name: 'Partners', href: '#partners' },
+  // Home section links - use hash links that work from any page
+  const homeSectionLinks = [
+    { name: 'History', href: '/#history' },
+    { name: 'Partners', href: '/#partners' },
   ]
 
   return (
@@ -40,7 +40,7 @@ function Navbar() {
 
         {/* Desktop navigation */}
         <div className="hidden md:flex items-center gap-8">
-          {isHome && homeLinks.map((item) => (
+          {homeSectionLinks.map((item) => (
             <a
               key={item.name}
               href={item.href}
@@ -99,7 +99,7 @@ function Navbar() {
       {mobileMenuOpen && (
         <div className="md:hidden bg-paper border-t border-brand-ink/10 px-6 py-4">
           <div className="flex flex-col gap-4">
-            {isHome && homeLinks.map((item) => (
+            {homeSectionLinks.map((item) => (
               <a
                 key={item.name}
                 href={item.href}

@@ -83,6 +83,33 @@ function getLogoUrl(fields) {
   return null;
 }
 
+function getSponsorTier(fields) {
+  // Try different field name variations
+  const tierField = fields['Sponsor tier'] || fields.sponsor_tier || fields.SponsorTier || fields.Tier || fields.tier;
+
+  if (!tierField) return 'supporting';
+
+  // If it's an array (linked record or multi-select), get first value
+  if (Array.isArray(tierField)) {
+    const first = tierField[0];
+    if (typeof first === 'string') return first.toLowerCase();
+    if (first?.name) return first.name.toLowerCase();
+    return 'supporting';
+  }
+
+  // If it's a string, return it lowercased
+  if (typeof tierField === 'string') {
+    return tierField.toLowerCase();
+  }
+
+  // If it's an object with a name property
+  if (tierField?.name) {
+    return tierField.name.toLowerCase();
+  }
+
+  return 'supporting';
+}
+
 function processRecords(records) {
   const organizations = records.map((record) => {
     const fields = record.fields;
@@ -106,7 +133,7 @@ function processRecords(records) {
       localLogoPath: `/sponsor-logos/${slug}.png`,
       // Sponsor fields - check various field name formats
       isSponsor: fields.Sponsor === true || fields.sponsor === true || fields['Sponsor?'] === true || fields.is_sponsor === true,
-      sponsorTier: fields['Sponsor tier'] || fields.sponsor_tier || fields.SponsorTier || fields.Tier || fields.tier || 'supporting',
+      sponsorTier: getSponsorTier(fields),
       sponsorOrder: fields['Sponsor order'] || fields.sponsor_order || fields.SponsorOrder || fields.Order || fields.order || 999,
       // Other org info
       description: fields.Description || fields.description || '',

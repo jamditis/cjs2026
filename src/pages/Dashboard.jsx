@@ -1153,6 +1153,16 @@ function Dashboard() {
                       <p className="font-body text-brand-ink/60">
                         See you in Chapel Hill!
                       </p>
+                      <button
+                        onClick={async () => {
+                          if (window.confirm('Reset your ticket status? This will show the ticket purchase options again.')) {
+                            await updateUserProfile(currentUser.uid, { ticketsPurchased: false })
+                          }
+                        }}
+                        className="mt-2 font-body text-xs text-brand-ink/40 hover:text-brand-ink/60 underline"
+                      >
+                        Not correct? Reset status
+                      </button>
                     </div>
                   </div>
                 </motion.div>
