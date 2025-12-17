@@ -51,7 +51,9 @@ Before completing any task that touches user-visible text or content:
 - Stats (summits count, cities, attendees, mission)
 - Info cards content and colors
 - Footer content
-- Any field accessed via `getContent()`, `getContentMeta()`, `timeline`, or `stats`
+- **Sponsors section** (Organizations with "Sponsor" checkbox checked)
+- Schedule sessions (Schedule table)
+- Any field accessed via `getContent()`, `getContentMeta()`, `timeline`, `stats`, or `sponsors`
 
 ### What is NOT controlled by Airtable CMS
 
@@ -98,6 +100,40 @@ Before completing any task that touches user-visible text or content:
 | `color` | Single select | teal, cardinal, green-dark | No |
 
 **Note:** The generate-schedule.cjs script will work with whatever fields exist, using defaults for missing fields.
+
+### Organizations table (for Sponsors display)
+
+**Table:** Organizations (in same base: appL8Sn87xUotm4jF)
+
+**Purpose:** Organizations with the "Sponsor" checkbox checked will display in the "Supported by" section on the homepage.
+
+**Current fields:**
+
+| Field | Type | Description | Required |
+|-------|------|-------------|----------|
+| `Name` | Single line text | Organization name | Yes |
+| `Logo` | Attachment | Organization logo image | Yes (for sponsors) |
+| `Website` | URL | Organization website | No |
+| `Sponsor` | Checkbox | If checked, displays as sponsor on homepage | Yes |
+| `Sponsor tier` | Single select | presenting, lead, supporting, partner, media, community | No |
+| `Sponsor order` | Number | Display order within tier | No |
+| `Description` | Long text | Organization description | No |
+| `Type` | Single select | Organization type | No |
+| `Visible` | Checkbox | Show organization? | No (defaults to true) |
+
+**How it works:**
+1. Add organization to the "Organizations" table in Airtable
+2. Upload logo as an attachment
+3. Check the "Sponsor" checkbox
+4. Optionally set tier and order for sorting
+5. Deploy triggers `npm run generate-organizations` which updates `src/content/organizationsData.js`
+6. Homepage dynamically displays all sponsors with checked "Sponsor" field
+
+**NPM scripts:**
+```bash
+npm run generate-organizations  # Pull sponsors from Airtable
+npm run generate-all            # Generate content, schedule, AND organizations
+```
 
 ---
 

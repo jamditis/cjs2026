@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Mail, AlertCircle, CheckCircle, Send, Clock } from 'lucide-react'
+import { Mail, AlertCircle, CheckCircle, Send, Clock, Timer } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 
 const LAST_SIGNIN_KEY = 'cjs2026_last_signin_method'
+const MAGIC_LINK_COOLDOWN_KEY = 'cjs2026_magic_link_cooldown'
+const COOLDOWN_SECONDS = 60
 
 function Login() {
   const [email, setEmail] = useState('')
@@ -14,25 +16,67 @@ function Login() {
   const [loading, setLoading] = useState(false)
   const [emailSent, setEmailSent] = useState(false)
   const [lastMethod, setLastMethod] = useState(null)
+  const [cooldownRemaining, setCooldownRemaining] = useState(0)
 
   const { sendMagicLink, loginWithGoogle } = useAuth()
 
-  // Load last sign-in method from localStorage
+  // Calculate remaining cooldown time
+  const calculateCooldown = useCallback(() => {
+    const lastSent = localStorage.getItem(MAGIC_LINK_COOLDOWN_KEY)
+    if (lastSent) {
+      const elapsed = Math.floor((Date.now() - parseInt(lastSent, 10)) / 1000)
+      const remaining = Math.max(0, COOLDOWN_SECONDS - elapsed)
+      return remaining
+    }
+    return 0
+  }, [])
+
+  // Load last sign-in method and check cooldown
   useEffect(() => {
     const saved = localStorage.getItem(LAST_SIGNIN_KEY)
     if (saved) {
       setLastMethod(saved)
     }
-  }, [])
+
+    // Check initial cooldown
+    setCooldownRemaining(calculateCooldown())
+  }, [calculateCooldown])
+
+  // Cooldown countdown timer
+  useEffect(() => {
+    if (cooldownRemaining <= 0) return
+
+    const timer = setInterval(() => {
+      const remaining = calculateCooldown()
+      setCooldownRemaining(remaining)
+      if (remaining <= 0) {
+        clearInterval(timer)
+      }
+    }, 1000)
+
+    return () => clearInterval(timer)
+  }, [cooldownRemaining, calculateCooldown])
 
   async function handleSubmit(e) {
     e.preventDefault()
     setError('')
+
+    // Check cooldown
+    const remaining = calculateCooldown()
+    if (remaining > 0) {
+      setError(`Please wait ${remaining} seconds before requesting another link.`)
+      setCooldownRemaining(remaining)
+      return
+    }
+
     setLoading(true)
 
     try {
       await sendMagicLink(email)
       localStorage.setItem(LAST_SIGNIN_KEY, 'email')
+      // Set cooldown timestamp
+      localStorage.setItem(MAGIC_LINK_COOLDOWN_KEY, Date.now().toString())
+      setCooldownRemaining(COOLDOWN_SECONDS)
       setEmailSent(true)
     } catch (err) {
       console.error('Login error:', err)
@@ -128,12 +172,19 @@ function Login() {
               <div className="border-t-2 border-brand-ink/10 pt-6">
                 <p className="font-body text-brand-ink/50 text-sm">
                   Didn't receive the email?{' '}
-                  <button
-                    onClick={() => setEmailSent(false)}
-                    className="text-brand-teal hover:underline"
-                  >
-                    Try again
-                  </button>
+                  {cooldownRemaining > 0 ? (
+                    <span className="text-brand-ink/40 inline-flex items-center gap-1">
+                      <Timer className="w-3 h-3 inline" />
+                      Wait {cooldownRemaining}s to resend
+                    </span>
+                  ) : (
+                    <button
+                      onClick={() => setEmailSent(false)}
+                      className="text-brand-teal hover:underline"
+                    >
+                      Try again
+                    </button>
+                  )}
                 </p>
               </div>
             </div>
@@ -266,13 +317,22 @@ function Login() {
 
               <motion.button
                 type="submit"
-                disabled={loading}
-                className="w-full py-3 px-4 rounded-lg border-2 border-brand-ink/20 bg-white font-body text-brand-ink hover:border-brand-teal/50 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+                disabled={loading || cooldownRemaining > 0}
+                className="w-full py-3 px-4 rounded-lg border-2 border-brand-ink/20 bg-white font-body text-brand-ink hover:border-brand-teal/50 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                whileHover={cooldownRemaining <= 0 ? { scale: 1.02 } : {}}
+                whileTap={cooldownRemaining <= 0 ? { scale: 0.98 } : {}}
               >
-                <Send className="w-4 h-4" />
-                {loading ? 'Sending link...' : 'Send sign-in link'}
+                {cooldownRemaining > 0 ? (
+                  <>
+                    <Timer className="w-4 h-4" />
+                    Wait {cooldownRemaining}s
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-4 h-4" />
+                    {loading ? 'Sending link...' : 'Send sign-in link'}
+                  </>
+                )}
               </motion.button>
             </form>
           </div>

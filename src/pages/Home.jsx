@@ -21,6 +21,7 @@ import EmailSignup from '../components/EmailSignup'
 
 // Import static content from Airtable
 import { getContent, getContentMeta, getColorClass, timeline, stats } from '../content/siteContent'
+import { sponsors, hasSponsors, sponsorsByTier, tierDisplayNames } from '../content/organizationsData'
 
 // ============================================
 // Data - Now pulled from Airtable via siteContent.js
@@ -522,6 +523,57 @@ function Home() {
           </motion.div>
         </div>
       </section>
+
+      {/* ============================================
+          Sponsors Section - Dynamic from Airtable Organizations
+          ============================================ */}
+      {hasSponsors() && (
+        <section id="sponsors" className="py-12 px-6 bg-parchment">
+          <div className="max-w-4xl mx-auto text-center">
+            <p className="text-brand-ink/40 text-sm mb-6 font-body">Supported by</p>
+            {/* Group sponsors by tier */}
+            {Object.entries(sponsorsByTier).map(([tier, tierSponsors]) => (
+              <motion.div
+                key={tier}
+                className="mb-8 last:mb-0"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+              >
+                {/* Tier label */}
+                <p className="text-brand-ink/50 text-xs uppercase tracking-wider mb-4 font-body">
+                  {tierDisplayNames[tier] || tier}
+                </p>
+                {/* Sponsor logos for this tier */}
+                <div className="flex flex-wrap items-center justify-center gap-8 md:gap-12">
+                  {tierSponsors.map((sponsor) => (
+                    <a
+                      key={sponsor.id}
+                      href={sponsor.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:opacity-70 transition-opacity"
+                      title={sponsor.name}
+                    >
+                      <img
+                        src={sponsor.logoUrl || sponsor.localLogoPath}
+                        alt={sponsor.name}
+                        className="h-16 md:h-20 max-w-[200px] object-contain"
+                        onError={(e) => {
+                          // Fallback to local logo path if Airtable URL fails
+                          if (e.target.src !== sponsor.localLogoPath) {
+                            e.target.src = sponsor.localLogoPath
+                          }
+                        }}
+                      />
+                    </a>
+                  ))}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Sketch divider */}
       <div className="divider-sketch" />

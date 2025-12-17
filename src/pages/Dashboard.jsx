@@ -796,7 +796,7 @@ function Dashboard() {
 
                     <Step>
                       <h2>What's your name?</h2>
-                      <p>This will appear on your attendee badge.</p>
+                      <p>This will appear on your attendee profile.</p>
                       <label>Full name *</label>
                       <input
                         type="text"
@@ -1251,8 +1251,8 @@ function Dashboard() {
                       <Clock className="w-5 h-5 text-brand-teal" />
                     </div>
                     <div>
-                      <p className="font-heading font-semibold text-brand-ink">8:00 AM – 7:00 PM</p>
-                      <p className="font-body text-sm text-brand-ink/60">Full schedule coming soon</p>
+                      <p className="font-heading font-semibold text-brand-ink">June 8-9, 2026</p>
+                      <p className="font-body text-sm text-brand-ink/60">See schedule for session times</p>
                     </div>
                   </div>
                 </div>
