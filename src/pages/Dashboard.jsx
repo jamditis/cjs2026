@@ -39,9 +39,9 @@ import { checkProfanity, validateNoProfanity } from '../utils/profanityFilter'
 
 // Admin email addresses (must match Cloud Functions)
 const ADMIN_EMAILS = [
-  "amditisj@montclair.edu",
   "jamditis@gmail.com",
-  "murrays@montclair.edu",
+  "murrayst@montclair.edu",
+  "etiennec@montclair.edu",
 ]
 
 // ============================================

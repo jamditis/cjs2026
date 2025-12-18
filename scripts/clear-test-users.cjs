@@ -28,9 +28,9 @@ const fs = require('fs')
 
 // Admin emails that should NOT be deleted
 const ADMIN_EMAILS = [
-  'amditisj@montclair.edu',
   'jamditis@gmail.com',
-  'murrays@montclair.edu'
+  'murrayst@montclair.edu',
+  'etiennec@montclair.edu'
 ]
 
 function showInstructions() {

@@ -49,9 +49,9 @@ async function verifyAuthToken(authHeader) {
 // Admin emails - fallback for users who should have admin access
 // This must match the ADMIN_EMAILS in Dashboard.jsx
 const ADMIN_EMAILS = [
-  "amditisj@montclair.edu",
   "jamditis@gmail.com",
-  "murrays@montclair.edu",
+  "murrayst@montclair.edu",
+  "etiennec@montclair.edu",
 ];
 
 /**
