@@ -207,17 +207,18 @@ Refers to `CJS_WEB_STYLE_GUIDE.md` for the single source of truth.
 
 ---
 
-## Project status (updated 2025-12-17)
+## Project status (updated 2025-12-18)
 
 ### Completed
 
 **Infrastructure:**
-- Firebase Hosting deployed at https://cjs2026.web.app
-- Firebase Firestore enabled with security rules
-- Firebase Cloud Functions deployed (saveEmailSignup, health)
+- Firebase Hosting deployed at https://cjs2026.web.app and https://summit.collaborativejournalism.org
+- Firebase Firestore enabled with comprehensive security rules
+- Firebase Cloud Functions deployed (saveEmailSignup, health, syncProfileToAirtable, exportAttendees, getSystemErrors, etc.)
 - Firebase Analytics enabled
+- Firebase Storage configured for profile photos
 - GitHub repo: https://github.com/jamditis/cjs2026
-- Redirect configured: collaborativejournalism.org/cjs2026 → cjs2026.web.app
+- GitHub Actions workflow for automated deploys from Airtable
 - Secure email signup implemented (using Cloud Function)
 
 **Frontend:**
@@ -228,10 +229,20 @@ Refers to `CJS_WEB_STYLE_GUIDE.md` for the single source of truth.
 - OG image configured for social sharing
 - Mobile responsive
 - Dynamic sponsor display on Homepage and Sponsors page
-- User authentication with magic links
+- User authentication with magic links + Google OAuth (cross-browser compatible)
 - Attendee dashboard with profile wizard
-- Personal schedule builder
+- Personal schedule builder with sharing options
 - User-facing ticket reset
+
+**Admin panel:**
+- Full admin command center at `/admin`
+- Attendee management with search, filter, sort
+- Edit/delete user profiles
+- Admin badge indicators
+- System error tracking
+- Activity logging
+- Announcement banner management
+- CSV export and Airtable sync
 
 **Content:**
 - Announcement materials drafted in `planning/announcement-materials.md`
@@ -244,6 +255,7 @@ Refers to `CJS_WEB_STYLE_GUIDE.md` for the single source of truth.
 ### Pending/optional
 
 - Additional frontend polish (Gemini working on this)
+- Firebase Storage rules deployment (config ready, needs deploy)
 
 ### Key files
 
@@ -800,3 +812,125 @@ npm run deploy                 # Build and deploy to Firebase
 | Knight Foundation | Presenting sponsor | ✅ Live |
 
 *To add sponsors: Go to Airtable Organizations table → Check "Sponsor" checkbox → Set tier → Deploy*
+
+---
+
+## Updates (2025-12-18)
+
+### Admin panel enhancements
+
+**Edit/delete users from admin dashboard:**
+- Admins and super admins can now edit user profiles directly from the Admin panel
+- Edit modal allows updating: name, email, organization, job title, registration status, system role, social links
+- Delete confirmation modal with warning
+- Super admins can change system roles; regular admins cannot
+
+**Admin badges in attendees table:**
+- Shield icon badges next to user names identify admins
+- Amber badge with "Super" label for super_admins
+- Teal badge with "Admin" label for admins
+
+### Firestore security rules updates
+
+Updated `firestore.rules` to support admin operations:
+
+```javascript
+match /users/{userId} {
+  // Users can read/write their own profile
+  allow read, write: if request.auth != null && request.auth.uid == userId;
+  // Admins can read all profiles
+  allow read: if isAdmin() || isSuperAdmin();
+  // Admins can update (except role field)
+  allow update: if isAdmin() && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role']);
+  // Super admins can update any field including role
+  allow update: if isSuperAdmin();
+  // Admins and super admins can delete users
+  allow delete: if isAdmin() || isSuperAdmin();
+}
+```
+
+### Access control for unpaid users
+
+Dashboard now gates full access based on registration status:
+- **Full access:** Admins, super_admins, users with `registrationStatus: 'registered'` or `'confirmed'`
+- **Gated view:** Pending users see a message about purchasing tickets or requesting admin approval
+- Includes "Notify me when tickets are available" option
+
+### Authentication improvements
+
+**Fixed Firestore permission errors:**
+- Removed email-based duplicate user query that caused permission errors for non-admin users
+- Firebase Auth's "One account per email" setting handles duplicate prevention instead
+- Added try-catch error handling to `createUserProfile()`, `getUserProfile()`, `loginWithGoogle()`
+
+**Cross-browser Google OAuth with redirect fallback:**
+- Mobile and Safari browsers now use redirect-based auth (more reliable)
+- Desktop browsers try popup first, automatically fall back to redirect if blocked
+- Added loading state "Completing sign-in..." for redirect auth in progress
+- No longer requires users to enable popups or use specific browsers
+
+**Key auth files updated:**
+- `src/contexts/AuthContext.jsx` - Redirect-based auth, error handling
+- `src/pages/Login.jsx` - Redirect state handling, improved error messages
+
+### OG image fix
+
+Replaced incorrect OG social share image:
+- Copied correct 2.5MB og-image.png to public folder
+- Same image now used across all pages
+
+### Admin email management
+
+**Removed hardcoded admin email:**
+- Denise Shannon's email removed from `ADMIN_EMAILS` arrays
+- Admin access should be granted via Firestore `role` field, not hardcoded emails
+- Proper flow: User signs in → Admin edits their profile → Sets role to `admin` or `super_admin`
+
+### Files changed
+
+| File | Changes |
+|------|---------|
+| `src/pages/Admin.jsx` | Edit/delete modals, admin badges |
+| `src/pages/Dashboard.jsx` | Access control gating, ticket reset |
+| `src/pages/AdminOld.jsx` | Removed hardcoded admin email |
+| `src/contexts/AuthContext.jsx` | Redirect auth, error handling |
+| `src/pages/Login.jsx` | Redirect state, improved errors |
+| `firestore.rules` | Admin update/delete permissions |
+| `public/og-image.png` | Replaced with correct image |
+
+### Current admin emails (hardcoded bootstrap only)
+
+| Email | Purpose |
+|-------|---------|
+| amditisj@montclair.edu | Joe (super admin) |
+| jamditis@gmail.com | Joe (super admin) |
+| murrays@montclair.edu | Stefanie |
+
+*New admins should be added via Firestore role field, not hardcoded.*
+
+---
+
+## Quick reference
+
+### Adding a new admin
+
+1. User signs in to the site (Google or magic link)
+2. Go to Admin Panel → Attendees
+3. Find the user and click Edit
+4. Set "System role" to `admin` or `super_admin`
+5. Save changes
+
+### Deploying changes
+
+```bash
+npm run build && npx firebase deploy --only hosting  # Frontend only
+firebase deploy --only functions                      # Cloud Functions only
+firebase deploy --only firestore:rules                # Security rules only
+npm run deploy                                        # Full deploy (build + hosting)
+```
+
+### Troubleshooting auth issues
+
+1. **Google sign-in fails:** Now auto-falls back to redirect; should work on all browsers
+2. **Magic link shows blank page:** Link was already used or expired; request a new one
+3. **Permission denied errors:** Check Firestore rules are deployed; user may not have correct role

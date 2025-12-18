@@ -1,6 +1,16 @@
 name: Deploy to Firebase
 
 on:
+  # Trigger on push to master branch
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - '**.md'
+      - 'branding/**'
+      - 'planning/**'
+      - 'history/**'
+
   # Manual trigger from GitHub Actions UI
   workflow_dispatch:
 

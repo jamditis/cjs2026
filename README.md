@@ -4,7 +4,7 @@
 
 The 10th anniversary edition of the Collaborative Journalism Summit.
 
-🌐 **Website**: [collaborativejournalism.org/cjs2026](https://collaborativejournalism.org/cjs2026)
+🌐 **Live site**: [summit.collaborativejournalism.org](https://summit.collaborativejournalism.org)
 
 ---
 
@@ -12,7 +12,7 @@ The 10th anniversary edition of the Collaborative Journalism Summit.
 
 The Collaborative Journalism Summit is the premier annual gathering for journalists exploring how to work together in the public interest. Since 2017, we've brought together practitioners, funders, and innovators to share knowledge, build connections, and advance the field.
 
-CJS 2026 marks a milestone: **10 years** of collaborative journalism.
+CJS2026 marks a milestone: **10 years** of collaborative journalism.
 
 ### Event details
 
@@ -45,20 +45,24 @@ CJS 2026 marks a milestone: **10 years** of collaborative journalism.
 
 ### Past locations
 
-- 2017–2018: Montclair, NJ
-- 2019: Philadelphia, PA
-- 2020–2021: Virtual
-- 2022: Chicago, IL
-- 2023: Washington, D.C.
-- 2024: Detroit, MI
-- 2025: Denver, CO
-- 2026: Chapel Hill, NC ← **You are here**
+| Year | Location | Notes |
+|------|----------|-------|
+| 2017 | Montclair, NJ | Inaugural summit 🎓 |
+| 2018 | Montclair, NJ | |
+| 2019 | Philadelphia, PA | |
+| 2020 | Virtual | Pandemic year 🏠 |
+| 2021 | Virtual | Pandemic year 💻 |
+| 2022 | Chicago, IL | |
+| 2023 | Washington, D.C. | |
+| 2024 | Detroit, MI | |
+| 2025 | Denver, CO | |
+| 2026 | Chapel Hill, NC | **10th anniversary** ← You are here |
 
 ---
 
 ## Registration
 
-Registration opens soon. [Sign up for updates](https://collaborativejournalism.org/cjs2026).
+Registration opens soon. [Sign up for updates](https://summit.collaborativejournalism.org).
 
 **Scholarship tickets** are available to ensure cost is not a barrier to participation. Email summit@collaborativejournalism.org to request one.
 
@@ -81,7 +85,23 @@ Registration opens soon. [Sign up for updates](https://collaborativejournalism.o
 
 ## Development
 
-This is the official website for CJS 2026.
+This is the official website for CJS2026.
+
+### Tech stack
+
+| Technology | Purpose |
+|------------|---------|
+| React 18 | UI framework |
+| Vite | Build tool |
+| Tailwind CSS | Styling |
+| Framer Motion | Animations |
+| Firebase Hosting | Static hosting |
+| Firebase Auth | User authentication (magic links + Google OAuth) |
+| Firebase Firestore | User profiles and data |
+| Firebase Cloud Functions | Secure API endpoints |
+| Firebase Storage | Profile photos |
+| Airtable | Headless CMS for content |
+| GitHub Actions | Automated deploys |
 
 ### Quick start
 
@@ -99,12 +119,69 @@ npm run build
 npm run deploy
 ```
 
-### Tech stack
+### Content management
 
-- React 18
-- Vite
-- Tailwind CSS
-- Firebase Hosting
+The site uses Airtable as a headless CMS. Content editors can update the website directly from Airtable.
+
+```bash
+# Pull fresh content from Airtable
+npm run generate-content       # Site content
+npm run generate-schedule      # Schedule sessions
+npm run generate-organizations # Sponsors
+npm run generate-all           # All three
+
+# Deploy with fresh content
+npm run deploy
+```
+
+### Project structure
+
+```
+cjs2026/
+├── src/
+│   ├── components/     # React components
+│   ├── contexts/       # Auth context
+│   ├── content/        # Auto-generated content (DO NOT EDIT)
+│   ├── pages/          # Page components
+│   └── utils/          # Utility functions
+├── functions/          # Firebase Cloud Functions
+├── scripts/            # Airtable content generators
+├── public/             # Static assets
+├── branding/           # Design source files
+├── planning/           # Meeting notes and context
+└── history/            # Archives of past summits
+```
+
+### Key features
+
+- **Attendee dashboard** - Profile wizard, badge system, personal schedule builder
+- **Admin panel** - User management, system monitoring, announcement banners
+- **Cross-browser auth** - Works on all browsers with popup/redirect fallback
+- **CMS integration** - Airtable-powered content with one-click deploys
+
+---
+
+## Environment variables
+
+Copy `.env.example` to `.env` and fill in values:
+
+```bash
+VITE_FIREBASE_API_KEY=
+VITE_FIREBASE_AUTH_DOMAIN=
+VITE_FIREBASE_PROJECT_ID=
+VITE_FIREBASE_STORAGE_BUCKET=
+VITE_FIREBASE_MESSAGING_SENDER_ID=
+VITE_FIREBASE_APP_ID=
+AIRTABLE_API_KEY=
+```
+
+---
+
+## Documentation
+
+- **[CLAUDE.md](./CLAUDE.md)** - Full development documentation
+- **[CJS_WEB_STYLE_GUIDE.md](./CJS_WEB_STYLE_GUIDE.md)** - Design system reference
+- **[GEMINI.md](./GEMINI.md)** - Notes for Gemini (frontend polish)
 
 ---
 

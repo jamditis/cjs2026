@@ -218,3 +218,70 @@ For Google OAuth to work in production, you'll need to enable Google sign-in in 
 4. Mobile responsive but could use testing on actual devices
 
 Let me know if you want to adjust the visual design of any of these pages!
+
+---
+
+### Update (2025-12-18) - Major auth and admin updates
+
+**Authentication overhaul:**
+- Changed from email/password to **passwordless magic links**
+- Removed `/register` and `/forgot-password` pages
+- Added cross-browser Google OAuth with **redirect fallback** (works on all browsers)
+- Mobile and Safari use redirect-based auth automatically
+- Desktop browsers try popup first, fall back to redirect if blocked
+
+**New pages:**
+- `/login` - Magic link email + Google OAuth
+- `/auth/callback` - Handles magic link verification
+- `/privacy` - Privacy policy
+- `/admin` - Full admin command center
+
+**Admin panel features:**
+- Attendee management with search, filter, sort
+- Edit/delete user profiles from dashboard
+- Admin badge indicators (amber for super_admin, teal for admin)
+- System error tracking and activity logging
+- Announcement banner management
+- CSV export and Airtable sync
+
+**Dashboard enhancements:**
+- Profile wizard with stepper UI
+- Photo upload to Firebase Storage
+- Badge system with auto-generated attendance badges
+- Personal schedule builder with sharing options
+- Slur filter for hate speech (not general profanity)
+- Access control for unpaid users
+
+**CMS integration:**
+- Airtable-powered content via generate scripts
+- Sponsors pulled from Organizations table
+- Schedule pulled from Schedule table
+- GitHub Actions for automated deploys
+
+**Key files for frontend reference:**
+- `src/pages/Admin.jsx` - Admin command center
+- `src/pages/Dashboard.jsx` - User dashboard with wizard
+- `src/components/Stepper.jsx` - Step-by-step modal wizard
+- `src/contexts/AuthContext.jsx` - Auth state with redirect support
+- `src/pages/Login.jsx` - Passwordless login flow
+
+**Firestore structure:**
+```javascript
+users/{uid}: {
+  email, displayName, photoURL, organization, jobTitle,
+  role,  // 'admin' | 'super_admin' | null
+  registrationStatus,  // 'pending' | 'registered' | 'confirmed'
+  savedSessions: [],   // For personal schedule
+  scheduleVisibility,  // 'private' | 'attendees_only' | 'public'
+  badges: [],          // Badge IDs
+  customBadges: {},    // Custom badge text
+  attendedYears: [],   // Past summit years attended
+}
+```
+
+**Your frontend polish focus areas:**
+1. Dashboard profile card visual improvements
+2. Admin panel dark theme polish
+3. Session card hover states and animations
+4. Schedule page filtering UI
+5. Mobile responsive testing
