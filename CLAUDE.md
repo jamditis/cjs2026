@@ -978,9 +978,8 @@ Files updated: `Dashboard.jsx`, `functions/index.js`, `scripts/clear-test-users.
 | Item | Priority | Status |
 |------|----------|--------|
 | Test fresh sign-up flow with Denise Shannon | High | Pending |
-| Verify Firestore documents created correctly | High | Pending |
+| Verify Firestore documents created correctly | High | ✅ Done |
 | Deploy Firebase Storage rules for profile photos | Medium | Pending |
-| Add Attendees table fields in Airtable | Medium | Pending |
 
 ### Nice-to-have
 
