@@ -1,9 +1,7 @@
 const { onRequest } = require("firebase-functions/v2/https");
-const { onDocumentUpdated } = require("firebase-functions/v2/firestore");
 const { defineSecret } = require("firebase-functions/params");
 const admin = require("firebase-admin");
 const cors = require("cors")({ origin: true });
-const sgMail = require("@sendgrid/mail");
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -16,7 +14,6 @@ const AIRTABLE_SITE_CONTENT_TABLE = "tblTZ0F89UMTO8PO0";
 // Define the secrets (will be accessed at runtime)
 const airtableApiKey = defineSecret("AIRTABLE_API_KEY");
 const eventbriteToken = defineSecret("EVENTBRITE_TOKEN");
-const sendgridApiKey = defineSecret("SENDGRID_API_KEY");
 
 // Eventbrite config
 const EVENTBRITE_EVENT_ID = "1977919688031";
