@@ -19,6 +19,162 @@ let contentCache = null;
 let cacheTimestamp = null;
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
+// ============================================
+// Security & Auth Helpers
+// ============================================
+
+/**
+ * Verify Firebase Auth token and return user
+ * @param {string} authHeader - Authorization header from request
+ * @returns {Promise<{uid: string, email: string}>} Verified user
+ */
+async function verifyAuthToken(authHeader) {
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    throw new Error('Missing or invalid authorization header');
+  }
+
+  const token = authHeader.split('Bearer ')[1];
+  const decodedToken = await admin.auth().verifyIdToken(token);
+
+  return {
+    uid: decodedToken.uid,
+    email: decodedToken.email
+  };
+}
+
+/**
+ * Check if user has admin role in Firestore
+ * @param {string} uid - User ID
+ * @returns {Promise<boolean>} True if user is admin or super_admin
+ */
+async function isAdmin(uid) {
+  const userDoc = await db.collection('users').doc(uid).get();
+  if (!userDoc.exists) return false;
+
+  const role = userDoc.data().role;
+  return role === 'admin' || role === 'super_admin';
+}
+
+/**
+ * Check if user has super_admin role
+ * @param {string} uid - User ID
+ * @returns {Promise<boolean>} True if user is super_admin
+ */
+async function isSuperAdmin(uid) {
+  const userDoc = await db.collection('users').doc(uid).get();
+  if (!userDoc.exists) return false;
+
+  return userDoc.data().role === 'super_admin';
+}
+
+/**
+ * Verify user is admin (throws if not)
+ * @param {object} req - Request object
+ * @returns {Promise<{uid: string, email: string}>} Verified admin user
+ */
+async function requireAdmin(req) {
+  const user = await verifyAuthToken(req.headers.authorization);
+  const adminStatus = await isAdmin(user.uid);
+
+  if (!adminStatus) {
+    throw new Error('Unauthorized: Admin access required');
+  }
+
+  return user;
+}
+
+/**
+ * Verify user is super admin (throws if not)
+ */
+async function requireSuperAdmin(req) {
+  const user = await verifyAuthToken(req.headers.authorization);
+  const superAdminStatus = await isSuperAdmin(user.uid);
+
+  if (!superAdminStatus) {
+    throw new Error('Unauthorized: Super admin access required');
+  }
+
+  return user;
+}
+
+// ============================================
+// Logging Helpers
+// ============================================
+
+/**
+ * Log user activity
+ */
+async function logActivity(type, userId, details = {}) {
+  try {
+    await db.collection('activity_logs').add({
+      type,
+      userId,
+      details,
+      timestamp: admin.firestore.FieldValue.serverTimestamp(),
+      createdAt: new Date().toISOString()
+    });
+  } catch (err) {
+    console.error('Failed to log activity:', err);
+  }
+}
+
+/**
+ * Log system error
+ */
+async function logError(source, error, context = {}) {
+  try {
+    await db.collection('system_errors').add({
+      source,
+      error: {
+        message: error.message,
+        stack: error.stack,
+        code: error.code
+      },
+      context,
+      timestamp: admin.firestore.FieldValue.serverTimestamp(),
+      createdAt: new Date().toISOString(),
+      resolved: false
+    });
+  } catch (err) {
+    console.error('Failed to log error:', err);
+  }
+}
+
+/**
+ * Log admin action for audit trail
+ */
+async function logAdminAction(adminUid, action, targetUid = null, details = {}) {
+  try {
+    await db.collection('admin_logs').add({
+      adminUid,
+      action,
+      targetUid,
+      details,
+      timestamp: admin.firestore.FieldValue.serverTimestamp(),
+      createdAt: new Date().toISOString()
+    });
+  } catch (err) {
+    console.error('Failed to log admin action:', err);
+  }
+}
+
+/**
+ * Log background job execution
+ */
+async function logBackgroundJob(jobType, status, details = {}) {
+  try {
+    await db.collection('background_jobs').add({
+      jobType,
+      status, // 'started', 'completed', 'failed'
+      details,
+      timestamp: admin.firestore.FieldValue.serverTimestamp(),
+      createdAt: new Date().toISOString()
+    });
+  } catch (err) {
+    console.error('Failed to log background job:', err);
+  }
+}
+
 /**
  * Save email signup to both Firestore and Airtable
  */
@@ -358,13 +514,6 @@ exports.invalidateCache = onRequest({ cors: true }, async (req, res) => {
 
 const AIRTABLE_ATTENDEES_TABLE = "Attendees";
 
-// Admin email addresses (can edit this list as needed)
-const ADMIN_EMAILS = [
-  "amditisj@montclair.edu",
-  "jamditis@gmail.com",
-  "murrays@montclair.edu", // Stefanie
-];
-
 /**
  * Sync a single user profile to Airtable
  * Called when a user updates their profile
@@ -484,15 +633,10 @@ exports.exportAttendees = onRequest({ cors: true }, async (req, res) => {
       return;
     }
 
-    // Check admin authorization via query param (simple auth for internal use)
-    // In production, you'd use Firebase Auth tokens
-    const adminEmail = req.query.adminEmail;
-    if (!adminEmail || !ADMIN_EMAILS.includes(adminEmail)) {
-      res.status(403).json({ error: "Unauthorized. Admin access required." });
-      return;
-    }
-
     try {
+      const admin = await requireAdmin(req);
+      await logAdminAction(admin.uid, 'export_attendees');
+
       const snapshot = await db.collection("users").get();
       const attendees = [];
 
@@ -530,7 +674,9 @@ exports.exportAttendees = onRequest({ cors: true }, async (req, res) => {
       });
     } catch (error) {
       console.error("Error exporting attendees:", error);
-      res.status(500).json({ error: "Failed to export attendees", details: error.message });
+      await logError('exportAttendees', error);
+      res.status(error.message.includes('Unauthorized') ? 403 : 500)
+        .json({ error: error.message || "Failed to export attendees" });
     }
   });
 });
@@ -546,13 +692,11 @@ exports.syncAllProfilesToAirtable = onRequest({ cors: true, secrets: [airtableAp
       return;
     }
 
-    const adminEmail = req.body.adminEmail;
-    if (!adminEmail || !ADMIN_EMAILS.includes(adminEmail)) {
-      res.status(403).json({ error: "Unauthorized. Admin access required." });
-      return;
-    }
-
     try {
+      const adminUser = await requireAdmin(req);
+      await logAdminAction(adminUser.uid, 'sync_all_profiles_to_airtable');
+      await logBackgroundJob('airtable_sync_all', 'started', { initiatedBy: adminUser.uid });
+
       const snapshot = await db.collection("users").get();
       let synced = 0;
       let errors = 0;
@@ -625,6 +769,8 @@ exports.syncAllProfilesToAirtable = onRequest({ cors: true, secrets: [airtableAp
         }
       }
 
+      await logBackgroundJob('airtable_sync_all', 'completed', { synced, errors });
+
       res.status(200).json({
         success: true,
         message: `Synced ${synced} profiles, ${errors} errors`,
@@ -633,7 +779,466 @@ exports.syncAllProfilesToAirtable = onRequest({ cors: true, secrets: [airtableAp
       });
     } catch (error) {
       console.error("Error in batch sync:", error);
-      res.status(500).json({ error: "Batch sync failed", details: error.message });
+      await logError('syncAllProfilesToAirtable', error);
+      await logBackgroundJob('airtable_sync_all', 'failed', { error: error.message });
+      res.status(error.message.includes('Unauthorized') ? 403 : 500)
+        .json({ error: error.message || "Batch sync failed" });
+    }
+  });
+});
+
+// ============================================
+// Admin Panel Endpoints
+// ============================================
+
+/**
+ * Get system statistics for admin dashboard
+ */
+exports.getSystemStats = onRequest({ cors: true }, async (req, res) => {
+  cors(req, res, async () => {
+    if (req.method !== "GET") {
+      res.status(405).send("Method Not Allowed");
+      return;
+    }
+
+    try {
+      await requireAdmin(req);
+
+      // Get various stats
+      const now = new Date();
+      const oneDayAgo = new Date(now - 24 * 60 * 60 * 1000);
+      const sevenDaysAgo = new Date(now - 7 * 24 * 60 * 60 * 1000);
+      const thirtyDaysAgo = new Date(now - 30 * 24 * 60 * 60 * 1000);
+
+      // Total users
+      const usersSnapshot = await db.collection('users').get();
+      const totalUsers = usersSnapshot.size;
+
+      // Registration status breakdown
+      let pending = 0, registered = 0, confirmed = 0;
+      let profileComplete = 0;
+      let ticketsPurchased = 0;
+      usersSnapshot.forEach(doc => {
+        const data = doc.data();
+        const status = data.registrationStatus || 'pending';
+        if (status === 'pending') pending++;
+        else if (status === 'registered') registered++;
+        else if (status === 'confirmed') confirmed++;
+
+        // Profile completion check (has required fields)
+        if (data.displayName && data.organization && data.role && data.badges?.length > 0) {
+          profileComplete++;
+        }
+
+        if (data.ticketsPurchased) {
+          ticketsPurchased++;
+        }
+      });
+
+      // Recent signups (24h, 7d, 30d)
+      const signups24h = usersSnapshot.docs.filter(doc => {
+        const createdAt = doc.data().createdAt?.toDate?.();
+        return createdAt && createdAt > oneDayAgo;
+      }).length;
+
+      const signups7d = usersSnapshot.docs.filter(doc => {
+        const createdAt = doc.data().createdAt?.toDate?.();
+        return createdAt && createdAt > sevenDaysAgo;
+      }).length;
+
+      const signups30d = usersSnapshot.docs.filter(doc => {
+        const createdAt = doc.data().createdAt?.toDate?.();
+        return createdAt && createdAt > thirtyDaysAgo;
+      }).length;
+
+      // Email signups
+      const emailSignupsSnapshot = await db.collection('email_signups').get();
+      const totalEmailSignups = emailSignupsSnapshot.size;
+
+      // Recent errors (24h)
+      const errorsSnapshot = await db.collection('system_errors')
+        .where('createdAt', '>', oneDayAgo.toISOString())
+        .get();
+      const recentErrors = errorsSnapshot.size;
+
+      // Recent activity (24h)
+      const activitySnapshot = await db.collection('activity_logs')
+        .where('createdAt', '>', oneDayAgo.toISOString())
+        .get();
+      const recentActivity = activitySnapshot.size;
+
+      // Background jobs (last 10)
+      const jobsSnapshot = await db.collection('background_jobs')
+        .orderBy('createdAt', 'desc')
+        .limit(10)
+        .get();
+
+      const recentJobs = [];
+      jobsSnapshot.forEach(doc => {
+        recentJobs.push({ id: doc.id, ...doc.data() });
+      });
+
+      res.status(200).json({
+        success: true,
+        stats: {
+          users: {
+            total: totalUsers,
+            pending,
+            registered,
+            confirmed,
+            profileComplete,
+            ticketsPurchased,
+            profileCompletionRate: totalUsers > 0 ? Math.round((profileComplete / totalUsers) * 100) : 0
+          },
+          signups: {
+            last24h: signups24h,
+            last7d: signups7d,
+            last30d: signups30d
+          },
+          emailSignups: totalEmailSignups,
+          activity: {
+            recentErrors,
+            recentActivity
+          },
+          recentJobs
+        },
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Error getting system stats:', error);
+      await logError('getSystemStats', error);
+      res.status(error.message.includes('Unauthorized') ? 403 : 500)
+        .json({ error: error.message || 'Failed to get system stats' });
+    }
+  });
+});
+
+/**
+ * Get recent activity logs
+ */
+exports.getActivityLogs = onRequest({ cors: true }, async (req, res) => {
+  cors(req, res, async () => {
+    if (req.method !== "GET") {
+      res.status(405).send("Method Not Allowed");
+      return;
+    }
+
+    try {
+      await requireAdmin(req);
+
+      const limit = parseInt(req.query.limit) || 50;
+      const type = req.query.type || null;
+
+      let query = db.collection('activity_logs')
+        .orderBy('createdAt', 'desc')
+        .limit(limit);
+
+      if (type) {
+        query = query.where('type', '==', type);
+      }
+
+      const snapshot = await query.get();
+      const logs = [];
+
+      snapshot.forEach(doc => {
+        logs.push({ id: doc.id, ...doc.data() });
+      });
+
+      res.status(200).json({
+        success: true,
+        logs,
+        count: logs.length
+      });
+    } catch (error) {
+      console.error('Error getting activity logs:', error);
+      res.status(error.message.includes('Unauthorized') ? 403 : 500)
+        .json({ error: error.message || 'Failed to get activity logs' });
+    }
+  });
+});
+
+/**
+ * Get recent system errors
+ */
+exports.getSystemErrors = onRequest({ cors: true }, async (req, res) => {
+  cors(req, res, async () => {
+    if (req.method !== "GET") {
+      res.status(405).send("Method Not Allowed");
+      return;
+    }
+
+    try {
+      await requireAdmin(req);
+
+      const limit = parseInt(req.query.limit) || 50;
+      const resolved = req.query.resolved === 'true';
+
+      let query = db.collection('system_errors')
+        .orderBy('createdAt', 'desc')
+        .limit(limit);
+
+      if (resolved !== undefined) {
+        query = query.where('resolved', '==', resolved);
+      }
+
+      const snapshot = await query.get();
+      const errors = [];
+
+      snapshot.forEach(doc => {
+        errors.push({ id: doc.id, ...doc.data() });
+      });
+
+      res.status(200).json({
+        success: true,
+        errors,
+        count: errors.length
+      });
+    } catch (error) {
+      console.error('Error getting system errors:', error);
+      res.status(error.message.includes('Unauthorized') ? 403 : 500)
+        .json({ error: error.message || 'Failed to get system errors' });
+    }
+  });
+});
+
+/**
+ * Mark error as resolved
+ */
+exports.resolveError = onRequest({ cors: true }, async (req, res) => {
+  cors(req, res, async () => {
+    if (req.method !== "POST") {
+      res.status(405).send("Method Not Allowed");
+      return;
+    }
+
+    try {
+      const admin = await requireAdmin(req);
+      const { errorId } = req.body;
+
+      if (!errorId) {
+        res.status(400).json({ error: 'Error ID required' });
+        return;
+      }
+
+      await db.collection('system_errors').doc(errorId).update({
+        resolved: true,
+        resolvedBy: admin.uid,
+        resolvedAt: new Date().toISOString()
+      });
+
+      await logAdminAction(admin.uid, 'resolve_error', null, { errorId });
+
+      res.status(200).json({ success: true, message: 'Error marked as resolved' });
+    } catch (error) {
+      console.error('Error resolving error:', error);
+      res.status(error.message.includes('Unauthorized') ? 403 : 500)
+        .json({ error: error.message || 'Failed to resolve error' });
+    }
+  });
+});
+
+/**
+ * Get background jobs
+ */
+exports.getBackgroundJobs = onRequest({ cors: true }, async (req, res) => {
+  cors(req, res, async () => {
+    if (req.method !== "GET") {
+      res.status(405).send("Method Not Allowed");
+      return;
+    }
+
+    try {
+      await requireAdmin(req);
+
+      const limit = parseInt(req.query.limit) || 50;
+      const jobType = req.query.jobType || null;
+
+      let query = db.collection('background_jobs')
+        .orderBy('createdAt', 'desc')
+        .limit(limit);
+
+      if (jobType) {
+        query = query.where('jobType', '==', jobType);
+      }
+
+      const snapshot = await query.get();
+      const jobs = [];
+
+      snapshot.forEach(doc => {
+        jobs.push({ id: doc.id, ...doc.data() });
+      });
+
+      res.status(200).json({
+        success: true,
+        jobs,
+        count: jobs.length
+      });
+    } catch (error) {
+      console.error('Error getting background jobs:', error);
+      res.status(error.message.includes('Unauthorized') ? 403 : 500)
+        .json({ error: error.message || 'Failed to get background jobs' });
+    }
+  });
+});
+
+/**
+ * Get admin audit logs
+ */
+exports.getAdminLogs = onRequest({ cors: true }, async (req, res) => {
+  cors(req, res, async () => {
+    if (req.method !== "GET") {
+      res.status(405).send("Method Not Allowed");
+      return;
+    }
+
+    try {
+      await requireAdmin(req);
+
+      const limit = parseInt(req.query.limit) || 100;
+
+      const snapshot = await db.collection('admin_logs')
+        .orderBy('createdAt', 'desc')
+        .limit(limit)
+        .get();
+
+      const logs = [];
+
+      snapshot.forEach(doc => {
+        logs.push({ id: doc.id, ...doc.data() });
+      });
+
+      res.status(200).json({
+        success: true,
+        logs,
+        count: logs.length
+      });
+    } catch (error) {
+      console.error('Error getting admin logs:', error);
+      res.status(error.message.includes('Unauthorized') ? 403 : 500)
+        .json({ error: error.message || 'Failed to get admin logs' });
+    }
+  });
+});
+
+/**
+ * Grant admin role to user (super admin only)
+ */
+exports.grantAdminRole = onRequest({ cors: true }, async (req, res) => {
+  cors(req, res, async () => {
+    if (req.method !== "POST") {
+      res.status(405).send("Method Not Allowed");
+      return;
+    }
+
+    try {
+      const superAdmin = await requireSuperAdmin(req);
+      const { targetEmail, role } = req.body;
+
+      if (!targetEmail || !role) {
+        res.status(400).json({ error: 'Target email and role required' });
+        return;
+      }
+
+      if (role !== 'admin' && role !== 'super_admin') {
+        res.status(400).json({ error: 'Invalid role. Must be "admin" or "super_admin"' });
+        return;
+      }
+
+      // Find user by email
+      const usersSnapshot = await db.collection('users')
+        .where('email', '==', targetEmail)
+        .limit(1)
+        .get();
+
+      if (usersSnapshot.empty) {
+        res.status(404).json({ error: 'User not found with that email' });
+        return;
+      }
+
+      const targetUserDoc = usersSnapshot.docs[0];
+      const targetUid = targetUserDoc.id;
+
+      // Update user role
+      await db.collection('users').doc(targetUid).update({
+        role,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+
+      // Log admin action
+      await logAdminAction(superAdmin.uid, 'grant_admin_role', targetUid, { role, targetEmail });
+
+      res.status(200).json({
+        success: true,
+        message: `Granted ${role} role to ${targetEmail}`,
+        targetUid
+      });
+    } catch (error) {
+      console.error('Error granting admin role:', error);
+      await logError('grantAdminRole', error, { targetEmail: req.body.targetEmail });
+      res.status(error.message.includes('Unauthorized') ? 403 : 500)
+        .json({ error: error.message || 'Failed to grant admin role' });
+    }
+  });
+});
+
+/**
+ * Revoke admin role from user (super admin only)
+ */
+exports.revokeAdminRole = onRequest({ cors: true }, async (req, res) => {
+  cors(req, res, async () => {
+    if (req.method !== "POST") {
+      res.status(405).send("Method Not Allowed");
+      return;
+    }
+
+    try {
+      const superAdmin = await requireSuperAdmin(req);
+      const { targetEmail } = req.body;
+
+      if (!targetEmail) {
+        res.status(400).json({ error: 'Target email required' });
+        return;
+      }
+
+      // Prevent revoking own admin access
+      if (targetEmail === superAdmin.email) {
+        res.status(400).json({ error: 'Cannot revoke your own admin access' });
+        return;
+      }
+
+      // Find user by email
+      const usersSnapshot = await db.collection('users')
+        .where('email', '==', targetEmail)
+        .limit(1)
+        .get();
+
+      if (usersSnapshot.empty) {
+        res.status(404).json({ error: 'User not found with that email' });
+        return;
+      }
+
+      const targetUserDoc = usersSnapshot.docs[0];
+      const targetUid = targetUserDoc.id;
+
+      // Update user role to regular user
+      await db.collection('users').doc(targetUid).update({
+        role: admin.firestore.FieldValue.delete(),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+
+      // Log admin action
+      await logAdminAction(superAdmin.uid, 'revoke_admin_role', targetUid, { targetEmail });
+
+      res.status(200).json({
+        success: true,
+        message: `Revoked admin role from ${targetEmail}`,
+        targetUid
+      });
+    } catch (error) {
+      console.error('Error revoking admin role:', error);
+      await logError('revokeAdminRole', error, { targetEmail: req.body.targetEmail });
+      res.status(error.message.includes('Unauthorized') ? 403 : 500)
+        .json({ error: error.message || 'Failed to revoke admin role' });
     }
   });
 });
