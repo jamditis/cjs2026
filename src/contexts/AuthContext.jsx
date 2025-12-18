@@ -94,15 +94,8 @@ export function AuthProvider({ children }) {
         const { email, displayName, photoURL } = user
         const finalDisplayName = displayName || additionalData.displayName || ''
 
-        // If no display name available, flag for profile setup
-        // Don't create incomplete profile - wait for user input
-        if (!finalDisplayName) {
-          console.log('No displayName available, flagging for profile setup')
-          setNeedsProfileSetup(true)
-          return null
-        }
-
-        // Create new profile with ALL fields initialized
+        // ALWAYS create the document with full schema
+        // If no displayName, flag for profile setup but still create the document
         const newProfile = {
           ...getEmptyProfileSchema(),
           email,
@@ -115,7 +108,15 @@ export function AuthProvider({ children }) {
         }
 
         await setDoc(userRef, newProfile)
-        setNeedsProfileSetup(false)
+        console.log('Created new user profile for:', email)
+
+        // If no display name, flag for profile completion
+        if (!finalDisplayName) {
+          console.log('No displayName available, flagging for profile setup')
+          setNeedsProfileSetup(true)
+        } else {
+          setNeedsProfileSetup(false)
+        }
       } else {
         // Profile exists - check if it's complete (has required fields)
         const existingData = snapshot.data()
