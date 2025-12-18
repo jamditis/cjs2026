@@ -300,9 +300,11 @@ function Dashboard() {
   // Full access granted to: admins, super_admins, registered users, confirmed users
   const isAdmin = userProfile?.role === 'admin' || userProfile?.role === 'super_admin' ||
                   ADMIN_EMAILS.includes(currentUser?.email)
+  // Note: 'approved' is not an official status but is handled as alias for 'registered' in case someone types it manually
   const hasFullAccess = isAdmin ||
                         userProfile?.registrationStatus === 'registered' ||
-                        userProfile?.registrationStatus === 'confirmed'
+                        userProfile?.registrationStatus === 'confirmed' ||
+                        userProfile?.registrationStatus === 'approved'
 
   // Initialize edit data when profile loads
   useEffect(() => {
@@ -715,7 +717,8 @@ function Dashboard() {
     },
   }
 
-  const status = statusConfig[registrationStatus]
+  // Fallback to 'pending' config for unknown status values (e.g., if someone typed 'approved' manually)
+  const status = statusConfig[registrationStatus] || statusConfig.pending
   const StatusIcon = status.icon
 
   // Get badge objects from IDs
