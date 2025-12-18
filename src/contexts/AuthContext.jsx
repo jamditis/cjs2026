@@ -179,9 +179,35 @@ export function AuthProvider({ children }) {
     }
   }
 
-  // Update user profile
+  // Ensure user document exists with full schema before updating
+  // This prevents partial documents from being created
+  async function ensureUserDocumentExists(uid, email = null) {
+    const userRef = doc(db, 'users', uid)
+    const snapshot = await getDoc(userRef)
+
+    if (!snapshot.exists()) {
+      // Document doesn't exist - create it with full schema
+      const newProfile = {
+        ...getEmptyProfileSchema(),
+        email: email || currentUser?.email || '',
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      }
+      await setDoc(userRef, newProfile)
+      console.log('Created new user document with full schema for uid:', uid)
+      return true // Document was created
+    }
+    return false // Document already existed
+  }
+
+  // Update user profile - ensures document exists with full schema first
   async function updateUserProfile(uid, data) {
     const userRef = doc(db, 'users', uid)
+
+    // First ensure the document exists with full schema
+    await ensureUserDocumentExists(uid)
+
+    // Now safe to merge - document definitely exists
     await setDoc(userRef, {
       ...data,
       updatedAt: serverTimestamp()
@@ -192,6 +218,10 @@ export function AuthProvider({ children }) {
   // Save a session to user's personal schedule
   async function saveSession(sessionId) {
     if (!currentUser) return false
+
+    // Ensure document exists with full schema first
+    await ensureUserDocumentExists(currentUser.uid, currentUser.email)
+
     const userRef = doc(db, 'users', currentUser.uid)
     await setDoc(userRef, {
       savedSessions: arrayUnion(sessionId),
@@ -208,6 +238,10 @@ export function AuthProvider({ children }) {
   // Remove a session from user's personal schedule
   async function unsaveSession(sessionId) {
     if (!currentUser) return false
+
+    // Ensure document exists with full schema first
+    await ensureUserDocumentExists(currentUser.uid, currentUser.email)
+
     const userRef = doc(db, 'users', currentUser.uid)
     await setDoc(userRef, {
       savedSessions: arrayRemove(sessionId),
@@ -229,6 +263,10 @@ export function AuthProvider({ children }) {
   // Update schedule visibility setting
   async function updateScheduleVisibility(visibility) {
     if (!currentUser) return false
+
+    // Ensure document exists with full schema first
+    await ensureUserDocumentExists(currentUser.uid, currentUser.email)
+
     const userRef = doc(db, 'users', currentUser.uid)
     await setDoc(userRef, {
       scheduleVisibility: visibility,
