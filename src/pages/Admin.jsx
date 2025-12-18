@@ -8,6 +8,8 @@ import {
   Filter,
   ChevronDown,
   ChevronUp,
+  ChevronLeft,
+  ChevronRight,
   User,
   Building,
   Globe,
@@ -30,23 +32,29 @@ import {
   Clock,
   UserPlus,
   UserMinus,
-  XCircle
+  XCircle,
+  Menu,
+  X,
+  Zap,
+  Database,
+  Settings,
+  LogOut
 } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
-import Navbar from '../components/Navbar'
-import Footer from '../components/Footer'
+import { useNavigate } from 'react-router-dom'
 
-const TABS = [
-  { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
-  { id: 'attendees', label: 'Attendees', icon: Users },
-  { id: 'activity', label: 'Activity Log', icon: Activity },
-  { id: 'errors', label: 'Errors', icon: AlertTriangle },
-  { id: 'jobs', label: 'Background Jobs', icon: Briefcase },
-  { id: 'admins', label: 'Admin Management', icon: UserCog },
-  { id: 'audit', label: 'Audit Log', icon: FileText }
+// Navigation items with icons
+const NAV_ITEMS = [
+  { id: 'dashboard', label: 'Overview', icon: BarChart3, description: 'System health & metrics' },
+  { id: 'attendees', label: 'Attendees', icon: Users, description: 'User management' },
+  { id: 'activity', label: 'Activity', icon: Activity, description: 'User actions' },
+  { id: 'errors', label: 'Errors', icon: AlertTriangle, description: 'System errors' },
+  { id: 'jobs', label: 'Jobs', icon: Briefcase, description: 'Background tasks' },
+  { id: 'admins', label: 'Admins', icon: UserCog, description: 'Access control' },
+  { id: 'audit', label: 'Audit', icon: FileText, description: 'Admin actions' }
 ]
 
-// Badge definitions (same as Dashboard)
+// Badge definitions
 const BADGE_CATEGORIES = {
   experience: {
     badges: [
@@ -104,13 +112,12 @@ function getBadgeInfo(badgeId) {
   return ALL_BADGES.find(b => b.id === badgeId)
 }
 
-// Helper to get auth token
+// API helpers
 async function getAuthToken(currentUser) {
   if (!currentUser) throw new Error('No user logged in')
   return await currentUser.getIdToken()
 }
 
-// Helper to make authenticated API calls
 async function apiCall(endpoint, currentUser, options = {}) {
   const token = await getAuthToken(currentUser)
   const response = await fetch(endpoint, {
@@ -123,13 +130,13 @@ async function apiCall(endpoint, currentUser, options = {}) {
   return response.json()
 }
 
+// Main Admin Panel
 function AdminPanel() {
-  const { currentUser } = useAuth()
+  const { currentUser, logout } = useAuth()
+  const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState('dashboard')
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
-
-  // Check if user is admin by checking if they can access system stats
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
   const [checkingAuth, setCheckingAuth] = useState(true)
 
@@ -140,7 +147,6 @@ function AdminPanel() {
         setCheckingAuth(false)
         return
       }
-
       try {
         const data = await apiCall(
           'https://us-central1-cjs2026.cloudfunctions.net/getSystemStats',
@@ -153,105 +159,258 @@ function AdminPanel() {
         setCheckingAuth(false)
       }
     }
-
     checkAdminStatus()
   }, [currentUser])
 
-  // Unauthorized view
+  // Loading state
   if (checkingAuth) {
     return (
-      <>
-        <Navbar />
-        <div className="min-h-screen bg-paper pt-24 pb-16 flex items-center justify-center">
-          <Loader2 className="w-8 h-8 animate-spin text-brand-teal" />
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center">
+            <Loader2 className="w-8 h-8 text-white animate-spin" />
+          </div>
+          <p className="text-slate-400 font-medium">Verifying access...</p>
         </div>
-        <Footer />
-      </>
+      </div>
     )
   }
 
+  // Unauthorized
   if (!isAdmin) {
     return (
-      <>
-        <Navbar />
-        <div className="min-h-screen bg-paper pt-24 pb-16">
-          <div className="max-w-3xl mx-auto px-6 text-center">
-            <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-brand-cardinal/10 flex items-center justify-center">
-              <Shield className="w-8 h-8 text-brand-cardinal" />
-            </div>
-            <h1 className="editorial-headline text-3xl text-brand-ink mb-4">
-              Admin access required
-            </h1>
-            <p className="font-body text-brand-ink/60">
-              This page is restricted to CJS2026 administrators.
-              {currentUser && (
-                <span className="block mt-2 text-sm">
-                  Logged in as: {currentUser.email}
-                </span>
-              )}
-            </p>
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center p-6">
+        <motion.div
+          className="max-w-md w-full text-center"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+        >
+          <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center">
+            <Shield className="w-10 h-10 text-rose-400" />
           </div>
-        </div>
-        <Footer />
-      </>
+          <h1 className="text-2xl font-semibold text-white mb-3">
+            Access restricted
+          </h1>
+          <p className="text-slate-400 mb-6">
+            This area is reserved for CJS2026 administrators.
+          </p>
+          {currentUser && (
+            <div className="p-4 rounded-xl bg-slate-800/50 border border-slate-700/50 mb-6">
+              <p className="text-sm text-slate-500">Logged in as</p>
+              <p className="text-slate-300 font-medium">{currentUser.email}</p>
+            </div>
+          )}
+          <button
+            onClick={() => navigate('/')}
+            className="px-6 py-3 rounded-xl bg-slate-800 text-slate-300 font-medium hover:bg-slate-700 transition-colors"
+          >
+            Return to site
+          </button>
+        </motion.div>
+      </div>
     )
   }
 
+  // Main admin interface
   return (
-    <>
-      <Navbar />
-      <div className="min-h-screen bg-paper pt-24 pb-16">
-        <div className="max-w-7xl mx-auto px-6">
-          {/* Header */}
-          <motion.div
-            className="mb-8"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <h1 className="editorial-headline text-3xl md:text-4xl text-brand-ink mb-2">
-              Admin Panel
-            </h1>
-            <p className="font-body text-brand-ink/60">
-              System visibility and management
-            </p>
-          </motion.div>
-
-          {/* Tabs */}
-          <motion.div
-            className="card-sketch mb-6 overflow-x-auto"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-          >
-            <div className="flex border-b border-brand-ink/10">
-              {TABS.map((tab) => {
-                const Icon = tab.icon
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`flex items-center gap-2 px-4 py-3 font-body text-sm whitespace-nowrap transition-colors ${
-                      activeTab === tab.id
-                        ? 'text-brand-teal border-b-2 border-brand-teal -mb-px'
-                        : 'text-brand-ink/60 hover:text-brand-ink'
-                    }`}
-                  >
-                    <Icon className="w-4 h-4" />
-                    {tab.label}
-                  </button>
-                )
-              })}
+    <div className="min-h-screen bg-slate-900 flex">
+      {/* Sidebar - Desktop */}
+      <motion.aside
+        className={`hidden lg:flex flex-col border-r border-slate-800 bg-slate-900/80 backdrop-blur-xl ${
+          sidebarCollapsed ? 'w-20' : 'w-64'
+        } transition-all duration-300`}
+        initial={false}
+      >
+        {/* Logo/Brand */}
+        <div className="h-16 flex items-center justify-between px-4 border-b border-slate-800">
+          {!sidebarCollapsed && (
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center">
+                <Zap className="w-4 h-4 text-white" />
+              </div>
+              <div>
+                <span className="font-semibold text-white text-sm">CJS2026</span>
+                <span className="block text-[10px] text-slate-500 uppercase tracking-wider">Admin</span>
+              </div>
             </div>
-          </motion.div>
+          )}
+          <button
+            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+            className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+          >
+            {sidebarCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+          </button>
+        </div>
 
-          {/* Tab Content */}
+        {/* Navigation */}
+        <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
+          {NAV_ITEMS.map((item) => {
+            const Icon = item.icon
+            const isActive = activeTab === item.id
+            return (
+              <button
+                key={item.id}
+                onClick={() => setActiveTab(item.id)}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all duration-200 group ${
+                  isActive
+                    ? 'bg-gradient-to-r from-teal-500/20 to-emerald-500/10 text-teal-400 border border-teal-500/20'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
+                }`}
+                title={sidebarCollapsed ? item.label : undefined}
+              >
+                <Icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-teal-400' : 'text-slate-500 group-hover:text-slate-300'}`} />
+                {!sidebarCollapsed && (
+                  <div className="flex-1 min-w-0">
+                    <span className="block text-sm font-medium">{item.label}</span>
+                    <span className="block text-[11px] text-slate-500 truncate">{item.description}</span>
+                  </div>
+                )}
+              </button>
+            )
+          })}
+        </nav>
+
+        {/* User section */}
+        <div className="p-3 border-t border-slate-800">
+          {!sidebarCollapsed ? (
+            <div className="p-3 rounded-xl bg-slate-800/50">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-slate-700 to-slate-600 flex items-center justify-center">
+                  <User className="w-4 h-4 text-slate-300" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-slate-200 truncate">
+                    {currentUser?.displayName || 'Admin'}
+                  </p>
+                  <p className="text-[11px] text-slate-500 truncate">{currentUser?.email}</p>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => navigate('/dashboard')}
+                  className="flex-1 px-3 py-1.5 text-xs font-medium text-slate-400 hover:text-white rounded-lg hover:bg-slate-700 transition-colors"
+                >
+                  Dashboard
+                </button>
+                <button
+                  onClick={logout}
+                  className="px-3 py-1.5 text-xs font-medium text-slate-400 hover:text-rose-400 rounded-lg hover:bg-slate-700 transition-colors"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+          ) : (
+            <button
+              onClick={logout}
+              className="w-full p-3 rounded-xl text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition-colors"
+              title="Sign out"
+            >
+              <LogOut className="w-5 h-5 mx-auto" />
+            </button>
+          )}
+        </div>
+      </motion.aside>
+
+      {/* Mobile menu overlay */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <>
+            <motion.div
+              className="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setMobileMenuOpen(false)}
+            />
+            <motion.aside
+              className="lg:hidden fixed inset-y-0 left-0 w-72 bg-slate-900 border-r border-slate-800 z-50 flex flex-col"
+              initial={{ x: '-100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '-100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            >
+              <div className="h-16 flex items-center justify-between px-4 border-b border-slate-800">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center">
+                    <Zap className="w-4 h-4 text-white" />
+                  </div>
+                  <span className="font-semibold text-white">Admin Panel</span>
+                </div>
+                <button
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="p-2 rounded-lg text-slate-400 hover:text-white"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <nav className="flex-1 py-4 px-3 space-y-1">
+                {NAV_ITEMS.map((item) => {
+                  const Icon = item.icon
+                  const isActive = activeTab === item.id
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => {
+                        setActiveTab(item.id)
+                        setMobileMenuOpen(false)
+                      }}
+                      className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl text-left transition-colors ${
+                        isActive
+                          ? 'bg-teal-500/10 text-teal-400'
+                          : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                      }`}
+                    >
+                      <Icon className="w-5 h-5" />
+                      <span className="font-medium">{item.label}</span>
+                    </button>
+                  )
+                })}
+              </nav>
+            </motion.aside>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Main content area */}
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Top bar */}
+        <header className="h-16 flex items-center justify-between px-4 lg:px-8 border-b border-slate-800 bg-slate-900/80 backdrop-blur-xl sticky top-0 z-30">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setMobileMenuOpen(true)}
+              className="lg:hidden p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+            <div>
+              <h1 className="text-lg font-semibold text-white">
+                {NAV_ITEMS.find(n => n.id === activeTab)?.label || 'Admin'}
+              </h1>
+              <p className="text-xs text-slate-500 hidden sm:block">
+                {NAV_ITEMS.find(n => n.id === activeTab)?.description}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => navigate('/')}
+              className="px-4 py-2 text-sm font-medium text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+            >
+              View site
+            </button>
+          </div>
+        </header>
+
+        {/* Content */}
+        <main className="flex-1 p-4 lg:p-8 overflow-y-auto">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.2 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.15 }}
             >
               {activeTab === 'dashboard' && <DashboardTab currentUser={currentUser} />}
               {activeTab === 'attendees' && <AttendeesTab currentUser={currentUser} />}
@@ -262,14 +421,45 @@ function AdminPanel() {
               {activeTab === 'audit' && <AuditTab currentUser={currentUser} />}
             </motion.div>
           </AnimatePresence>
-        </div>
+        </main>
       </div>
-      <Footer />
-    </>
+    </div>
   )
 }
 
-// Dashboard Tab - System Overview
+// Reusable metric card component
+function MetricCard({ title, value, subtitle, icon: Icon, trend, color = 'teal', large = false }) {
+  const colors = {
+    teal: 'from-teal-500/20 to-emerald-500/10 border-teal-500/20 text-teal-400',
+    green: 'from-emerald-500/20 to-green-500/10 border-emerald-500/20 text-emerald-400',
+    rose: 'from-rose-500/20 to-pink-500/10 border-rose-500/20 text-rose-400',
+    amber: 'from-amber-500/20 to-orange-500/10 border-amber-500/20 text-amber-400',
+    blue: 'from-blue-500/20 to-indigo-500/10 border-blue-500/20 text-blue-400'
+  }
+
+  return (
+    <div className={`relative rounded-2xl bg-gradient-to-br ${colors[color]} border p-5 overflow-hidden`}>
+      <div className="absolute top-4 right-4 opacity-20">
+        <Icon className={`${large ? 'w-16 h-16' : 'w-12 h-12'}`} />
+      </div>
+      <div className="relative">
+        <p className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-2">{title}</p>
+        <p className={`${large ? 'text-4xl' : 'text-3xl'} font-bold text-white mb-1`}>{value}</p>
+        {subtitle && <p className="text-sm text-slate-400">{subtitle}</p>}
+        {trend && (
+          <div className={`inline-flex items-center gap-1 mt-2 text-xs font-medium ${
+            trend > 0 ? 'text-emerald-400' : trend < 0 ? 'text-rose-400' : 'text-slate-400'
+          }`}>
+            <TrendingUp className={`w-3 h-3 ${trend < 0 ? 'rotate-180' : ''}`} />
+            {Math.abs(trend)}% from last week
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// Dashboard Tab
 function DashboardTab({ currentUser }) {
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -301,167 +491,179 @@ function DashboardTab({ currentUser }) {
 
   if (loading) {
     return (
-      <div className="text-center py-12">
-        <Loader2 className="w-8 h-8 mx-auto animate-spin text-brand-teal" />
-        <p className="mt-4 font-body text-brand-ink/60">Loading system stats...</p>
+      <div className="flex items-center justify-center py-24">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 mx-auto text-teal-400 animate-spin mb-4" />
+          <p className="text-slate-400">Loading system stats...</p>
+        </div>
       </div>
     )
   }
 
   if (error) {
     return (
-      <div className="text-center py-12">
-        <AlertCircle className="w-8 h-8 mx-auto text-brand-cardinal" />
-        <p className="mt-4 font-body text-brand-cardinal">{error}</p>
+      <div className="flex items-center justify-center py-24">
+        <div className="text-center">
+          <AlertCircle className="w-12 h-12 mx-auto text-rose-400 mb-4" />
+          <p className="text-rose-400 font-medium">{error}</p>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="space-y-6">
-      {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard
-          title="Total Users"
+    <div className="space-y-8">
+      {/* Primary metrics */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <MetricCard
+          title="Total users"
           value={stats.users.total}
           icon={Users}
           color="teal"
         />
-        <StatCard
-          title="Profile Complete"
+        <MetricCard
+          title="Profile complete"
           value={`${stats.users.profileCompletionRate}%`}
           subtitle={`${stats.users.profileComplete} of ${stats.users.total}`}
           icon={CheckCircle}
-          color="green-dark"
+          color="green"
         />
-        <StatCard
-          title="Tickets Purchased"
+        <MetricCard
+          title="Tickets purchased"
           value={stats.users.ticketsPurchased}
           icon={CheckCircle}
-          color="green-dark"
+          color="blue"
         />
-        <StatCard
-          title="Email Signups"
+        <MetricCard
+          title="Email signups"
           value={stats.emailSignups}
           icon={Mail}
-          color="teal"
+          color="amber"
         />
       </div>
 
-      {/* Registration Status */}
-      <div className="card-sketch p-6">
-        <h3 className="font-heading font-semibold text-lg text-brand-ink mb-4">
-          Registration Status
-        </h3>
-        <div className="grid grid-cols-3 gap-4">
+      {/* Registration funnel */}
+      <div className="rounded-2xl bg-slate-800/50 border border-slate-700/50 p-6">
+        <h3 className="text-lg font-semibold text-white mb-6">Registration funnel</h3>
+        <div className="grid grid-cols-3 gap-6">
           <div className="text-center">
-            <div className="text-3xl font-heading font-bold text-brand-cardinal mb-1">
-              {stats.users.pending}
+            <div className="w-16 h-16 mx-auto rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mb-3">
+              <Clock className="w-8 h-8 text-amber-400" />
             </div>
-            <div className="text-sm font-body text-brand-ink/60">Pending</div>
+            <p className="text-3xl font-bold text-white mb-1">{stats.users.pending}</p>
+            <p className="text-sm text-slate-400">Pending</p>
           </div>
           <div className="text-center">
-            <div className="text-3xl font-heading font-bold text-brand-teal mb-1">
-              {stats.users.registered}
+            <div className="w-16 h-16 mx-auto rounded-2xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center mb-3">
+              <Users className="w-8 h-8 text-teal-400" />
             </div>
-            <div className="text-sm font-body text-brand-ink/60">Registered</div>
+            <p className="text-3xl font-bold text-white mb-1">{stats.users.registered}</p>
+            <p className="text-sm text-slate-400">Registered</p>
           </div>
           <div className="text-center">
-            <div className="text-3xl font-heading font-bold text-brand-green-dark mb-1">
-              {stats.users.confirmed}
+            <div className="w-16 h-16 mx-auto rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-3">
+              <CheckCircle className="w-8 h-8 text-emerald-400" />
             </div>
-            <div className="text-sm font-body text-brand-ink/60">Confirmed</div>
+            <p className="text-3xl font-bold text-white mb-1">{stats.users.confirmed}</p>
+            <p className="text-sm text-slate-400">Confirmed</p>
           </div>
         </div>
       </div>
 
-      {/* Signups Trend */}
-      <div className="card-sketch p-6">
-        <h3 className="font-heading font-semibold text-lg text-brand-ink mb-4 flex items-center gap-2">
-          <TrendingUp className="w-5 h-5" />
-          Recent Signups
-        </h3>
-        <div className="grid grid-cols-3 gap-4">
-          <div>
-            <div className="text-2xl font-heading font-bold text-brand-ink mb-1">
-              {stats.signups.last24h}
+      {/* Two-column grid */}
+      <div className="grid lg:grid-cols-2 gap-6">
+        {/* Recent signups */}
+        <div className="rounded-2xl bg-slate-800/50 border border-slate-700/50 p-6">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-teal-500/10 flex items-center justify-center">
+              <TrendingUp className="w-5 h-5 text-teal-400" />
             </div>
-            <div className="text-sm font-body text-brand-ink/60">Last 24 hours</div>
+            <h3 className="text-lg font-semibold text-white">Recent signups</h3>
           </div>
-          <div>
-            <div className="text-2xl font-heading font-bold text-brand-ink mb-1">
-              {stats.signups.last7d}
-            </div>
-            <div className="text-sm font-body text-brand-ink/60">Last 7 days</div>
-          </div>
-          <div>
-            <div className="text-2xl font-heading font-bold text-brand-ink mb-1">
-              {stats.signups.last30d}
-            </div>
-            <div className="text-sm font-body text-brand-ink/60">Last 30 days</div>
-          </div>
-        </div>
-      </div>
-
-      {/* System Health */}
-      <div className="card-sketch p-6">
-        <h3 className="font-heading font-semibold text-lg text-brand-ink mb-4">
-          System Health (Last 24h)
-        </h3>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="flex items-center gap-3">
-            {stats.activity.recentErrors === 0 ? (
-              <CheckCircle className="w-6 h-6 text-brand-green-dark" />
-            ) : (
-              <AlertCircle className="w-6 h-6 text-brand-cardinal" />
-            )}
-            <div>
-              <div className="font-heading font-semibold text-brand-ink">
-                {stats.activity.recentErrors} Errors
+          <div className="space-y-4">
+            <div className="flex items-center justify-between p-4 rounded-xl bg-slate-900/50">
+              <div>
+                <p className="text-2xl font-bold text-white">{stats.signups.last24h}</p>
+                <p className="text-sm text-slate-400">Last 24 hours</p>
               </div>
-              <div className="text-sm font-body text-brand-ink/60">
-                {stats.activity.recentErrors === 0 ? 'All systems operational' : 'Needs attention'}
+              <div className="w-12 h-12 rounded-full bg-teal-500/10 flex items-center justify-center">
+                <Clock className="w-5 h-5 text-teal-400" />
               </div>
             </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <Activity className="w-6 h-6 text-brand-teal" />
-            <div>
-              <div className="font-heading font-semibold text-brand-ink">
-                {stats.activity.recentActivity} Activities
+            <div className="grid grid-cols-2 gap-4">
+              <div className="p-4 rounded-xl bg-slate-900/50">
+                <p className="text-xl font-bold text-white">{stats.signups.last7d}</p>
+                <p className="text-xs text-slate-500">Last 7 days</p>
               </div>
-              <div className="text-sm font-body text-brand-ink/60">
-                User actions logged
+              <div className="p-4 rounded-xl bg-slate-900/50">
+                <p className="text-xl font-bold text-white">{stats.signups.last30d}</p>
+                <p className="text-xs text-slate-500">Last 30 days</p>
               </div>
             </div>
           </div>
         </div>
+
+        {/* System health */}
+        <div className="rounded-2xl bg-slate-800/50 border border-slate-700/50 p-6">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+              <Activity className="w-5 h-5 text-emerald-400" />
+            </div>
+            <h3 className="text-lg font-semibold text-white">System health</h3>
+            <span className="ml-auto text-xs text-slate-500">Last 24h</span>
+          </div>
+          <div className="space-y-4">
+            <div className={`flex items-center gap-4 p-4 rounded-xl ${
+              stats.activity.recentErrors === 0 ? 'bg-emerald-500/5' : 'bg-rose-500/5'
+            }`}>
+              {stats.activity.recentErrors === 0 ? (
+                <CheckCircle className="w-6 h-6 text-emerald-400" />
+              ) : (
+                <AlertTriangle className="w-6 h-6 text-rose-400" />
+              )}
+              <div className="flex-1">
+                <p className="font-semibold text-white">{stats.activity.recentErrors} errors</p>
+                <p className="text-sm text-slate-400">
+                  {stats.activity.recentErrors === 0 ? 'All systems operational' : 'Needs attention'}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-4 p-4 rounded-xl bg-slate-900/50">
+              <Activity className="w-6 h-6 text-teal-400" />
+              <div className="flex-1">
+                <p className="font-semibold text-white">{stats.activity.recentActivity} activities</p>
+                <p className="text-sm text-slate-400">User actions logged</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Recent Background Jobs */}
+      {/* Recent jobs */}
       {stats.recentJobs && stats.recentJobs.length > 0 && (
-        <div className="card-sketch p-6">
-          <h3 className="font-heading font-semibold text-lg text-brand-ink mb-4">
-            Recent Background Jobs
-          </h3>
+        <div className="rounded-2xl bg-slate-800/50 border border-slate-700/50 p-6">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
+              <Briefcase className="w-5 h-5 text-blue-400" />
+            </div>
+            <h3 className="text-lg font-semibold text-white">Recent background jobs</h3>
+          </div>
           <div className="space-y-2">
             {stats.recentJobs.slice(0, 5).map((job, idx) => (
-              <div key={idx} className="flex items-center justify-between py-2 border-b border-brand-ink/5 last:border-0">
+              <div key={idx} className="flex items-center justify-between p-4 rounded-xl bg-slate-900/50">
                 <div className="flex items-center gap-3">
-                  <Briefcase className="w-4 h-4 text-brand-ink/40" />
+                  <Database className="w-4 h-4 text-slate-500" />
                   <div>
-                    <div className="font-body text-sm text-brand-ink">{job.jobType}</div>
-                    <div className="font-body text-xs text-brand-ink/50">
-                      {new Date(job.createdAt).toLocaleString()}
-                    </div>
+                    <p className="text-sm font-medium text-white">{job.jobType}</p>
+                    <p className="text-xs text-slate-500">{new Date(job.createdAt).toLocaleString()}</p>
                   </div>
                 </div>
-                <span className={`px-2 py-1 rounded-full text-xs font-body ${
+                <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                   job.status === 'completed'
-                    ? 'bg-brand-green-dark/10 text-brand-green-dark'
+                    ? 'bg-emerald-500/10 text-emerald-400'
                     : job.status === 'failed'
-                      ? 'bg-brand-cardinal/10 text-brand-cardinal'
-                      : 'bg-brand-teal/10 text-brand-teal'
+                      ? 'bg-rose-500/10 text-rose-400'
+                      : 'bg-amber-500/10 text-amber-400'
                 }`}>
                   {job.status}
                 </span>
@@ -471,46 +673,21 @@ function DashboardTab({ currentUser }) {
         </div>
       )}
 
-      {/* Refresh Button */}
-      <div className="flex justify-center">
+      {/* Refresh button */}
+      <div className="flex justify-center pt-4">
         <button
           onClick={fetchStats}
-          className="btn-secondary py-2 px-4 text-sm inline-flex items-center gap-2"
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-slate-800 text-slate-300 font-medium hover:bg-slate-700 transition-colors"
         >
           <RefreshCw className="w-4 h-4" />
-          Refresh Stats
+          Refresh data
         </button>
       </div>
     </div>
   )
 }
 
-function StatCard({ title, value, subtitle, icon: Icon, color }) {
-  const colorClasses = {
-    teal: 'bg-brand-teal/10 text-brand-teal',
-    'green-dark': 'bg-brand-green-dark/10 text-brand-green-dark',
-    cardinal: 'bg-brand-cardinal/10 text-brand-cardinal'
-  }
-
-  return (
-    <div className="card-sketch p-4">
-      <div className="flex items-start justify-between mb-3">
-        <div className="font-body text-sm text-brand-ink/60">{title}</div>
-        <div className={`p-2 rounded-lg ${colorClasses[color]}`}>
-          <Icon className="w-4 h-4" />
-        </div>
-      </div>
-      <div className="font-heading text-2xl font-bold text-brand-ink mb-1">
-        {value}
-      </div>
-      {subtitle && (
-        <div className="font-body text-xs text-brand-ink/50">{subtitle}</div>
-      )}
-    </div>
-  )
-}
-
-// Attendees Tab - Full user management
+// Attendees Tab
 function AttendeesTab({ currentUser }) {
   const [attendees, setAttendees] = useState([])
   const [loading, setLoading] = useState(true)
@@ -538,7 +715,6 @@ function AttendeesTab({ currentUser }) {
         setError(data.error || 'Failed to fetch attendees')
       }
     } catch (err) {
-      console.error('Error fetching attendees:', err)
       setError('Failed to connect to server')
     } finally {
       setLoading(false)
@@ -565,11 +741,7 @@ function AttendeesTab({ currentUser }) {
         }
       )
       const data = await response.json()
-      if (data.success) {
-        setSyncResult({ type: 'success', message: data.message })
-      } else {
-        setSyncResult({ type: 'error', message: data.error })
-      }
+      setSyncResult({ type: data.success ? 'success' : 'error', message: data.message || data.error })
     } catch (err) {
       setSyncResult({ type: 'error', message: 'Failed to sync' })
     } finally {
@@ -583,28 +755,16 @@ function AttendeesTab({ currentUser }) {
       'Badges', 'Attended Summits', 'Website', 'Instagram', 'LinkedIn', 'Bluesky',
       'Notify When Available', 'Created At'
     ]
-
     const rows = filteredAttendees.map(a => [
-      a.displayName,
-      a.email,
-      a.organization,
-      a.role,
-      a.registrationStatus,
+      a.displayName, a.email, a.organization, a.role, a.registrationStatus,
       a.badges.map(id => getBadgeInfo(id)?.label || id).join('; '),
-      a.attendedSummits.join('; '),
-      a.website,
-      a.instagram,
-      a.linkedin,
-      a.bluesky,
-      a.notifyWhenTicketsAvailable ? 'Yes' : 'No',
-      a.createdAt || ''
+      a.attendedSummits.join('; '), a.website, a.instagram, a.linkedin, a.bluesky,
+      a.notifyWhenTicketsAvailable ? 'Yes' : 'No', a.createdAt || ''
     ])
-
     const csvContent = [
       headers.join(','),
       ...rows.map(row => row.map(cell => `"${(cell || '').toString().replace(/"/g, '""')}"`).join(','))
     ].join('\n')
-
     const blob = new Blob([csvContent], { type: 'text/csv' })
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
@@ -614,27 +774,18 @@ function AttendeesTab({ currentUser }) {
     URL.revokeObjectURL(url)
   }
 
-  // Filter and sort attendees
+  // Filter and sort
   const filteredAttendees = attendees
     .filter(a => {
-      // Search filter
       if (searchTerm) {
         const term = searchTerm.toLowerCase()
-        const matches =
-          a.displayName?.toLowerCase().includes(term) ||
-          a.email?.toLowerCase().includes(term) ||
-          a.organization?.toLowerCase().includes(term) ||
-          a.role?.toLowerCase().includes(term)
-        if (!matches) return false
+        if (!a.displayName?.toLowerCase().includes(term) &&
+            !a.email?.toLowerCase().includes(term) &&
+            !a.organization?.toLowerCase().includes(term) &&
+            !a.role?.toLowerCase().includes(term)) return false
       }
-      // Badge filter
-      if (filterBadge && !a.badges?.includes(filterBadge)) {
-        return false
-      }
-      // Status filter
-      if (filterStatus && a.registrationStatus !== filterStatus) {
-        return false
-      }
+      if (filterBadge && !a.badges?.includes(filterBadge)) return false
+      if (filterStatus && a.registrationStatus !== filterStatus) return false
       return true
     })
     .sort((a, b) => {
@@ -655,30 +806,34 @@ function AttendeesTab({ currentUser }) {
 
   if (loading) {
     return (
-      <div className="text-center py-12">
-        <Loader2 className="w-8 h-8 mx-auto animate-spin text-brand-teal" />
-        <p className="mt-4 font-body text-brand-ink/60">Loading attendees...</p>
+      <div className="flex items-center justify-center py-24">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 mx-auto text-teal-400 animate-spin mb-4" />
+          <p className="text-slate-400">Loading attendees...</p>
+        </div>
       </div>
     )
   }
 
   if (error) {
     return (
-      <div className="text-center py-12">
-        <AlertCircle className="w-8 h-8 mx-auto text-brand-cardinal" />
-        <p className="mt-4 font-body text-brand-cardinal">{error}</p>
+      <div className="flex items-center justify-center py-24">
+        <div className="text-center">
+          <AlertCircle className="w-12 h-12 mx-auto text-rose-400 mb-4" />
+          <p className="text-rose-400 font-medium">{error}</p>
+        </div>
       </div>
     )
   }
 
   return (
     <div className="space-y-6">
-      {/* Header Actions */}
+      {/* Action bar */}
       <div className="flex flex-wrap gap-3">
         <button
           onClick={fetchAttendees}
           disabled={loading}
-          className="btn-secondary py-2 px-4 text-sm inline-flex items-center gap-2 disabled:opacity-50"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 text-slate-300 font-medium hover:bg-slate-700 transition-colors disabled:opacity-50"
         >
           <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           Refresh
@@ -686,7 +841,7 @@ function AttendeesTab({ currentUser }) {
         <button
           onClick={exportToCSV}
           disabled={filteredAttendees.length === 0}
-          className="btn-secondary py-2 px-4 text-sm inline-flex items-center gap-2 disabled:opacity-50"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 text-slate-300 font-medium hover:bg-slate-700 transition-colors disabled:opacity-50"
         >
           <Download className="w-4 h-4" />
           Export CSV
@@ -694,89 +849,77 @@ function AttendeesTab({ currentUser }) {
         <button
           onClick={syncAllToAirtable}
           disabled={syncing}
-          className="btn-primary py-2 px-4 text-sm inline-flex items-center gap-2 disabled:opacity-50"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 text-white font-medium hover:from-teal-500 hover:to-emerald-500 transition-colors disabled:opacity-50"
         >
           {syncing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
           Sync to Airtable
         </button>
       </div>
 
-      {/* Sync result message */}
+      {/* Sync result */}
       {syncResult && (
-        <div className={`p-4 rounded-lg flex items-center gap-3 ${
-          syncResult.type === 'success' ? 'bg-brand-teal/10' : 'bg-brand-cardinal/10'
-        }`}>
+        <motion.div
+          className={`flex items-center gap-3 p-4 rounded-xl ${
+            syncResult.type === 'success' ? 'bg-emerald-500/10 border border-emerald-500/20' : 'bg-rose-500/10 border border-rose-500/20'
+          }`}
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
           {syncResult.type === 'success' ? (
-            <CheckCircle className="w-5 h-5 text-brand-teal" />
+            <CheckCircle className="w-5 h-5 text-emerald-400" />
           ) : (
-            <AlertCircle className="w-5 h-5 text-brand-cardinal" />
+            <AlertCircle className="w-5 h-5 text-rose-400" />
           )}
-          <span className={`font-body text-sm ${
-            syncResult.type === 'success' ? 'text-brand-teal' : 'text-brand-cardinal'
-          }`}>
+          <span className={syncResult.type === 'success' ? 'text-emerald-400' : 'text-rose-400'}>
             {syncResult.message}
           </span>
-        </div>
+        </motion.div>
       )}
 
       {/* Filters */}
-      <div className="card-sketch p-4">
+      <div className="rounded-2xl bg-slate-800/50 border border-slate-700/50 p-4">
         <div className="flex flex-wrap gap-4">
-          {/* Search */}
-          <div className="flex-1 min-w-[200px]">
+          <div className="flex-1 min-w-[250px]">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-ink/40" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search by name, email, org..."
-                className="w-full pl-10 pr-3 py-2 rounded-lg border-2 border-brand-ink/20 bg-white font-body text-sm focus:border-brand-teal focus:outline-none"
+                placeholder="Search name, email, org..."
+                className="w-full pl-11 pr-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
               />
             </div>
           </div>
-
-          {/* Badge filter */}
-          <div className="w-48">
-            <div className="relative">
-              <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-ink/40" />
-              <select
-                value={filterBadge}
-                onChange={(e) => setFilterBadge(e.target.value)}
-                className="w-full pl-10 pr-3 py-2 rounded-lg border-2 border-brand-ink/20 bg-white font-body text-sm focus:border-brand-teal focus:outline-none appearance-none"
-              >
-                <option value="">All badges</option>
-                {ALL_BADGES.map(badge => (
-                  <option key={badge.id} value={badge.id}>
-                    {badge.emoji} {badge.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Status filter */}
-          <div className="w-40">
-            <select
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg border-2 border-brand-ink/20 bg-white font-body text-sm focus:border-brand-teal focus:outline-none appearance-none"
-            >
-              <option value="">All statuses</option>
-              <option value="pending">Pending</option>
-              <option value="registered">Registered</option>
-              <option value="confirmed">Confirmed</option>
-            </select>
-          </div>
+          <select
+            value={filterBadge}
+            onChange={(e) => setFilterBadge(e.target.value)}
+            className="px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white focus:border-teal-500 focus:outline-none"
+          >
+            <option value="">All badges</option>
+            {ALL_BADGES.map(badge => (
+              <option key={badge.id} value={badge.id}>{badge.emoji} {badge.label}</option>
+            ))}
+          </select>
+          <select
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+            className="px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white focus:border-teal-500 focus:outline-none"
+          >
+            <option value="">All statuses</option>
+            <option value="pending">Pending</option>
+            <option value="registered">Registered</option>
+            <option value="confirmed">Confirmed</option>
+          </select>
         </div>
-
-        {/* Active filters */}
         {(searchTerm || filterBadge || filterStatus) && (
-          <div className="mt-3 flex items-center gap-2 text-sm">
-            <span className="text-brand-ink/50">Showing {filteredAttendees.length} of {attendees.length}</span>
+          <div className="mt-3 flex items-center gap-3 text-sm">
+            <span className="text-slate-400">
+              Showing {filteredAttendees.length} of {attendees.length}
+            </span>
             <button
               onClick={() => { setSearchTerm(''); setFilterBadge(''); setFilterStatus(''); }}
-              className="text-brand-teal hover:underline"
+              className="text-teal-400 hover:text-teal-300"
             >
               Clear filters
             </button>
@@ -784,85 +927,87 @@ function AttendeesTab({ currentUser }) {
         )}
       </div>
 
-      {/* Attendee table */}
-      <div className="card-sketch overflow-hidden">
+      {/* Table */}
+      <div className="rounded-2xl bg-slate-800/50 border border-slate-700/50 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-brand-ink/5">
-              <tr>
+            <thead>
+              <tr className="border-b border-slate-700/50">
                 <th
-                  className="px-4 py-3 text-left font-heading font-semibold text-sm text-brand-ink cursor-pointer hover:bg-brand-ink/10"
+                  className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider cursor-pointer hover:text-white"
                   onClick={() => toggleSort('displayName')}
                 >
-                  <span className="flex items-center gap-1">
+                  <span className="inline-flex items-center gap-2">
                     Name
-                    {sortField === 'displayName' && (sortDirection === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />)}
+                    {sortField === 'displayName' && (
+                      sortDirection === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />
+                    )}
                   </span>
                 </th>
                 <th
-                  className="px-4 py-3 text-left font-heading font-semibold text-sm text-brand-ink cursor-pointer hover:bg-brand-ink/10"
+                  className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider cursor-pointer hover:text-white"
                   onClick={() => toggleSort('organization')}
                 >
-                  <span className="flex items-center gap-1">
+                  <span className="inline-flex items-center gap-2">
                     Organization
-                    {sortField === 'organization' && (sortDirection === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />)}
+                    {sortField === 'organization' && (
+                      sortDirection === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />
+                    )}
                   </span>
                 </th>
-                <th className="px-4 py-3 text-left font-heading font-semibold text-sm text-brand-ink">
+                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">
                   Badges
                 </th>
                 <th
-                  className="px-4 py-3 text-left font-heading font-semibold text-sm text-brand-ink cursor-pointer hover:bg-brand-ink/10"
+                  className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider cursor-pointer hover:text-white"
                   onClick={() => toggleSort('registrationStatus')}
                 >
-                  <span className="flex items-center gap-1">
+                  <span className="inline-flex items-center gap-2">
                     Status
-                    {sortField === 'registrationStatus' && (sortDirection === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />)}
+                    {sortField === 'registrationStatus' && (
+                      sortDirection === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />
+                    )}
                   </span>
                 </th>
-                <th className="px-4 py-3 text-left font-heading font-semibold text-sm text-brand-ink">
-                  Links
+                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                  Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-brand-ink/10">
+            <tbody className="divide-y divide-slate-700/30">
               {filteredAttendees.map(attendee => (
                 <React.Fragment key={attendee.uid}>
                   <tr
-                    className="hover:bg-brand-teal/5 cursor-pointer"
+                    className="hover:bg-slate-700/20 cursor-pointer transition-colors"
                     onClick={() => setExpandedUser(expandedUser === attendee.uid ? null : attendee.uid)}
                   >
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-brand-teal/10 flex items-center justify-center overflow-hidden flex-shrink-0">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-slate-700 to-slate-600 flex items-center justify-center overflow-hidden flex-shrink-0">
                           {attendee.photoURL ? (
                             <img src={attendee.photoURL} alt="" className="w-full h-full object-cover" />
                           ) : (
-                            <User className="w-5 h-5 text-brand-teal" />
+                            <User className="w-5 h-5 text-slate-400" />
                           )}
                         </div>
                         <div>
-                          <p className="font-heading font-semibold text-brand-ink">
-                            {attendee.displayName || 'No name'}
-                          </p>
-                          <p className="font-body text-xs text-brand-ink/50">{attendee.email}</p>
+                          <p className="font-medium text-white">{attendee.displayName || 'No name'}</p>
+                          <p className="text-sm text-slate-500">{attendee.email}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-3">
-                      <p className="font-body text-sm text-brand-ink">{attendee.organization || '—'}</p>
-                      {attendee.role && (
-                        <p className="font-body text-xs text-brand-ink/50">{attendee.role}</p>
-                      )}
+                    <td className="px-6 py-4">
+                      <p className="text-slate-300">{attendee.organization || '—'}</p>
+                      {attendee.role && <p className="text-sm text-slate-500">{attendee.role}</p>}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-6 py-4">
                       <div className="flex flex-wrap gap-1">
                         {(attendee.badges || []).slice(0, 3).map(badgeId => {
                           const badge = getBadgeInfo(badgeId)
                           return badge ? (
                             <span
                               key={badgeId}
-                              className="inline-flex items-center gap-1 px-2 py-0.5 bg-brand-teal/10 rounded-full text-[10px]"
+                              className="inline-flex items-center px-2 py-0.5 rounded-md bg-slate-700/50 text-xs"
                               title={badge.label}
                             >
                               {badge.emoji}
@@ -870,30 +1015,28 @@ function AttendeesTab({ currentUser }) {
                           ) : null
                         })}
                         {(attendee.badges?.length || 0) > 3 && (
-                          <span className="text-[10px] text-brand-ink/50">
-                            +{attendee.badges.length - 3}
-                          </span>
+                          <span className="text-xs text-slate-500">+{attendee.badges.length - 3}</span>
                         )}
                       </div>
                     </td>
-                    <td className="px-4 py-3">
-                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-body ${
+                    <td className="px-6 py-4">
+                      <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${
                         attendee.registrationStatus === 'confirmed'
-                          ? 'bg-brand-green-dark/10 text-brand-green-dark'
+                          ? 'bg-emerald-500/10 text-emerald-400'
                           : attendee.registrationStatus === 'registered'
-                            ? 'bg-brand-teal/10 text-brand-teal'
-                            : 'bg-brand-cardinal/10 text-brand-cardinal'
+                            ? 'bg-teal-500/10 text-teal-400'
+                            : 'bg-amber-500/10 text-amber-400'
                       }`}>
                         {attendee.registrationStatus || 'pending'}
                       </span>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-6 py-4">
                       <div className="flex gap-2">
                         {attendee.email && (
                           <a
                             href={`mailto:${attendee.email}`}
                             onClick={(e) => e.stopPropagation()}
-                            className="p-1.5 rounded bg-brand-ink/5 hover:bg-brand-teal/10 text-brand-ink/50 hover:text-brand-teal"
+                            className="p-2 rounded-lg bg-slate-700/50 text-slate-400 hover:text-white hover:bg-slate-700 transition-colors"
                           >
                             <Mail className="w-4 h-4" />
                           </a>
@@ -904,7 +1047,7 @@ function AttendeesTab({ currentUser }) {
                             target="_blank"
                             rel="noopener noreferrer"
                             onClick={(e) => e.stopPropagation()}
-                            className="p-1.5 rounded bg-brand-ink/5 hover:bg-brand-teal/10 text-brand-ink/50 hover:text-brand-teal"
+                            className="p-2 rounded-lg bg-slate-700/50 text-slate-400 hover:text-white hover:bg-slate-700 transition-colors"
                           >
                             <Linkedin className="w-4 h-4" />
                           </a>
@@ -913,88 +1056,77 @@ function AttendeesTab({ currentUser }) {
                     </td>
                   </tr>
 
-                  {/* Expanded details */}
-                  {expandedUser === attendee.uid && (
-                    <tr>
-                      <td colSpan={5} className="px-4 py-4 bg-brand-ink/5">
-                        <div className="grid md:grid-cols-2 gap-6">
-                          {/* Contact & social */}
-                          <div>
-                            <h4 className="font-heading font-semibold text-sm text-brand-ink mb-3">Contact & social</h4>
-                            <div className="space-y-2 font-body text-sm">
-                              <p className="flex items-center gap-2">
-                                <Mail className="w-4 h-4 text-brand-ink/40" />
-                                <a href={`mailto:${attendee.email}`} className="text-brand-teal hover:underline">{attendee.email}</a>
-                              </p>
-                              {attendee.website && (
-                                <p className="flex items-center gap-2">
-                                  <Globe className="w-4 h-4 text-brand-ink/40" />
-                                  <a href={`https://${attendee.website}`} target="_blank" rel="noopener noreferrer" className="text-brand-teal hover:underline">{attendee.website}</a>
+                  {/* Expanded row */}
+                  <AnimatePresence>
+                    {expandedUser === attendee.uid && (
+                      <motion.tr
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                      >
+                        <td colSpan={5} className="px-6 py-6 bg-slate-900/50">
+                          <div className="grid md:grid-cols-2 gap-8">
+                            <div>
+                              <h4 className="text-sm font-semibold text-white mb-4">Contact & social</h4>
+                              <div className="space-y-3">
+                                <a href={`mailto:${attendee.email}`} className="flex items-center gap-3 text-sm text-slate-400 hover:text-teal-400">
+                                  <Mail className="w-4 h-4" /> {attendee.email}
+                                </a>
+                                {attendee.website && (
+                                  <a href={`https://${attendee.website}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-sm text-slate-400 hover:text-teal-400">
+                                    <Globe className="w-4 h-4" /> {attendee.website}
+                                  </a>
+                                )}
+                                {attendee.instagram && (
+                                  <a href={`https://instagram.com/${attendee.instagram}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-sm text-slate-400 hover:text-teal-400">
+                                    <Instagram className="w-4 h-4" /> @{attendee.instagram}
+                                  </a>
+                                )}
+                                {attendee.linkedin && (
+                                  <a href={`https://linkedin.com/in/${attendee.linkedin}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-sm text-slate-400 hover:text-teal-400">
+                                    <Linkedin className="w-4 h-4" /> {attendee.linkedin}
+                                  </a>
+                                )}
+                                {attendee.bluesky && (
+                                  <a href={`https://bsky.app/profile/${attendee.bluesky}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-sm text-slate-400 hover:text-teal-400">
+                                    <AtSign className="w-4 h-4" /> @{attendee.bluesky}
+                                  </a>
+                                )}
+                              </div>
+                            </div>
+                            <div>
+                              <h4 className="text-sm font-semibold text-white mb-4">Badges & history</h4>
+                              <div className="flex flex-wrap gap-2 mb-4">
+                                {(attendee.badges || []).map(badgeId => {
+                                  const badge = getBadgeInfo(badgeId)
+                                  return badge ? (
+                                    <span key={badgeId} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-slate-700/50 text-sm text-slate-300">
+                                      {badge.emoji} {badge.label}
+                                    </span>
+                                  ) : null
+                                })}
+                                {attendee.customBadges && Object.entries(attendee.customBadges).flatMap(([_, badges]) =>
+                                  (badges || []).map(badge => (
+                                    <span key={badge.label} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-slate-700/50 text-sm text-slate-300">
+                                      {badge.emoji} {badge.label}
+                                    </span>
+                                  ))
+                                )}
+                              </div>
+                              {attendee.attendedSummits?.length > 0 && (
+                                <p className="text-sm text-slate-500">
+                                  Past summits: {attendee.attendedSummits.sort().join(', ')}
                                 </p>
                               )}
-                              {attendee.instagram && (
-                                <p className="flex items-center gap-2">
-                                  <Instagram className="w-4 h-4 text-brand-ink/40" />
-                                  <a href={`https://instagram.com/${attendee.instagram}`} target="_blank" rel="noopener noreferrer" className="text-brand-teal hover:underline">@{attendee.instagram}</a>
-                                </p>
-                              )}
-                              {attendee.linkedin && (
-                                <p className="flex items-center gap-2">
-                                  <Linkedin className="w-4 h-4 text-brand-ink/40" />
-                                  <a href={`https://linkedin.com/in/${attendee.linkedin}`} target="_blank" rel="noopener noreferrer" className="text-brand-teal hover:underline">{attendee.linkedin}</a>
-                                </p>
-                              )}
-                              {attendee.bluesky && (
-                                <p className="flex items-center gap-2">
-                                  <AtSign className="w-4 h-4 text-brand-ink/40" />
-                                  <a href={`https://bsky.app/profile/${attendee.bluesky}`} target="_blank" rel="noopener noreferrer" className="text-brand-teal hover:underline">@{attendee.bluesky}</a>
-                                </p>
+                              {attendee.notifyWhenTicketsAvailable && (
+                                <p className="text-sm text-teal-400 mt-2">✓ Wants ticket notifications</p>
                               )}
                             </div>
                           </div>
-
-                          {/* Badges & history */}
-                          <div>
-                            <h4 className="font-heading font-semibold text-sm text-brand-ink mb-3">Badges & history</h4>
-                            <div className="flex flex-wrap gap-1 mb-3">
-                              {(attendee.badges || []).map(badgeId => {
-                                const badge = getBadgeInfo(badgeId)
-                                return badge ? (
-                                  <span
-                                    key={badgeId}
-                                    className="inline-flex items-center gap-1 px-2 py-1 bg-brand-teal/10 rounded-full text-xs"
-                                  >
-                                    {badge.emoji} {badge.label}
-                                  </span>
-                                ) : null
-                              })}
-                              {/* Custom badges */}
-                              {attendee.customBadges && Object.entries(attendee.customBadges).flatMap(([_, badges]) =>
-                                (badges || []).map(badge => (
-                                  <span
-                                    key={badge.label}
-                                    className="inline-flex items-center gap-1 px-2 py-1 bg-brand-teal/10 rounded-full text-xs"
-                                  >
-                                    {badge.emoji} {badge.label}
-                                  </span>
-                                ))
-                              )}
-                            </div>
-                            {attendee.attendedSummits?.length > 0 && (
-                              <p className="font-body text-xs text-brand-ink/60">
-                                Past summits: {attendee.attendedSummits.sort().join(', ')}
-                              </p>
-                            )}
-                            {attendee.notifyWhenTicketsAvailable && (
-                              <p className="font-body text-xs text-brand-teal mt-2">
-                                ✓ Wants ticket notifications
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                  )}
+                        </td>
+                      </motion.tr>
+                    )}
+                  </AnimatePresence>
                 </React.Fragment>
               ))}
             </tbody>
@@ -1002,9 +1134,9 @@ function AttendeesTab({ currentUser }) {
         </div>
 
         {filteredAttendees.length === 0 && (
-          <div className="text-center py-12">
-            <Users className="w-8 h-8 mx-auto text-brand-ink/30" />
-            <p className="mt-4 font-body text-brand-ink/60">No attendees found</p>
+          <div className="text-center py-16">
+            <Users className="w-12 h-12 mx-auto text-slate-600 mb-4" />
+            <p className="text-slate-400">No attendees found</p>
           </div>
         )}
       </div>
@@ -1016,82 +1148,67 @@ function AttendeesTab({ currentUser }) {
 function ActivityTab({ currentUser }) {
   const [logs, setLogs] = useState([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
 
   async function fetchLogs() {
     setLoading(true)
-    setError(null)
     try {
       const data = await apiCall(
         'https://us-central1-cjs2026.cloudfunctions.net/getActivityLogs?limit=100',
         currentUser
       )
-      if (data.success) {
-        setLogs(data.logs)
-      } else {
-        setError(data.error || 'Failed to fetch logs')
-      }
+      if (data.success) setLogs(data.logs)
     } catch (err) {
-      setError('Failed to connect to server')
+      console.error(err)
     } finally {
       setLoading(false)
     }
   }
 
-  useEffect(() => {
-    fetchLogs()
-  }, [])
+  useEffect(() => { fetchLogs() }, [])
 
   if (loading) {
     return (
-      <div className="text-center py-12">
-        <Loader2 className="w-8 h-8 mx-auto animate-spin text-brand-teal" />
+      <div className="flex items-center justify-center py-24">
+        <Loader2 className="w-8 h-8 text-teal-400 animate-spin" />
       </div>
     )
   }
 
   return (
-    <div className="card-sketch overflow-hidden">
-      <div className="p-4 border-b border-brand-ink/10 flex items-center justify-between">
-        <h3 className="font-heading font-semibold text-brand-ink">
-          Activity Log ({logs.length} entries)
-        </h3>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <p className="text-slate-400">{logs.length} entries</p>
         <button
           onClick={fetchLogs}
-          className="btn-secondary py-1 px-3 text-sm inline-flex items-center gap-2"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 text-slate-300 font-medium hover:bg-slate-700 transition-colors"
         >
-          <RefreshCw className="w-3 h-3" />
-          Refresh
+          <RefreshCw className="w-4 h-4" /> Refresh
         </button>
       </div>
 
       {logs.length === 0 ? (
-        <div className="text-center py-12">
-          <Activity className="w-8 h-8 mx-auto text-brand-ink/30" />
-          <p className="mt-4 font-body text-brand-ink/60">No activity logged yet</p>
+        <div className="rounded-2xl bg-slate-800/50 border border-slate-700/50 p-16 text-center">
+          <Activity className="w-12 h-12 mx-auto text-slate-600 mb-4" />
+          <p className="text-slate-400">No activity logged yet</p>
         </div>
       ) : (
-        <div className="overflow-x-auto">
+        <div className="rounded-2xl bg-slate-800/50 border border-slate-700/50 overflow-hidden">
           <table className="w-full">
-            <thead className="bg-brand-ink/5">
-              <tr>
-                <th className="px-4 py-3 text-left font-heading font-semibold text-sm text-brand-ink">Type</th>
-                <th className="px-4 py-3 text-left font-heading font-semibold text-sm text-brand-ink">User</th>
-                <th className="px-4 py-3 text-left font-heading font-semibold text-sm text-brand-ink">Details</th>
-                <th className="px-4 py-3 text-left font-heading font-semibold text-sm text-brand-ink">Time</th>
+            <thead>
+              <tr className="border-b border-slate-700/50">
+                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Type</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">User</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Details</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Time</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-brand-ink/10">
+            <tbody className="divide-y divide-slate-700/30">
               {logs.map((log) => (
-                <tr key={log.id} className="hover:bg-brand-teal/5">
-                  <td className="px-4 py-3 font-body text-sm text-brand-ink">{log.type}</td>
-                  <td className="px-4 py-3 font-body text-sm text-brand-ink/60">{log.userId?.slice(0, 8)}...</td>
-                  <td className="px-4 py-3 font-body text-xs text-brand-ink/50">
-                    {JSON.stringify(log.details)}
-                  </td>
-                  <td className="px-4 py-3 font-body text-xs text-brand-ink/50">
-                    {new Date(log.createdAt).toLocaleString()}
-                  </td>
+                <tr key={log.id} className="hover:bg-slate-700/20 transition-colors">
+                  <td className="px-6 py-4 text-sm text-white">{log.type}</td>
+                  <td className="px-6 py-4 text-sm text-slate-400 font-mono">{log.userId?.slice(0, 8)}...</td>
+                  <td className="px-6 py-4 text-xs text-slate-500 max-w-xs truncate">{JSON.stringify(log.details)}</td>
+                  <td className="px-6 py-4 text-sm text-slate-500">{new Date(log.createdAt).toLocaleString()}</td>
                 </tr>
               ))}
             </tbody>
@@ -1115,9 +1232,7 @@ function ErrorsTab({ currentUser }) {
         `https://us-central1-cjs2026.cloudfunctions.net/getSystemErrors?limit=50&resolved=${showResolved}`,
         currentUser
       )
-      if (data.success) {
-        setErrors(data.errors)
-      }
+      if (data.success) setErrors(data.errors)
     } catch (err) {
       console.error(err)
     } finally {
@@ -1125,19 +1240,14 @@ function ErrorsTab({ currentUser }) {
     }
   }
 
-  useEffect(() => {
-    fetchErrors()
-  }, [showResolved])
+  useEffect(() => { fetchErrors() }, [showResolved])
 
   async function resolveError(errorId) {
     try {
       const token = await getAuthToken(currentUser)
       await fetch('https://us-central1-cjs2026.cloudfunctions.net/resolveError', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ errorId })
       })
       fetchErrors()
@@ -1148,75 +1258,69 @@ function ErrorsTab({ currentUser }) {
 
   if (loading) {
     return (
-      <div className="text-center py-12">
-        <Loader2 className="w-8 h-8 mx-auto animate-spin text-brand-teal" />
+      <div className="flex items-center justify-center py-24">
+        <Loader2 className="w-8 h-8 text-teal-400 animate-spin" />
       </div>
     )
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h3 className="font-heading font-semibold text-brand-ink">
-          System Errors ({errors.length})
-        </h3>
         <div className="flex items-center gap-4">
-          <label className="flex items-center gap-2 font-body text-sm">
+          <p className="text-slate-400">{errors.length} errors</p>
+          <label className="flex items-center gap-2 text-sm text-slate-400 cursor-pointer">
             <input
               type="checkbox"
               checked={showResolved}
               onChange={(e) => setShowResolved(e.target.checked)}
-              className="rounded border-brand-ink/20"
+              className="rounded bg-slate-800 border-slate-700 text-teal-500 focus:ring-teal-500"
             />
             Show resolved
           </label>
-          <button
-            onClick={fetchErrors}
-            className="btn-secondary py-1 px-3 text-sm inline-flex items-center gap-2"
-          >
-            <RefreshCw className="w-3 h-3" />
-            Refresh
-          </button>
         </div>
+        <button
+          onClick={fetchErrors}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 text-slate-300 font-medium hover:bg-slate-700 transition-colors"
+        >
+          <RefreshCw className="w-4 h-4" /> Refresh
+        </button>
       </div>
 
       {errors.length === 0 ? (
-        <div className="card-sketch p-12 text-center">
-          <CheckCircle className="w-12 h-12 mx-auto text-brand-green-dark mb-4" />
-          <p className="font-body text-brand-ink">No errors to show</p>
+        <div className="rounded-2xl bg-emerald-500/5 border border-emerald-500/20 p-16 text-center">
+          <CheckCircle className="w-16 h-16 mx-auto text-emerald-400 mb-4" />
+          <p className="text-xl font-semibold text-white mb-2">All clear</p>
+          <p className="text-slate-400">No errors to show</p>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-4">
           {errors.map((error) => (
-            <div key={error.id} className="card-sketch p-4">
-              <div className="flex items-start justify-between mb-2">
-                <div className="flex items-start gap-3">
-                  <AlertTriangle className="w-5 h-5 text-brand-cardinal mt-0.5 flex-shrink-0" />
-                  <div className="flex-1">
-                    <div className="font-heading font-semibold text-brand-ink mb-1">
-                      {error.source}
-                    </div>
-                    <div className="font-body text-sm text-brand-ink/80 mb-2">
-                      {error.error.message}
-                    </div>
-                    <div className="font-body text-xs text-brand-ink/50">
-                      {new Date(error.createdAt).toLocaleString()}
-                    </div>
+            <div key={error.id} className="rounded-2xl bg-slate-800/50 border border-slate-700/50 p-6">
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-rose-500/10 flex items-center justify-center flex-shrink-0">
+                    <AlertTriangle className="w-5 h-5 text-rose-400" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-white mb-1">{error.source}</p>
+                    <p className="text-slate-400">{error.error.message}</p>
+                    <p className="text-sm text-slate-500 mt-2">{new Date(error.createdAt).toLocaleString()}</p>
                   </div>
                 </div>
                 {!error.resolved && (
                   <button
                     onClick={() => resolveError(error.id)}
-                    className="btn-secondary py-1 px-3 text-xs"
+                    className="px-4 py-2 rounded-xl bg-slate-700 text-slate-300 text-sm font-medium hover:bg-slate-600 transition-colors"
                   >
-                    Mark Resolved
+                    Mark resolved
                   </button>
                 )}
               </div>
               {error.context && Object.keys(error.context).length > 0 && (
-                <div className="mt-3 p-3 bg-brand-ink/5 rounded text-xs font-mono overflow-x-auto">
+                <pre className="p-4 rounded-xl bg-slate-900/50 text-xs text-slate-400 overflow-x-auto">
                   {JSON.stringify(error.context, null, 2)}
-                </div>
+                </pre>
               )}
             </div>
           ))}
@@ -1238,9 +1342,7 @@ function JobsTab({ currentUser }) {
         'https://us-central1-cjs2026.cloudfunctions.net/getBackgroundJobs?limit=100',
         currentUser
       )
-      if (data.success) {
-        setJobs(data.jobs)
-      }
+      if (data.success) setJobs(data.jobs)
     } catch (err) {
       console.error(err)
     } finally {
@@ -1248,64 +1350,53 @@ function JobsTab({ currentUser }) {
     }
   }
 
-  useEffect(() => {
-    fetchJobs()
-  }, [])
+  useEffect(() => { fetchJobs() }, [])
 
   if (loading) {
     return (
-      <div className="text-center py-12">
-        <Loader2 className="w-8 h-8 mx-auto animate-spin text-brand-teal" />
+      <div className="flex items-center justify-center py-24">
+        <Loader2 className="w-8 h-8 text-teal-400 animate-spin" />
       </div>
     )
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h3 className="font-heading font-semibold text-brand-ink">
-          Background Jobs ({jobs.length})
-        </h3>
+        <p className="text-slate-400">{jobs.length} jobs</p>
         <button
           onClick={fetchJobs}
-          className="btn-secondary py-1 px-3 text-sm inline-flex items-center gap-2"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 text-slate-300 font-medium hover:bg-slate-700 transition-colors"
         >
-          <RefreshCw className="w-3 h-3" />
-          Refresh
+          <RefreshCw className="w-4 h-4" /> Refresh
         </button>
       </div>
 
-      <div className="card-sketch overflow-hidden">
+      <div className="rounded-2xl bg-slate-800/50 border border-slate-700/50 overflow-hidden">
         <table className="w-full">
-          <thead className="bg-brand-ink/5">
-            <tr>
-              <th className="px-4 py-3 text-left font-heading font-semibold text-sm text-brand-ink">Job Type</th>
-              <th className="px-4 py-3 text-left font-heading font-semibold text-sm text-brand-ink">Status</th>
-              <th className="px-4 py-3 text-left font-heading font-semibold text-sm text-brand-ink">Details</th>
-              <th className="px-4 py-3 text-left font-heading font-semibold text-sm text-brand-ink">Time</th>
+          <thead>
+            <tr className="border-b border-slate-700/50">
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Job type</th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Status</th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Details</th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Time</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-brand-ink/10">
+          <tbody className="divide-y divide-slate-700/30">
             {jobs.map((job) => (
-              <tr key={job.id} className="hover:bg-brand-teal/5">
-                <td className="px-4 py-3 font-body text-sm text-brand-ink">{job.jobType}</td>
-                <td className="px-4 py-3">
-                  <span className={`px-2 py-1 rounded-full text-xs font-body ${
-                    job.status === 'completed'
-                      ? 'bg-brand-green-dark/10 text-brand-green-dark'
-                      : job.status === 'failed'
-                        ? 'bg-brand-cardinal/10 text-brand-cardinal'
-                        : 'bg-brand-teal/10 text-brand-teal'
+              <tr key={job.id} className="hover:bg-slate-700/20 transition-colors">
+                <td className="px-6 py-4 text-sm text-white">{job.jobType}</td>
+                <td className="px-6 py-4">
+                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                    job.status === 'completed' ? 'bg-emerald-500/10 text-emerald-400'
+                      : job.status === 'failed' ? 'bg-rose-500/10 text-rose-400'
+                      : 'bg-amber-500/10 text-amber-400'
                   }`}>
                     {job.status}
                   </span>
                 </td>
-                <td className="px-4 py-3 font-body text-xs text-brand-ink/50 max-w-xs truncate">
-                  {JSON.stringify(job.details)}
-                </td>
-                <td className="px-4 py-3 font-body text-xs text-brand-ink/50">
-                  {new Date(job.createdAt).toLocaleString()}
-                </td>
+                <td className="px-6 py-4 text-xs text-slate-500 max-w-xs truncate">{JSON.stringify(job.details)}</td>
+                <td className="px-6 py-4 text-sm text-slate-500">{new Date(job.createdAt).toLocaleString()}</td>
               </tr>
             ))}
           </tbody>
@@ -1329,10 +1420,7 @@ function AdminsTab({ currentUser }) {
       const token = await getAuthToken(currentUser)
       const response = await fetch('https://us-central1-cjs2026.cloudfunctions.net/grantAdminRole', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ targetEmail, role: selectedRole })
       })
       const data = await response.json()
@@ -1352,10 +1440,7 @@ function AdminsTab({ currentUser }) {
       const token = await getAuthToken(currentUser)
       const response = await fetch('https://us-central1-cjs2026.cloudfunctions.net/revokeAdminRole', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ targetEmail })
       })
       const data = await response.json()
@@ -1369,93 +1454,94 @@ function AdminsTab({ currentUser }) {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="card-sketch p-6">
-        <h3 className="font-heading font-semibold text-lg text-brand-ink mb-4">
-          Grant Admin Access
-        </h3>
-        <p className="font-body text-sm text-brand-ink/60 mb-4">
-          Grant admin or super admin privileges to a user by email. The user must have an existing account.
-        </p>
+    <div className="max-w-2xl space-y-6">
+      <div className="rounded-2xl bg-slate-800/50 border border-slate-700/50 p-6">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-10 h-10 rounded-xl bg-teal-500/10 flex items-center justify-center">
+            <UserCog className="w-5 h-5 text-teal-400" />
+          </div>
+          <div>
+            <h3 className="font-semibold text-white">Grant admin access</h3>
+            <p className="text-sm text-slate-400">Add or remove admin privileges</p>
+          </div>
+        </div>
 
         <div className="space-y-4">
           <div>
-            <label className="block font-body text-sm text-brand-ink mb-2">
-              User Email
-            </label>
+            <label className="block text-sm font-medium text-slate-300 mb-2">User email</label>
             <input
               type="email"
               value={targetEmail}
               onChange={(e) => setTargetEmail(e.target.value)}
               placeholder="user@example.com"
-              className="w-full px-4 py-2 rounded-lg border-2 border-brand-ink/20 bg-white font-body text-sm focus:border-brand-teal focus:outline-none"
+              className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
             />
           </div>
 
           <div>
-            <label className="block font-body text-sm text-brand-ink mb-2">
-              Role
-            </label>
+            <label className="block text-sm font-medium text-slate-300 mb-2">Role</label>
             <select
               value={selectedRole}
               onChange={(e) => setSelectedRole(e.target.value)}
-              className="w-full px-4 py-2 rounded-lg border-2 border-brand-ink/20 bg-white font-body text-sm focus:border-brand-teal focus:outline-none"
+              className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white focus:border-teal-500 focus:outline-none"
             >
               <option value="admin">Admin</option>
-              <option value="super_admin">Super Admin</option>
+              <option value="super_admin">Super admin</option>
             </select>
-            <p className="mt-2 font-body text-xs text-brand-ink/50">
+            <p className="mt-2 text-xs text-slate-500">
               Super admins can grant/revoke admin access. Regular admins cannot.
             </p>
           </div>
 
-          <div className="flex gap-3">
+          <div className="flex gap-3 pt-2">
             <button
               onClick={grantAdmin}
               disabled={loading || !targetEmail}
-              className="btn-primary py-2 px-4 text-sm inline-flex items-center gap-2 disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 text-white font-medium hover:from-teal-500 hover:to-emerald-500 transition-colors disabled:opacity-50"
             >
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <UserPlus className="w-4 h-4" />}
-              Grant Access
+              Grant access
             </button>
             <button
               onClick={revokeAdmin}
               disabled={loading || !targetEmail}
-              className="btn-secondary py-2 px-4 text-sm inline-flex items-center gap-2 disabled:opacity-50 border-brand-cardinal text-brand-cardinal hover:bg-brand-cardinal/5"
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 font-medium hover:bg-rose-500/20 transition-colors disabled:opacity-50"
             >
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <UserMinus className="w-4 h-4" />}
-              Revoke Access
+              Revoke access
             </button>
           </div>
 
           {result && (
-            <div className={`p-4 rounded-lg flex items-center gap-3 ${
-              result.type === 'success' ? 'bg-brand-teal/10' : 'bg-brand-cardinal/10'
-            }`}>
+            <motion.div
+              className={`flex items-center gap-3 p-4 rounded-xl ${
+                result.type === 'success' ? 'bg-emerald-500/10 border border-emerald-500/20' : 'bg-rose-500/10 border border-rose-500/20'
+              }`}
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
               {result.type === 'success' ? (
-                <CheckCircle className="w-5 h-5 text-brand-teal" />
+                <CheckCircle className="w-5 h-5 text-emerald-400" />
               ) : (
-                <XCircle className="w-5 h-5 text-brand-cardinal" />
+                <XCircle className="w-5 h-5 text-rose-400" />
               )}
-              <span className={`font-body text-sm ${
-                result.type === 'success' ? 'text-brand-teal' : 'text-brand-cardinal'
-              }`}>
+              <span className={result.type === 'success' ? 'text-emerald-400' : 'text-rose-400'}>
                 {result.message}
               </span>
-            </div>
+            </motion.div>
           )}
         </div>
       </div>
 
-      <div className="card-sketch p-6">
-        <h3 className="font-heading font-semibold text-lg text-brand-ink mb-4">
-          Current Admin
-        </h3>
-        <div className="flex items-center gap-3 p-4 bg-brand-teal/5 rounded-lg">
-          <Shield className="w-5 h-5 text-brand-teal" />
+      <div className="rounded-2xl bg-slate-800/50 border border-slate-700/50 p-6">
+        <h3 className="font-semibold text-white mb-4">Current session</h3>
+        <div className="flex items-center gap-4 p-4 rounded-xl bg-teal-500/5 border border-teal-500/10">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-teal-500/20 to-emerald-500/20 flex items-center justify-center">
+            <Shield className="w-6 h-6 text-teal-400" />
+          </div>
           <div>
-            <div className="font-body text-sm text-brand-ink">You are logged in as:</div>
-            <div className="font-heading font-semibold text-brand-ink">{currentUser.email}</div>
+            <p className="text-sm text-slate-400">Logged in as</p>
+            <p className="font-semibold text-white">{currentUser.email}</p>
           </div>
         </div>
       </div>
@@ -1475,9 +1561,7 @@ function AuditTab({ currentUser }) {
         'https://us-central1-cjs2026.cloudfunctions.net/getAdminLogs?limit=100',
         currentUser
       )
-      if (data.success) {
-        setLogs(data.logs)
-      }
+      if (data.success) setLogs(data.logs)
     } catch (err) {
       console.error(err)
     } finally {
@@ -1485,62 +1569,53 @@ function AuditTab({ currentUser }) {
     }
   }
 
-  useEffect(() => {
-    fetchLogs()
-  }, [])
+  useEffect(() => { fetchLogs() }, [])
 
   if (loading) {
     return (
-      <div className="text-center py-12">
-        <Loader2 className="w-8 h-8 mx-auto animate-spin text-brand-teal" />
+      <div className="flex items-center justify-center py-24">
+        <Loader2 className="w-8 h-8 text-teal-400 animate-spin" />
       </div>
     )
   }
 
   return (
-    <div className="card-sketch overflow-hidden">
-      <div className="p-4 border-b border-brand-ink/10 flex items-center justify-between">
-        <h3 className="font-heading font-semibold text-brand-ink">
-          Admin Audit Log ({logs.length} entries)
-        </h3>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <p className="text-slate-400">{logs.length} entries</p>
         <button
           onClick={fetchLogs}
-          className="btn-secondary py-1 px-3 text-sm inline-flex items-center gap-2"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 text-slate-300 font-medium hover:bg-slate-700 transition-colors"
         >
-          <RefreshCw className="w-3 h-3" />
-          Refresh
+          <RefreshCw className="w-4 h-4" /> Refresh
         </button>
       </div>
 
       {logs.length === 0 ? (
-        <div className="text-center py-12">
-          <FileText className="w-8 h-8 mx-auto text-brand-ink/30" />
-          <p className="mt-4 font-body text-brand-ink/60">No admin actions logged yet</p>
+        <div className="rounded-2xl bg-slate-800/50 border border-slate-700/50 p-16 text-center">
+          <FileText className="w-12 h-12 mx-auto text-slate-600 mb-4" />
+          <p className="text-slate-400">No admin actions logged yet</p>
         </div>
       ) : (
-        <div className="overflow-x-auto">
+        <div className="rounded-2xl bg-slate-800/50 border border-slate-700/50 overflow-hidden">
           <table className="w-full">
-            <thead className="bg-brand-ink/5">
-              <tr>
-                <th className="px-4 py-3 text-left font-heading font-semibold text-sm text-brand-ink">Action</th>
-                <th className="px-4 py-3 text-left font-heading font-semibold text-sm text-brand-ink">Admin</th>
-                <th className="px-4 py-3 text-left font-heading font-semibold text-sm text-brand-ink">Target</th>
-                <th className="px-4 py-3 text-left font-heading font-semibold text-sm text-brand-ink">Details</th>
-                <th className="px-4 py-3 text-left font-heading font-semibold text-sm text-brand-ink">Time</th>
+            <thead>
+              <tr className="border-b border-slate-700/50">
+                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Action</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Admin</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Target</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Details</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Time</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-brand-ink/10">
+            <tbody className="divide-y divide-slate-700/30">
               {logs.map((log) => (
-                <tr key={log.id} className="hover:bg-brand-teal/5">
-                  <td className="px-4 py-3 font-body text-sm text-brand-ink">{log.action}</td>
-                  <td className="px-4 py-3 font-body text-sm text-brand-ink/60">{log.adminUid?.slice(0, 8)}...</td>
-                  <td className="px-4 py-3 font-body text-sm text-brand-ink/60">{log.targetUid?.slice(0, 8) || '—'}...</td>
-                  <td className="px-4 py-3 font-body text-xs text-brand-ink/50 max-w-xs truncate">
-                    {JSON.stringify(log.details)}
-                  </td>
-                  <td className="px-4 py-3 font-body text-xs text-brand-ink/50">
-                    {new Date(log.createdAt).toLocaleString()}
-                  </td>
+                <tr key={log.id} className="hover:bg-slate-700/20 transition-colors">
+                  <td className="px-6 py-4 text-sm text-white">{log.action}</td>
+                  <td className="px-6 py-4 text-sm text-slate-400 font-mono">{log.adminUid?.slice(0, 8)}...</td>
+                  <td className="px-6 py-4 text-sm text-slate-400 font-mono">{log.targetUid?.slice(0, 8) || '—'}...</td>
+                  <td className="px-6 py-4 text-xs text-slate-500 max-w-xs truncate">{JSON.stringify(log.details)}</td>
+                  <td className="px-6 py-4 text-sm text-slate-500">{new Date(log.createdAt).toLocaleString()}</td>
                 </tr>
               ))}
             </tbody>

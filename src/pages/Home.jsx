@@ -556,13 +556,13 @@ function Home() {
                       title={sponsor.name}
                     >
                       <img
-                        src={sponsor.logoUrl || sponsor.localLogoPath}
+                        src={sponsor.localLogoPath || sponsor.logoUrl}
                         alt={sponsor.name}
                         className="h-16 md:h-20 max-w-[200px] object-contain"
                         onError={(e) => {
-                          // Fallback to local logo path if Airtable URL fails
-                          if (e.target.src !== sponsor.localLogoPath) {
-                            e.target.src = sponsor.localLogoPath
+                          // Fallback to Airtable URL if local path fails
+                          if (sponsor.logoUrl && e.target.src !== sponsor.logoUrl) {
+                            e.target.src = sponsor.logoUrl
                           }
                         }}
                       />

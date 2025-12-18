@@ -11,8 +11,12 @@ const AIRTABLE_BASE_ID = "appL8Sn87xUotm4jF";
 const AIRTABLE_TABLE_NAME = "Email signups";
 const AIRTABLE_SITE_CONTENT_TABLE = "tblTZ0F89UMTO8PO0";
 
-// Define the secret (will be accessed at runtime)
+// Define the secrets (will be accessed at runtime)
 const airtableApiKey = defineSecret("AIRTABLE_API_KEY");
+const eventbriteToken = defineSecret("EVENTBRITE_TOKEN");
+
+// Eventbrite config
+const EVENTBRITE_EVENT_ID = "1977919688031";
 
 // Cache for site content (in-memory, refreshes on function cold start)
 let contentCache = null;
@@ -1239,6 +1243,632 @@ exports.revokeAdminRole = onRequest({ cors: true }, async (req, res) => {
       await logError('revokeAdminRole', error, { targetEmail: req.body.targetEmail });
       res.status(error.message.includes('Unauthorized') ? 403 : 500)
         .json({ error: error.message || 'Failed to revoke admin role' });
+    }
+  });
+});
+
+// ============================================
+// Eventbrite Integration
+// ============================================
+
+/**
+ * Webhook endpoint for Eventbrite order notifications
+ * Set up in Eventbrite: Settings > Webhooks > Add webhook
+ * URL: https://us-central1-cjs2026.cloudfunctions.net/eventbriteWebhook
+ * Actions: order.placed, order.updated
+ */
+exports.eventbriteWebhook = onRequest({ cors: true, secrets: [eventbriteToken] }, async (req, res) => {
+  // Eventbrite sends POST requests for webhooks
+  if (req.method !== "POST") {
+    res.status(405).send("Method Not Allowed");
+    return;
+  }
+
+  try {
+    const payload = req.body;
+    console.log('Eventbrite webhook received:', JSON.stringify(payload));
+
+    // Eventbrite webhook payload structure
+    const action = payload.config?.action;
+    const apiUrl = payload.api_url;
+
+    if (!apiUrl) {
+      console.log('No api_url in webhook payload');
+      res.status(200).json({ success: true, message: 'Acknowledged (no api_url)' });
+      return;
+    }
+
+    // Handle refunds separately
+    if (action === 'order.refunded') {
+      await handleRefund(apiUrl);
+      res.status(200).json({ success: true, message: 'Refund processed' });
+      return;
+    }
+
+    // Handle attendee check-in/check-out
+    if (action === 'attendee.checked_in' || action === 'attendee.checked_out') {
+      await handleCheckInOut(apiUrl, action);
+      res.status(200).json({ success: true, message: `${action} processed` });
+      return;
+    }
+
+    // For order.placed and order.updated - process ticket purchase
+    // Fetch the full order details from Eventbrite
+    const orderResponse = await fetch(apiUrl, {
+      headers: {
+        'Authorization': `Bearer ${eventbriteToken.value()}`
+      }
+    });
+
+    if (!orderResponse.ok) {
+      throw new Error(`Failed to fetch order: ${orderResponse.status}`);
+    }
+
+    const order = await orderResponse.json();
+    console.log('Order details:', JSON.stringify(order));
+
+    // Get attendee emails from the order
+    const attendeesUrl = `${apiUrl}/attendees/`;
+    const attendeesResponse = await fetch(attendeesUrl, {
+      headers: {
+        'Authorization': `Bearer ${eventbriteToken.value()}`
+      }
+    });
+
+    if (!attendeesResponse.ok) {
+      throw new Error(`Failed to fetch attendees: ${attendeesResponse.status}`);
+    }
+
+    const attendeesData = await attendeesResponse.json();
+    const attendees = attendeesData.attendees || [];
+
+    let matched = 0;
+    let unmatched = 0;
+
+    for (const attendee of attendees) {
+      const email = attendee.profile?.email?.toLowerCase();
+      const name = attendee.profile?.name || `${attendee.profile?.first_name || ''} ${attendee.profile?.last_name || ''}`.trim();
+
+      if (!email) continue;
+
+      // Look for matching Firebase user
+      const usersSnapshot = await db.collection('users')
+        .where('email', '==', email)
+        .limit(1)
+        .get();
+
+      if (!usersSnapshot.empty) {
+        // Found matching user - update their registration status
+        const userDoc = usersSnapshot.docs[0];
+        await db.collection('users').doc(userDoc.id).update({
+          registrationStatus: 'registered',
+          ticketsPurchased: true,
+          eventbriteOrderId: order.id,
+          eventbriteAttendeeId: attendee.id,
+          ticketType: attendee.ticket_class_name || 'General',
+          ticketPurchasedAt: new Date().toISOString(),
+          updatedAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+
+        await logActivity('ticket_purchased', userDoc.id, {
+          email,
+          orderId: order.id,
+          ticketType: attendee.ticket_class_name
+        });
+
+        matched++;
+        console.log(`Matched and updated user: ${email}`);
+      } else {
+        // No matching user - store for later matching
+        await db.collection('eventbrite_unmatched').doc(attendee.id).set({
+          email,
+          name,
+          orderId: order.id,
+          attendeeId: attendee.id,
+          ticketType: attendee.ticket_class_name || 'General',
+          purchasedAt: new Date().toISOString(),
+          matched: false
+        });
+
+        unmatched++;
+        console.log(`No matching user for: ${email} - stored for later`);
+      }
+    }
+
+    await logBackgroundJob('eventbrite_webhook', 'completed', {
+      action,
+      orderId: order.id,
+      matched,
+      unmatched
+    });
+
+    res.status(200).json({
+      success: true,
+      message: `Processed ${matched + unmatched} attendees (${matched} matched, ${unmatched} unmatched)`
+    });
+
+  } catch (error) {
+    console.error('Eventbrite webhook error:', error);
+    await logError('eventbriteWebhook', error, { body: req.body });
+    // Return 200 to prevent Eventbrite from retrying
+    res.status(200).json({ success: false, error: error.message });
+  }
+});
+
+/**
+ * Handle refund - reset user's registration status
+ */
+async function handleRefund(apiUrl) {
+  try {
+    // Fetch the order details
+    const orderResponse = await fetch(apiUrl, {
+      headers: {
+        'Authorization': `Bearer ${eventbriteToken.value()}`
+      }
+    });
+
+    if (!orderResponse.ok) {
+      throw new Error(`Failed to fetch order for refund: ${orderResponse.status}`);
+    }
+
+    const order = await orderResponse.json();
+    const orderId = order.id;
+
+    console.log(`Processing refund for order: ${orderId}`);
+
+    // Find users with this order ID and reset their status
+    const usersSnapshot = await db.collection('users')
+      .where('eventbriteOrderId', '==', orderId)
+      .get();
+
+    let refundedCount = 0;
+
+    for (const userDoc of usersSnapshot.docs) {
+      await db.collection('users').doc(userDoc.id).update({
+        registrationStatus: 'pending',
+        ticketsPurchased: false,
+        ticketRefunded: true,
+        ticketRefundedAt: new Date().toISOString(),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+
+      await logActivity('ticket_refunded', userDoc.id, {
+        orderId,
+        email: userDoc.data().email
+      });
+
+      refundedCount++;
+      console.log(`Reset registration for user: ${userDoc.data().email}`);
+    }
+
+    // Also remove from eventbrite_synced if present
+    const syncedSnapshot = await db.collection('eventbrite_synced')
+      .where('orderId', '==', orderId)
+      .get();
+
+    for (const doc of syncedSnapshot.docs) {
+      await db.collection('eventbrite_synced').doc(doc.id).delete();
+    }
+
+    // Mark any unmatched entries as refunded
+    const unmatchedSnapshot = await db.collection('eventbrite_unmatched')
+      .where('orderId', '==', orderId)
+      .get();
+
+    for (const doc of unmatchedSnapshot.docs) {
+      await db.collection('eventbrite_unmatched').doc(doc.id).update({
+        refunded: true,
+        refundedAt: new Date().toISOString()
+      });
+    }
+
+    await logBackgroundJob('eventbrite_refund', 'completed', {
+      orderId,
+      refundedCount
+    });
+
+    console.log(`Refund processed: ${refundedCount} users reset`);
+
+  } catch (error) {
+    console.error('Refund handling error:', error);
+    await logError('handleRefund', error);
+    throw error;
+  }
+}
+
+/**
+ * Handle check-in/check-out at the summit
+ */
+async function handleCheckInOut(apiUrl, action) {
+  try {
+    // Fetch the attendee details
+    const attendeeResponse = await fetch(apiUrl, {
+      headers: {
+        'Authorization': `Bearer ${eventbriteToken.value()}`
+      }
+    });
+
+    if (!attendeeResponse.ok) {
+      throw new Error(`Failed to fetch attendee: ${attendeeResponse.status}`);
+    }
+
+    const attendee = await attendeeResponse.json();
+    const email = attendee.profile?.email?.toLowerCase();
+    const attendeeId = attendee.id;
+    const isCheckIn = action === 'attendee.checked_in';
+
+    console.log(`Processing ${action} for attendee: ${email}`);
+
+    // Find matching Firebase user
+    const usersSnapshot = await db.collection('users')
+      .where('email', '==', email)
+      .limit(1)
+      .get();
+
+    if (!usersSnapshot.empty) {
+      const userDoc = usersSnapshot.docs[0];
+
+      if (isCheckIn) {
+        await db.collection('users').doc(userDoc.id).update({
+          registrationStatus: 'confirmed',
+          checkedIn: true,
+          checkedInAt: new Date().toISOString(),
+          updatedAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+
+        await logActivity('attendee_checked_in', userDoc.id, {
+          email,
+          attendeeId
+        });
+      } else {
+        // Check-out (rare, but handle it)
+        await db.collection('users').doc(userDoc.id).update({
+          checkedOut: true,
+          checkedOutAt: new Date().toISOString(),
+          updatedAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+
+        await logActivity('attendee_checked_out', userDoc.id, {
+          email,
+          attendeeId
+        });
+      }
+
+      console.log(`${action} recorded for: ${email}`);
+    } else {
+      console.log(`No Firebase user found for check-in: ${email}`);
+    }
+
+    await logBackgroundJob(`eventbrite_${action}`, 'completed', {
+      email,
+      attendeeId
+    });
+
+  } catch (error) {
+    console.error('Check-in/out handling error:', error);
+    await logError('handleCheckInOut', error);
+    throw error;
+  }
+}
+
+/**
+ * Sync all Eventbrite attendees with Firebase users
+ * Can be called manually by admin or scheduled
+ */
+exports.syncEventbriteAttendees = onRequest({ cors: true, secrets: [eventbriteToken] }, async (req, res) => {
+  cors(req, res, async () => {
+    if (req.method !== "POST") {
+      res.status(405).send("Method Not Allowed");
+      return;
+    }
+
+    try {
+      const adminUser = await requireAdmin(req);
+      const { eventId } = req.body;
+
+      const targetEventId = eventId || EVENTBRITE_EVENT_ID;
+
+      if (!targetEventId) {
+        res.status(400).json({
+          error: 'Event ID required. Pass eventId in body or set EVENTBRITE_EVENT_ID in code.',
+          hint: 'Find your event ID in the Eventbrite URL: eventbrite.com/e/EVENT_ID'
+        });
+        return;
+      }
+
+      await logBackgroundJob('eventbrite_sync', 'started', { eventId: targetEventId, initiatedBy: adminUser.uid });
+
+      // Fetch all attendees from Eventbrite
+      let allAttendees = [];
+      let continuation = null;
+      let page = 1;
+
+      do {
+        const url = new URL(`https://www.eventbriteapi.com/v3/events/${targetEventId}/attendees/`);
+        url.searchParams.append('status', 'attending');
+        if (continuation) {
+          url.searchParams.append('continuation', continuation);
+        }
+
+        console.log(`Fetching attendees page ${page}...`);
+        const response = await fetch(url.toString(), {
+          headers: {
+            'Authorization': `Bearer ${eventbriteToken.value()}`
+          }
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Eventbrite API error: ${response.status} - ${errorText}`);
+        }
+
+        const data = await response.json();
+        allAttendees = allAttendees.concat(data.attendees || []);
+        continuation = data.pagination?.continuation;
+        page++;
+
+        // Rate limit protection
+        await new Promise(resolve => setTimeout(resolve, 100));
+      } while (continuation);
+
+      console.log(`Total attendees from Eventbrite: ${allAttendees.length}`);
+
+      let matched = 0;
+      let unmatched = 0;
+      let alreadySynced = 0;
+
+      for (const attendee of allAttendees) {
+        const email = attendee.profile?.email?.toLowerCase();
+        const name = attendee.profile?.name || `${attendee.profile?.first_name || ''} ${attendee.profile?.last_name || ''}`.trim();
+
+        if (!email) continue;
+
+        // Check if already synced
+        const existingSync = await db.collection('eventbrite_synced').doc(attendee.id).get();
+        if (existingSync.exists) {
+          alreadySynced++;
+          continue;
+        }
+
+        // Look for matching Firebase user
+        const usersSnapshot = await db.collection('users')
+          .where('email', '==', email)
+          .limit(1)
+          .get();
+
+        if (!usersSnapshot.empty) {
+          const userDoc = usersSnapshot.docs[0];
+
+          // Update user's registration status
+          await db.collection('users').doc(userDoc.id).update({
+            registrationStatus: 'registered',
+            ticketsPurchased: true,
+            eventbriteAttendeeId: attendee.id,
+            eventbriteOrderId: attendee.order_id,
+            ticketType: attendee.ticket_class_name || 'General',
+            ticketPurchasedAt: attendee.created ? new Date(attendee.created).toISOString() : new Date().toISOString(),
+            updatedAt: admin.firestore.FieldValue.serverTimestamp()
+          });
+
+          // Mark as synced
+          await db.collection('eventbrite_synced').doc(attendee.id).set({
+            email,
+            userId: userDoc.id,
+            syncedAt: new Date().toISOString()
+          });
+
+          matched++;
+        } else {
+          // Store for later matching (when user creates account)
+          await db.collection('eventbrite_unmatched').doc(attendee.id).set({
+            email,
+            name,
+            orderId: attendee.order_id,
+            attendeeId: attendee.id,
+            ticketType: attendee.ticket_class_name || 'General',
+            purchasedAt: attendee.created ? new Date(attendee.created).toISOString() : new Date().toISOString(),
+            matched: false
+          });
+
+          unmatched++;
+        }
+
+        // Rate limit for Firestore
+        if ((matched + unmatched) % 50 === 0) {
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
+      }
+
+      await logBackgroundJob('eventbrite_sync', 'completed', {
+        eventId: targetEventId,
+        total: allAttendees.length,
+        matched,
+        unmatched,
+        alreadySynced
+      });
+
+      await logAdminAction(adminUser.uid, 'sync_eventbrite', null, {
+        eventId: targetEventId,
+        matched,
+        unmatched,
+        alreadySynced
+      });
+
+      res.status(200).json({
+        success: true,
+        message: `Synced ${allAttendees.length} attendees`,
+        stats: {
+          total: allAttendees.length,
+          matched,
+          unmatched,
+          alreadySynced
+        }
+      });
+
+    } catch (error) {
+      console.error('Eventbrite sync error:', error);
+      await logError('syncEventbriteAttendees', error);
+      await logBackgroundJob('eventbrite_sync', 'failed', { error: error.message });
+      res.status(error.message.includes('Unauthorized') ? 403 : 500)
+        .json({ error: error.message || 'Sync failed' });
+    }
+  });
+});
+
+/**
+ * Check for unmatched Eventbrite tickets when a new user signs up
+ * Call this from the frontend after user creates account
+ */
+exports.checkEventbriteTicket = onRequest({ cors: true }, async (req, res) => {
+  cors(req, res, async () => {
+    if (req.method !== "POST") {
+      res.status(405).send("Method Not Allowed");
+      return;
+    }
+
+    try {
+      const user = await verifyAuthToken(req.headers.authorization);
+
+      // Get user's email
+      const userDoc = await db.collection('users').doc(user.uid).get();
+      if (!userDoc.exists) {
+        res.status(404).json({ error: 'User profile not found' });
+        return;
+      }
+
+      const userEmail = userDoc.data().email?.toLowerCase();
+      if (!userEmail) {
+        res.status(400).json({ error: 'User email not found' });
+        return;
+      }
+
+      // Check for unmatched Eventbrite ticket
+      const unmatchedSnapshot = await db.collection('eventbrite_unmatched')
+        .where('email', '==', userEmail)
+        .where('matched', '==', false)
+        .limit(1)
+        .get();
+
+      if (unmatchedSnapshot.empty) {
+        res.status(200).json({
+          success: true,
+          hasTicket: false,
+          message: 'No Eventbrite ticket found for this email'
+        });
+        return;
+      }
+
+      // Found a matching ticket - update user
+      const ticketDoc = unmatchedSnapshot.docs[0];
+      const ticketData = ticketDoc.data();
+
+      await db.collection('users').doc(user.uid).update({
+        registrationStatus: 'registered',
+        ticketsPurchased: true,
+        eventbriteAttendeeId: ticketData.attendeeId,
+        eventbriteOrderId: ticketData.orderId,
+        ticketType: ticketData.ticketType || 'General',
+        ticketPurchasedAt: ticketData.purchasedAt,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+
+      // Mark ticket as matched
+      await db.collection('eventbrite_unmatched').doc(ticketDoc.id).update({
+        matched: true,
+        matchedUserId: user.uid,
+        matchedAt: new Date().toISOString()
+      });
+
+      // Also add to synced collection
+      await db.collection('eventbrite_synced').doc(ticketData.attendeeId).set({
+        email: userEmail,
+        userId: user.uid,
+        syncedAt: new Date().toISOString()
+      });
+
+      await logActivity('ticket_matched', user.uid, {
+        email: userEmail,
+        attendeeId: ticketData.attendeeId,
+        matchedVia: 'account_creation'
+      });
+
+      res.status(200).json({
+        success: true,
+        hasTicket: true,
+        message: 'Found your Eventbrite ticket! Registration status updated.',
+        ticketType: ticketData.ticketType
+      });
+
+    } catch (error) {
+      console.error('Check Eventbrite ticket error:', error);
+      res.status(error.message.includes('Missing') ? 401 : 500)
+        .json({ error: error.message || 'Failed to check ticket' });
+    }
+  });
+});
+
+/**
+ * Get Eventbrite sync status (admin only)
+ */
+exports.getEventbriteSyncStatus = onRequest({ cors: true }, async (req, res) => {
+  cors(req, res, async () => {
+    if (req.method !== "GET") {
+      res.status(405).send("Method Not Allowed");
+      return;
+    }
+
+    try {
+      await requireAdmin(req);
+
+      // Count synced tickets
+      const syncedSnapshot = await db.collection('eventbrite_synced').get();
+      const syncedCount = syncedSnapshot.size;
+
+      // Count unmatched tickets
+      const unmatchedSnapshot = await db.collection('eventbrite_unmatched')
+        .where('matched', '==', false)
+        .get();
+      const unmatchedCount = unmatchedSnapshot.size;
+
+      // Get unmatched emails for display
+      const unmatchedEmails = [];
+      unmatchedSnapshot.forEach(doc => {
+        const data = doc.data();
+        unmatchedEmails.push({
+          email: data.email,
+          name: data.name,
+          ticketType: data.ticketType,
+          purchasedAt: data.purchasedAt
+        });
+      });
+
+      // Get last sync job
+      const lastSyncSnapshot = await db.collection('background_jobs')
+        .where('jobType', '==', 'eventbrite_sync')
+        .orderBy('createdAt', 'desc')
+        .limit(1)
+        .get();
+
+      let lastSync = null;
+      if (!lastSyncSnapshot.empty) {
+        lastSync = lastSyncSnapshot.docs[0].data();
+      }
+
+      res.status(200).json({
+        success: true,
+        stats: {
+          synced: syncedCount,
+          unmatched: unmatchedCount,
+          total: syncedCount + unmatchedCount
+        },
+        unmatchedEmails,
+        lastSync
+      });
+
+    } catch (error) {
+      console.error('Get Eventbrite sync status error:', error);
+      res.status(error.message.includes('Unauthorized') ? 403 : 500)
+        .json({ error: error.message || 'Failed to get sync status' });
     }
   });
 });

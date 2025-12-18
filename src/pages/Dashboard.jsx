@@ -1912,7 +1912,7 @@ function Dashboard() {
               </motion.div>
 
               {/* Admin tools - only visible to admins */}
-              {currentUser && ADMIN_EMAILS.includes(currentUser.email) && (
+              {currentUser && (userProfile?.role === 'admin' || userProfile?.role === 'super_admin' || ADMIN_EMAILS.includes(currentUser.email)) && (
                 <motion.div
                   className="card-sketch p-4 border-brand-cardinal/30 bg-brand-cardinal/5"
                   initial={{ opacity: 0, y: 20 }}
@@ -1923,17 +1923,26 @@ function Dashboard() {
                     <Shield className="w-4 h-4 text-brand-cardinal" />
                     <span className="font-body text-xs font-medium text-brand-cardinal">Admin tools</span>
                   </div>
-                  <button
-                    onClick={async () => {
-                      if (window.confirm('Reset ticketsPurchased flag? This will show the ticket CTA again.')) {
-                        await updateUserProfile(currentUser.uid, { ticketsPurchased: false })
-                      }
-                    }}
-                    className="w-full py-2 px-4 rounded-lg border-2 border-brand-cardinal/30 font-body text-sm text-brand-cardinal hover:bg-brand-cardinal/10 transition-colors flex items-center justify-center gap-2"
-                  >
-                    <RefreshCw className="w-4 h-4" />
-                    Reset ticket status
-                  </button>
+                  <div className="space-y-2">
+                    <Link
+                      to="/admin"
+                      className="w-full py-2 px-4 rounded-lg bg-slate-900 font-body text-sm text-white hover:bg-slate-800 transition-colors flex items-center justify-center gap-2"
+                    >
+                      <Shield className="w-4 h-4" />
+                      Open admin panel
+                    </Link>
+                    <button
+                      onClick={async () => {
+                        if (window.confirm('Reset ticketsPurchased flag? This will show the ticket CTA again.')) {
+                          await updateUserProfile(currentUser.uid, { ticketsPurchased: false })
+                        }
+                      }}
+                      className="w-full py-2 px-4 rounded-lg border-2 border-brand-cardinal/30 font-body text-sm text-brand-cardinal hover:bg-brand-cardinal/10 transition-colors flex items-center justify-center gap-2"
+                    >
+                      <RefreshCw className="w-4 h-4" />
+                      Reset ticket status
+                    </button>
+                  </div>
                 </motion.div>
               )}
             </div>

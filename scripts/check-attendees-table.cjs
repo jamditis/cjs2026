@@ -11,7 +11,7 @@ require('dotenv').config({ path: '.env.local' });
 require('dotenv').config({ path: '.env' });
 require('dotenv').config({ path: path.join(os.homedir(), '.claude', '.env') });
 
-const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY || process.env.VITE_AIRTABLE_API_KEY;
+const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY || process.env.VITE_AIRTABLE_API_KEY || process.env.VITE_AIRTABLE_KEY;
 const AIRTABLE_BASE_ID = "appL8Sn87xUotm4jF";
 const AIRTABLE_ATTENDEES_TABLE = "Attendees";
 

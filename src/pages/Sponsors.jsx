@@ -222,12 +222,13 @@ function Sponsors() {
                       title={sponsor.name}
                     >
                       <img
-                        src={sponsor.logoUrl || sponsor.localLogoPath}
+                        src={sponsor.localLogoPath || sponsor.logoUrl}
                         alt={sponsor.name}
                         className="h-20 md:h-24 max-w-[220px] object-contain"
                         onError={(e) => {
-                          if (e.target.src !== sponsor.localLogoPath) {
-                            e.target.src = sponsor.localLogoPath
+                          // Fallback to Airtable URL if local path fails
+                          if (sponsor.logoUrl && e.target.src !== sponsor.logoUrl) {
+                            e.target.src = sponsor.logoUrl
                           }
                         }}
                       />
