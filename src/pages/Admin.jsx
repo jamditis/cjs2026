@@ -1726,7 +1726,21 @@ function AttendeesTab({ currentUser, isInk }) {
                           )}
                         </div>
                         <div>
-                          <p className="font-admin-body font-medium text-[var(--admin-text)]">{attendee.displayName || 'No name'}</p>
+                          <div className="flex items-center gap-2">
+                            <p className="font-admin-body font-medium text-[var(--admin-text)]">{attendee.displayName || 'No name'}</p>
+                            {attendee.role === 'super_admin' && (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-admin-amber/10 text-admin-amber text-xs font-medium" title="Super Admin">
+                                <Shield className="w-3 h-3" />
+                                Super
+                              </span>
+                            )}
+                            {attendee.role === 'admin' && (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-admin-teal/10 text-admin-teal text-xs font-medium" title="Admin">
+                                <Shield className="w-3 h-3" />
+                                Admin
+                              </span>
+                            )}
+                          </div>
                           <p className="font-admin-mono text-xs text-[var(--admin-text-muted)]">{attendee.email}</p>
                         </div>
                       </div>
