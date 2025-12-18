@@ -777,7 +777,7 @@ function Dashboard() {
                     Get immediate access by registering for CJS2026.
                   </p>
                   <a
-                    href="https://collaborativejournalism.org/cjs2026"
+                    href="https://www.eventbrite.com/e/2026-collaborative-journalism-summit-tickets-1977919688031?aff=oddtdtcreator"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="btn-primary inline-flex items-center gap-2"
