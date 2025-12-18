@@ -34,6 +34,7 @@ import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import Stepper, { Step } from '../components/Stepper'
 import MySchedule from '../components/MySchedule'
+import ProfileSetupModal from '../components/ProfileSetupModal'
 import { checkProfanity, validateNoProfanity } from '../utils/profanityFilter'
 
 // Admin email addresses (must match Cloud Functions)
@@ -237,7 +238,7 @@ const PHOTO_CONFIG = {
 }
 
 function Dashboard() {
-  const { currentUser, userProfile, logout, updateUserProfile } = useAuth()
+  const { currentUser, userProfile, logout, updateUserProfile, needsProfileSetup } = useAuth()
   const [editing, setEditing] = useState(false)
   const [editData, setEditData] = useState({
     displayName: '',
@@ -724,6 +725,10 @@ function Dashboard() {
   return (
     <>
       <Navbar />
+
+      {/* Profile setup modal - shown when user needs to complete basic profile */}
+      {needsProfileSetup && <ProfileSetupModal />}
+
       <div className="min-h-screen bg-paper pt-24 pb-16">
         <div className="max-w-5xl mx-auto px-6">
           {/* Header */}
@@ -820,8 +825,8 @@ function Dashboard() {
               {/* Contact info */}
               <p className="font-body text-sm text-brand-ink/50 mt-6">
                 Already purchased a ticket? Contact us at{' '}
-                <a href="mailto:cjs@montclair.edu" className="text-brand-teal hover:underline">
-                  cjs@montclair.edu
+                <a href="mailto:summit@collaborativejournalism.org" className="text-brand-teal hover:underline">
+                  summit@collaborativejournalism.org
                 </a>{' '}
                 to verify your registration.
               </p>

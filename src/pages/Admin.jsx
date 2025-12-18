@@ -1407,7 +1407,7 @@ function AttendeesTab({ currentUser, isInk }) {
     const headers = [
       'Name', 'Email', 'Organization', 'Job Title', 'Registration Status',
       'Badges', 'Attended Summits', 'Website', 'Instagram', 'LinkedIn', 'Bluesky',
-      'Notify When Available', 'Created At'
+      'Notify When Available', 'Eventbrite Attendee ID', 'Eventbrite Order ID', 'Created At'
     ]
     const rows = filteredAttendees.map(a => [
       a.displayName, a.email, a.organization,
@@ -1416,7 +1416,9 @@ function AttendeesTab({ currentUser, isInk }) {
       a.registrationStatus,
       (a.badges || []).map(id => getBadgeInfo(id)?.label || id).join('; '),
       (a.attendedSummits || []).join('; '), a.website, a.instagram, a.linkedin, a.bluesky,
-      a.notifyWhenTicketsAvailable ? 'Yes' : 'No', a.createdAt || ''
+      a.notifyWhenTicketsAvailable ? 'Yes' : 'No',
+      a.eventbriteAttendeeId || '', a.eventbriteOrderId || '',
+      a.createdAt || ''
     ])
     const csvContent = [
       headers.join(','),
@@ -1706,6 +1708,7 @@ function AttendeesTab({ currentUser, isInk }) {
                     )}
                   </span>
                 </th>
+                <th>Eventbrite</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -1781,6 +1784,15 @@ function AttendeesTab({ currentUser, isInk }) {
                       }`}>
                         {attendee.registrationStatus || 'pending'}
                       </span>
+                    </td>
+                    <td>
+                      {attendee.eventbriteAttendeeId ? (
+                        <span className="font-admin-mono text-xs text-[var(--admin-text-secondary)]" title={`Order: ${attendee.eventbriteOrderId || 'N/A'}`}>
+                          {attendee.eventbriteAttendeeId.slice(-8)}
+                        </span>
+                      ) : (
+                        <span className="text-[var(--admin-text-muted)]">—</span>
+                      )}
                     </td>
                     <td>
                       <div className="flex gap-2">

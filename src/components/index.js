@@ -15,3 +15,4 @@ export { default as ScrollToTop } from './ScrollToTop';
 export { default as AnnouncementBanner } from './AnnouncementBanner';
 export { default as PublicLayout } from './PublicLayout';
 export { default as HeroAnnouncement } from './HeroAnnouncement';
+export { default as ProfileSetupModal } from './ProfileSetupModal';

@@ -1,7 +1,9 @@
 const { onRequest } = require("firebase-functions/v2/https");
+const { onDocumentUpdated } = require("firebase-functions/v2/firestore");
 const { defineSecret } = require("firebase-functions/params");
 const admin = require("firebase-admin");
 const cors = require("cors")({ origin: true });
+const sgMail = require("@sendgrid/mail");
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -14,6 +16,7 @@ const AIRTABLE_SITE_CONTENT_TABLE = "tblTZ0F89UMTO8PO0";
 // Define the secrets (will be accessed at runtime)
 const airtableApiKey = defineSecret("AIRTABLE_API_KEY");
 const eventbriteToken = defineSecret("EVENTBRITE_TOKEN");
+const sendgridApiKey = defineSecret("SENDGRID_API_KEY");
 
 // Eventbrite config
 const EVENTBRITE_EVENT_ID = "1977919688031";
@@ -1872,3 +1875,254 @@ exports.getEventbriteSyncStatus = onRequest({ cors: true }, async (req, res) => 
     }
   });
 });
+
+// ============================================
+// Email Notifications (Firestore Triggers)
+// ============================================
+
+// Email templates
+const EMAIL_FROM = 'CJS2026 <summit@collaborativejournalism.org>';
+const SITE_URL = 'https://summit.collaborativejournalism.org';
+
+/**
+ * Send email via SendGrid
+ */
+async function sendEmail(to, subject, htmlContent, textContent) {
+  sgMail.setApiKey(sendgridApiKey.value());
+
+  const msg = {
+    to,
+    from: EMAIL_FROM,
+    subject,
+    text: textContent,
+    html: htmlContent,
+  };
+
+  try {
+    await sgMail.send(msg);
+    console.log(`Email sent to ${to}: ${subject}`);
+    return true;
+  } catch (error) {
+    console.error('SendGrid error:', error);
+    if (error.response) {
+      console.error('SendGrid response:', error.response.body);
+    }
+    throw error;
+  }
+}
+
+/**
+ * Firestore trigger: Send email when user's registration status changes
+ * Triggers on any update to a user document in the 'users' collection
+ */
+exports.onUserStatusChange = onDocumentUpdated({
+  document: 'users/{userId}',
+  secrets: [sendgridApiKey]
+}, async (event) => {
+  const beforeData = event.data.before.data();
+  const afterData = event.data.after.data();
+  const userId = event.params.userId;
+
+  // Check if registrationStatus changed
+  const oldStatus = beforeData.registrationStatus || 'pending';
+  const newStatus = afterData.registrationStatus || 'pending';
+
+  if (oldStatus === newStatus) {
+    // No status change, nothing to do
+    return null;
+  }
+
+  const userEmail = afterData.email;
+  const userName = afterData.displayName || 'there';
+
+  if (!userEmail) {
+    console.log(`No email for user ${userId}, skipping notification`);
+    return null;
+  }
+
+  console.log(`Registration status changed for ${userEmail}: ${oldStatus} -> ${newStatus}`);
+
+  // Send appropriate email based on the new status
+  try {
+    if (newStatus === 'registered' && oldStatus === 'pending') {
+      // Account approved - they now have full dashboard access
+      await sendAccountApprovedEmail(userEmail, userName);
+      await logActivity('email_sent', userId, {
+        type: 'account_approved',
+        to: userEmail,
+        statusChange: `${oldStatus} -> ${newStatus}`
+      });
+    } else if (newStatus === 'confirmed' && oldStatus !== 'confirmed') {
+      // Registration confirmed (e.g., checked in at event)
+      await sendRegistrationConfirmedEmail(userEmail, userName);
+      await logActivity('email_sent', userId, {
+        type: 'registration_confirmed',
+        to: userEmail,
+        statusChange: `${oldStatus} -> ${newStatus}`
+      });
+    }
+
+    return null;
+  } catch (error) {
+    console.error(`Failed to send email to ${userEmail}:`, error);
+    await logError('onUserStatusChange', error, { userId, userEmail, oldStatus, newStatus });
+    return null;
+  }
+});
+
+/**
+ * Send "Account Approved" email
+ */
+async function sendAccountApprovedEmail(email, name) {
+  const subject = 'Your CJS2026 account has been approved!';
+
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <style>
+        body { font-family: 'Source Sans Pro', Arial, sans-serif; line-height: 1.6; color: #2C3E50; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #2A9D8F; color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+        .header h1 { margin: 0; font-family: 'Playfair Display', Georgia, serif; font-size: 28px; }
+        .content { background: #F5F0E6; padding: 30px; border-radius: 0 0 8px 8px; }
+        .button { display: inline-block; background: #2A9D8F; color: white; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: 600; margin: 20px 0; }
+        .footer { text-align: center; padding: 20px; color: #666; font-size: 14px; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>Welcome to CJS2026!</h1>
+        </div>
+        <div class="content">
+          <p>Hi ${name},</p>
+
+          <p><strong>Great news!</strong> Your CJS2026 account has been approved. You now have full access to the attendee dashboard where you can:</p>
+
+          <ul>
+            <li>Complete your attendee profile</li>
+            <li>Select your badges and interests</li>
+            <li>Build your personal schedule</li>
+            <li>Connect with other attendees</li>
+          </ul>
+
+          <p style="text-align: center;">
+            <a href="${SITE_URL}/dashboard" class="button">Go to your dashboard</a>
+          </p>
+
+          <p>We're excited to have you join us in Chapel Hill for the 10th anniversary Collaborative Journalism Summit!</p>
+
+          <p>If you have any questions, just reply to this email or contact us at summit@collaborativejournalism.org.</p>
+
+          <p>See you in June!<br>
+          <strong>The CJS2026 Team</strong></p>
+        </div>
+        <div class="footer">
+          <p>Collaborative Journalism Summit 2026<br>
+          June 8-9, 2026 • Chapel Hill, NC</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  const textContent = `
+Hi ${name},
+
+Great news! Your CJS2026 account has been approved.
+
+You now have full access to the attendee dashboard where you can:
+- Complete your attendee profile
+- Select your badges and interests
+- Build your personal schedule
+- Connect with other attendees
+
+Go to your dashboard: ${SITE_URL}/dashboard
+
+We're excited to have you join us in Chapel Hill for the 10th anniversary Collaborative Journalism Summit!
+
+If you have any questions, reply to this email or contact us at summit@collaborativejournalism.org.
+
+See you in June!
+The CJS2026 Team
+
+---
+Collaborative Journalism Summit 2026
+June 8-9, 2026 • Chapel Hill, NC
+  `;
+
+  return sendEmail(email, subject, htmlContent, textContent);
+}
+
+/**
+ * Send "Registration Confirmed" email (for check-in at event)
+ */
+async function sendRegistrationConfirmedEmail(email, name) {
+  const subject = 'You\'re checked in for CJS2026!';
+
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <style>
+        body { font-family: 'Source Sans Pro', Arial, sans-serif; line-height: 1.6; color: #2C3E50; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #2A9D8F; color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+        .header h1 { margin: 0; font-family: 'Playfair Display', Georgia, serif; font-size: 28px; }
+        .content { background: #F5F0E6; padding: 30px; border-radius: 0 0 8px 8px; }
+        .button { display: inline-block; background: #2A9D8F; color: white; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: 600; margin: 20px 0; }
+        .footer { text-align: center; padding: 20px; color: #666; font-size: 14px; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>Welcome to CJS2026!</h1>
+        </div>
+        <div class="content">
+          <p>Hi ${name},</p>
+
+          <p><strong>You're officially checked in!</strong> Welcome to the 10th anniversary Collaborative Journalism Summit.</p>
+
+          <p>Quick links:</p>
+          <ul>
+            <li><a href="${SITE_URL}/schedule">View the full schedule</a></li>
+            <li><a href="${SITE_URL}/my-schedule">Your personal schedule</a></li>
+            <li><a href="${SITE_URL}/dashboard">Your dashboard</a></li>
+          </ul>
+
+          <p>Have a great summit!</p>
+
+          <p><strong>The CJS2026 Team</strong></p>
+        </div>
+        <div class="footer">
+          <p>Collaborative Journalism Summit 2026<br>
+          June 8-9, 2026 • Chapel Hill, NC</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  const textContent = `
+Hi ${name},
+
+You're officially checked in! Welcome to the 10th anniversary Collaborative Journalism Summit.
+
+Quick links:
+- View the full schedule: ${SITE_URL}/schedule
+- Your personal schedule: ${SITE_URL}/my-schedule
+- Your dashboard: ${SITE_URL}/dashboard
+
+Have a great summit!
+
+The CJS2026 Team
+
+---
+Collaborative Journalism Summit 2026
+June 8-9, 2026 • Chapel Hill, NC
+  `;
+
+  return sendEmail(email, subject, htmlContent, textContent);
+}

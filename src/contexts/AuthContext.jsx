@@ -31,6 +31,7 @@ export function AuthProvider({ children }) {
   const [userProfile, setUserProfile] = useState(null)
   const [loading, setLoading] = useState(true)
   const [authError, setAuthError] = useState(null) // For redirect errors
+  const [needsProfileSetup, setNeedsProfileSetup] = useState(false) // True if user authenticated but has no/incomplete profile
 
   // Create user profile in Firestore
   // IMPORTANT: 'role' is reserved for system permissions (admin, super_admin)
@@ -44,13 +45,20 @@ export function AuthProvider({ children }) {
 
       if (!snapshot.exists()) {
         const { email, displayName, photoURL } = user
+        const finalDisplayName = displayName || additionalData.displayName || ''
 
-        // Create new profile - Firebase Auth handles duplicate emails at auth level
-        // Note: If user signs in with different providers, they get linked automatically
-        // if "One account per email address" is enabled in Firebase Console
+        // If no display name available, flag for profile setup
+        // Don't create incomplete profile - wait for user input
+        if (!finalDisplayName) {
+          console.log('No displayName available, flagging for profile setup')
+          setNeedsProfileSetup(true)
+          return null
+        }
+
+        // Create new profile with required fields
         await setDoc(userRef, {
           email,
-          displayName: displayName || additionalData.displayName || '',
+          displayName: finalDisplayName,
           photoURL: photoURL || '',
           organization: additionalData.organization || '',
           jobTitle: additionalData.jobTitle || '', // User's job title (NOT system role)
@@ -59,15 +67,51 @@ export function AuthProvider({ children }) {
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp(),
         })
+
+        setNeedsProfileSetup(false)
+      } else {
+        // Profile exists - check if it's complete (has required fields)
+        const existingData = snapshot.data()
+        if (!existingData.email || !existingData.displayName) {
+          console.log('Existing profile incomplete, flagging for profile setup')
+          setNeedsProfileSetup(true)
+        } else {
+          setNeedsProfileSetup(false)
+        }
       }
 
       return getUserProfile(user.uid)
     } catch (error) {
       console.error('Error creating user profile:', error)
-      // Return null but don't throw - let the user continue to dashboard
-      // The dashboard will handle missing profile data gracefully
-      return null
+      // Don't swallow the error - set flag so user can retry
+      setNeedsProfileSetup(true)
+      throw error // Re-throw so calling code knows it failed
     }
+  }
+
+  // Complete profile setup for users who need to provide their name
+  // Called when user submits the required profile info
+  async function completeProfileSetup(displayName, email = null) {
+    if (!currentUser) throw new Error('No authenticated user')
+    if (!displayName || displayName.trim().length < 2) {
+      throw new Error('Display name is required')
+    }
+
+    const userRef = doc(db, 'users', currentUser.uid)
+
+    await setDoc(userRef, {
+      email: email || currentUser.email,
+      displayName: displayName.trim(),
+      photoURL: currentUser.photoURL || '',
+      organization: '',
+      jobTitle: '',
+      registrationStatus: 'pending',
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    }, { merge: true }) // merge: true so we don't overwrite if partial doc exists
+
+    setNeedsProfileSetup(false)
+    return getUserProfile(currentUser.uid)
   }
 
   // Get user profile from Firestore
@@ -172,8 +216,13 @@ export function AuthProvider({ children }) {
 
     const { user } = await signInWithEmailLink(auth, email, url)
 
-    // Create Firestore profile if new user (with empty fields to fill later)
-    await createUserProfile(user)
+    // Try to create Firestore profile - if no displayName, user will be prompted
+    try {
+      await createUserProfile(user)
+    } catch (error) {
+      console.log('Profile creation deferred - user will complete setup:', error.message)
+      // Don't throw - user is authenticated, they'll complete profile setup in dashboard
+    }
 
     // Clean up localStorage
     window.localStorage.removeItem('emailForSignIn')
@@ -206,7 +255,12 @@ export function AuthProvider({ children }) {
     // Try popup first for desktop browsers
     try {
       const { user } = await signInWithPopup(auth, provider)
-      await createUserProfile(user)
+      try {
+        await createUserProfile(user)
+      } catch (profileError) {
+        console.log('Profile creation deferred - user will complete setup:', profileError.message)
+        // Don't throw - user is authenticated, they'll complete profile setup in dashboard
+      }
       return user
     } catch (error) {
       // If popup fails for any reason, fall back to redirect
@@ -248,7 +302,12 @@ export function AuthProvider({ children }) {
         const result = await getRedirectResult(auth)
         if (result?.user) {
           // Successfully signed in via redirect
-          await createUserProfile(result.user)
+          try {
+            await createUserProfile(result.user)
+          } catch (profileError) {
+            console.log('Profile creation deferred - user will complete setup:', profileError.message)
+            // Don't throw - user is authenticated, they'll complete profile setup in dashboard
+          }
           localStorage.removeItem('cjs2026_auth_pending')
         }
       } catch (error) {
@@ -290,6 +349,8 @@ export function AuthProvider({ children }) {
     loading,
     authError, // For redirect auth errors
     clearAuthError,
+    needsProfileSetup, // True if user needs to complete profile (no displayName)
+    completeProfileSetup, // Function to complete profile setup
     sendMagicLink,
     completeSignInWithEmailLink,
     isEmailLink,
