@@ -95,15 +95,29 @@ function Login() {
     setLoading(true)
 
     try {
-      await loginWithGoogle()
+      const result = await loginWithGoogle()
+      // If null, the popup was cancelled/multiple popups - just reset state
+      if (result === null) {
+        setLoading(false)
+        return
+      }
       localStorage.setItem(LAST_SIGNIN_KEY, 'google')
       window.location.href = '/dashboard'
     } catch (err) {
       console.error('Google login error:', err)
-      if (err.code === 'auth/popup-closed-by-user') {
+      // Handle user-friendly error messages from AuthContext
+      if (err.message && !err.code) {
+        setError(err.message)
+      } else if (err.code === 'auth/popup-closed-by-user') {
         setError('Sign-in cancelled. Please try again.')
+      } else if (err.code === 'auth/popup-blocked') {
+        setError('Popup was blocked by your browser. Please allow popups for this site or try the email option.')
+      } else if (err.code === 'auth/network-request-failed') {
+        setError('Network error. Please check your internet connection.')
+      } else if (err.code === 'auth/internal-error') {
+        setError('Google sign-in encountered an error. Please try the email option instead.')
       } else {
-        setError('Failed to sign in with Google. Please try again.')
+        setError('Failed to sign in with Google. Please try the email sign-in option instead.')
       }
     } finally {
       setLoading(false)

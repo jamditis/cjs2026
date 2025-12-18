@@ -9,7 +9,7 @@ import {
   isSignInWithEmailLink,
   signInWithEmailLink
 } from 'firebase/auth'
-import { doc, setDoc, getDoc, serverTimestamp, arrayUnion, arrayRemove, collection, query, where, getDocs } from 'firebase/firestore'
+import { doc, setDoc, getDoc, serverTimestamp, arrayUnion, arrayRemove } from 'firebase/firestore'
 import { auth, db } from '../firebase'
 
 // Email link settings
@@ -33,77 +33,55 @@ export function AuthProvider({ children }) {
   // IMPORTANT: 'role' is reserved for system permissions (admin, super_admin)
   // Use 'jobTitle' for user's job/position at their organization
   async function createUserProfile(user, additionalData = {}) {
-    if (!user) return
+    if (!user) return null
 
-    const userRef = doc(db, 'users', user.uid)
-    const snapshot = await getDoc(userRef)
+    try {
+      const userRef = doc(db, 'users', user.uid)
+      const snapshot = await getDoc(userRef)
 
-    if (!snapshot.exists()) {
-      const { email, displayName, photoURL } = user
+      if (!snapshot.exists()) {
+        const { email, displayName, photoURL } = user
 
-      // Check for existing user with same email (prevents duplicates from different auth providers)
-      const existingUserQuery = query(
-        collection(db, 'users'),
-        where('email', '==', email)
-      )
-      const existingUsers = await getDocs(existingUserQuery)
-
-      if (!existingUsers.empty) {
-        // User with this email already exists - log warning and use existing profile
-        console.warn(`User with email ${email} already exists with different UID. Using existing profile.`)
-        const existingDoc = existingUsers.docs[0]
-        // Update the existing document to also track this UID
-        await setDoc(doc(db, 'users', existingDoc.id), {
-          linkedUIDs: arrayUnion(user.uid),
-          updatedAt: serverTimestamp()
-        }, { merge: true })
-        // Return the existing profile
-        const profile = { id: existingDoc.id, ...existingDoc.data() }
-        setUserProfile(profile)
-        return profile
+        // Create new profile - Firebase Auth handles duplicate emails at auth level
+        // Note: If user signs in with different providers, they get linked automatically
+        // if "One account per email address" is enabled in Firebase Console
+        await setDoc(userRef, {
+          email,
+          displayName: displayName || additionalData.displayName || '',
+          photoURL: photoURL || '',
+          organization: additionalData.organization || '',
+          jobTitle: additionalData.jobTitle || '', // User's job title (NOT system role)
+          // Note: 'role' field is NOT set here - it's only for admin permissions
+          registrationStatus: 'pending', // pending, registered, confirmed
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+        })
       }
 
-      // No existing user - create new profile
-      await setDoc(userRef, {
-        email,
-        displayName: displayName || additionalData.displayName || '',
-        photoURL: photoURL || '',
-        organization: additionalData.organization || '',
-        jobTitle: additionalData.jobTitle || '', // User's job title (NOT system role)
-        // Note: 'role' field is NOT set here - it's only for admin permissions
-        registrationStatus: 'pending', // pending, registered, confirmed
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-      })
+      return getUserProfile(user.uid)
+    } catch (error) {
+      console.error('Error creating user profile:', error)
+      // Return null but don't throw - let the user continue to dashboard
+      // The dashboard will handle missing profile data gracefully
+      return null
     }
-
-    return getUserProfile(user.uid)
   }
 
   // Get user profile from Firestore
-  // Also checks by email if UID lookup fails (handles different auth providers)
   async function getUserProfile(uid) {
-    const userRef = doc(db, 'users', uid)
-    const snapshot = await getDoc(userRef)
-    if (snapshot.exists()) {
-      const profile = { id: snapshot.id, ...snapshot.data() }
-      setUserProfile(profile)
-      return profile
+    try {
+      const userRef = doc(db, 'users', uid)
+      const snapshot = await getDoc(userRef)
+      if (snapshot.exists()) {
+        const profile = { id: snapshot.id, ...snapshot.data() }
+        setUserProfile(profile)
+        return profile
+      }
+      return null
+    } catch (error) {
+      console.error('Error getting user profile:', error)
+      return null
     }
-
-    // If not found by UID, try to find by linkedUIDs (in case of multiple auth providers)
-    const linkedQuery = query(
-      collection(db, 'users'),
-      where('linkedUIDs', 'array-contains', uid)
-    )
-    const linkedResults = await getDocs(linkedQuery)
-    if (!linkedResults.empty) {
-      const profile = { id: linkedResults.docs[0].id, ...linkedResults.docs[0].data() }
-      setUserProfile(profile)
-      return profile
-    }
-
-    return null
   }
 
   // Update user profile
@@ -207,10 +185,26 @@ export function AuthProvider({ children }) {
 
   // Sign in with Google
   async function loginWithGoogle() {
-    const provider = new GoogleAuthProvider()
-    const { user } = await signInWithPopup(auth, provider)
-    await createUserProfile(user)
-    return user
+    try {
+      const provider = new GoogleAuthProvider()
+      const { user } = await signInWithPopup(auth, provider)
+      await createUserProfile(user)
+      return user
+    } catch (error) {
+      // Handle specific Google auth errors with user-friendly messages
+      if (error.code === 'auth/popup-blocked') {
+        throw new Error('Popup was blocked. Please allow popups for this site.')
+      } else if (error.code === 'auth/popup-closed-by-user') {
+        throw new Error('Sign-in was cancelled.')
+      } else if (error.code === 'auth/cancelled-popup-request') {
+        // Multiple popups - ignore this one
+        return null
+      } else if (error.code === 'auth/network-request-failed') {
+        throw new Error('Network error. Please check your connection.')
+      }
+      console.error('Google login error:', error)
+      throw error
+    }
   }
 
   // Sign out
@@ -225,7 +219,12 @@ export function AuthProvider({ children }) {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setCurrentUser(user)
       if (user) {
-        await getUserProfile(user.uid)
+        try {
+          await getUserProfile(user.uid)
+        } catch (error) {
+          console.error('Error loading user profile:', error)
+          // Still set loading to false so the app can continue
+        }
       } else {
         setUserProfile(null)
       }
