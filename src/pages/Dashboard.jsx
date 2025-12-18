@@ -750,109 +750,48 @@ function Dashboard() {
             </p>
           </motion.div>
 
-          {/* Gated Access View - shown to pending users */}
+          {/* Pending Approval Banner - shown at top for pending users */}
           {!hasFullAccess && (
             <motion.div
-              className="card-sketch p-8 text-center"
-              initial={{ opacity: 0, y: 20 }}
+              className="card-sketch p-4 mb-6 border-brand-cardinal/30 bg-brand-cardinal/5"
+              initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
             >
-              <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-brand-teal/10 flex items-center justify-center">
-                <Clock className="w-10 h-10 text-brand-teal" />
-              </div>
-              <h2 className="font-heading text-2xl font-semibold text-brand-ink mb-3">
-                Account pending approval
-              </h2>
-              <p className="font-body text-brand-ink/70 mb-6 max-w-md mx-auto">
-                Your account is awaiting approval. Once you've purchased a ticket or been approved by an administrator,
-                you'll have full access to your dashboard, personal schedule builder, and attendee networking features.
-              </p>
-
-              <div className="space-y-4">
-                {/* Ticket purchase option */}
-                <div className="p-4 rounded-xl bg-brand-cream/50 border border-brand-ink/10">
-                  <div className="flex items-center gap-3 mb-2">
-                    <Ticket className="w-5 h-5 text-brand-teal" />
-                    <h3 className="font-heading font-semibold text-brand-ink">Purchase a ticket</h3>
-                  </div>
-                  <p className="font-body text-sm text-brand-ink/60 mb-3">
-                    Get immediate access by registering for CJS2026.
-                  </p>
-                  <a
-                    href="https://www.eventbrite.com/e/2026-collaborative-journalism-summit-tickets-1977919688031?aff=oddtdtcreator"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn-primary inline-flex items-center gap-2"
-                  >
-                    <Ticket className="w-4 h-4" />
-                    Get tickets
-                  </a>
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 rounded-full bg-brand-cardinal/10 flex items-center justify-center flex-shrink-0">
+                  <Clock className="w-5 h-5 text-brand-cardinal" />
                 </div>
-
-                {/* Notification option */}
-                {!userProfile?.notifyWhenTicketsAvailable && (
-                  <div className="p-4 rounded-xl bg-white border border-brand-ink/10">
-                    <div className="flex items-center gap-3 mb-2">
-                      <AlertCircle className="w-5 h-5 text-brand-cardinal" />
-                      <h3 className="font-heading font-semibold text-brand-ink">Tickets not available yet?</h3>
-                    </div>
-                    <p className="font-body text-sm text-brand-ink/60 mb-3">
-                      We'll notify you as soon as registration opens.
-                    </p>
-                    <button
-                      onClick={async () => {
-                        await updateUserProfile(currentUser.uid, { notifyWhenTicketsAvailable: true })
-                        setToast({ type: 'success', message: "We'll notify you when tickets are available!" })
-                      }}
-                      className="btn-secondary inline-flex items-center gap-2"
+                <div className="flex-1">
+                  <h3 className="font-heading font-semibold text-brand-cardinal mb-1">
+                    Account pending approval
+                  </h3>
+                  <p className="font-body text-sm text-brand-ink/70 mb-3">
+                    Complete your profile below while you wait. Once you've purchased a ticket or been approved,
+                    you'll unlock the personal schedule builder and attendee networking features.
+                  </p>
+                  <div className="flex flex-wrap gap-3">
+                    <a
+                      href="https://www.eventbrite.com/e/2026-collaborative-journalism-summit-tickets-1977919688031?aff=oddtdtcreator"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-primary py-2 px-4 text-sm inline-flex items-center gap-2"
                     >
-                      Notify me
-                    </button>
+                      <Ticket className="w-4 h-4" />
+                      Get tickets
+                    </a>
+                    <span className="font-body text-xs text-brand-ink/50 self-center">
+                      or contact{' '}
+                      <a href="mailto:summit@collaborativejournalism.org" className="text-brand-teal hover:underline">
+                        summit@collaborativejournalism.org
+                      </a>
+                    </span>
                   </div>
-                )}
-
-                {userProfile?.notifyWhenTicketsAvailable && (
-                  <div className="p-4 rounded-xl bg-brand-teal/5 border border-brand-teal/20">
-                    <div className="flex items-center gap-2 text-brand-teal">
-                      <CheckCircle className="w-5 h-5" />
-                      <span className="font-body font-medium">You're on the notification list</span>
-                    </div>
-                    <p className="font-body text-sm text-brand-ink/60 mt-1">
-                      We'll email you at {currentUser?.email} when tickets become available.
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              {/* Contact info */}
-              <p className="font-body text-sm text-brand-ink/50 mt-6">
-                Already purchased a ticket? Contact us at{' '}
-                <a href="mailto:summit@collaborativejournalism.org" className="text-brand-teal hover:underline">
-                  summit@collaborativejournalism.org
-                </a>{' '}
-                to verify your registration.
-              </p>
-
-              {/* Sign out option */}
-              <div className="mt-6 pt-6 border-t border-brand-ink/10">
-                <p className="font-body text-sm text-brand-ink/50 mb-3">
-                  Signed in as <span className="font-medium text-brand-ink/70">{currentUser?.email}</span>
-                </p>
-                <button
-                  onClick={logout}
-                  className="inline-flex items-center gap-2 text-sm text-brand-ink/60 hover:text-brand-cardinal transition-colors"
-                >
-                  <LogOut className="w-4 h-4" />
-                  Sign out and use a different account
-                </button>
+                </div>
               </div>
             </motion.div>
           )}
 
-          {/* Full Dashboard - only shown to approved/registered users */}
-          {hasFullAccess && (
-            <>
+          {/* Main Dashboard - shown to ALL logged-in users */}
           {/* Profile Setup Modal */}
           <AnimatePresence>
             {showTutorial && (
@@ -1424,9 +1363,9 @@ function Dashboard() {
                 </Link>
               </motion.div>
 
-              {/* My Schedule section */}
+              {/* My Schedule section - gated for pending users */}
               <motion.div
-                className="card-sketch p-6"
+                className={`card-sketch p-6 ${!hasFullAccess ? 'opacity-60' : ''}`}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
@@ -1435,14 +1374,32 @@ function Dashboard() {
                   <h2 className="font-heading font-semibold text-xl text-brand-ink">
                     My schedule
                   </h2>
-                  <Link
-                    to="/my-schedule"
-                    className="text-brand-teal hover:underline text-sm font-body"
-                  >
-                    View all
-                  </Link>
+                  {hasFullAccess ? (
+                    <Link
+                      to="/my-schedule"
+                      className="text-brand-teal hover:underline text-sm font-body"
+                    >
+                      View all
+                    </Link>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 px-2 py-1 bg-brand-cardinal/10 text-brand-cardinal text-xs rounded-full">
+                      <Clock className="w-3 h-3" />
+                      Locked
+                    </span>
+                  )}
                 </div>
-                <MySchedule compact={true} maxSessions={5} showViewAll={false} />
+                {hasFullAccess ? (
+                  <MySchedule compact={true} maxSessions={5} showViewAll={false} />
+                ) : (
+                  <div className="text-center py-6">
+                    <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-brand-ink/5 flex items-center justify-center">
+                      <Calendar className="w-6 h-6 text-brand-ink/30" />
+                    </div>
+                    <p className="font-body text-sm text-brand-ink/50">
+                      Build your personal schedule after approval
+                    </p>
+                  </div>
+                )}
               </motion.div>
             </div>
 
@@ -2071,8 +2028,6 @@ function Dashboard() {
               )}
             </div>
           </div>
-            </>
-          )}
         </div>
       </div>
       <Footer />
