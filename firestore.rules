@@ -2,15 +2,63 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // User profiles - users can read/write their own profile
-    match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+    // Helper function to check if user is admin
+    function isAdmin() {
+      return request.auth != null &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
-    // Email signups - anyone can create, only authenticated admins can read
+    // Helper function to check if user is super admin
+    function isSuperAdmin() {
+      return request.auth != null &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'super_admin';
+    }
+
+    // User profiles
+    match /users/{userId} {
+      // Users can read/write their own profile
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+      // Admins can read all profiles (for admin panel)
+      allow read: if isAdmin() || isSuperAdmin();
+      // Only super admins can change user roles
+      allow update: if isSuperAdmin() &&
+                      request.resource.data.diff(resource.data).affectedKeys().hasOnly(['role', 'updatedAt']);
+    }
+
+    // Email signups - anyone can create, only Cloud Functions can read
     match /email_signups/{document=**} {
       allow create: if true;
       allow read, update, delete: if false;
+    }
+
+    // Activity logs - only admins can read, only Cloud Functions can write
+    match /activity_logs/{logId} {
+      allow read: if isAdmin() || isSuperAdmin();
+      allow write: if false; // Only Cloud Functions can write
+    }
+
+    // Admin audit logs - only admins can read, only Cloud Functions can write
+    match /admin_logs/{logId} {
+      allow read: if isAdmin() || isSuperAdmin();
+      allow write: if false; // Only Cloud Functions can write
+    }
+
+    // System errors - only admins can read, only Cloud Functions can write
+    match /system_errors/{errorId} {
+      allow read: if isAdmin() || isSuperAdmin();
+      allow write: if false; // Only Cloud Functions can write
+    }
+
+    // Background jobs - only admins can read, only Cloud Functions can write
+    match /background_jobs/{jobId} {
+      allow read: if isAdmin() || isSuperAdmin();
+      allow write: if false; // Only Cloud Functions can write
+    }
+
+    // Edit requests - anyone can create, only admins can read/update
+    match /edit_requests/{requestId} {
+      allow create: if request.auth != null;
+      allow read, update: if isAdmin() || isSuperAdmin();
     }
 
     // Default deny all
