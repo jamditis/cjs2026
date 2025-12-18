@@ -902,11 +902,105 @@ Replaced incorrect OG social share image:
 
 | Email | Purpose |
 |-------|---------|
-| amditisj@montclair.edu | Joe (super admin) |
 | jamditis@gmail.com | Joe (super admin) |
-| murrays@montclair.edu | Stefanie |
+| murrayst@montclair.edu | Stefanie |
+| etiennec@montclair.edu | Etienne |
 
 *New admins should be added via Firestore role field, not hardcoded.*
+
+---
+
+## Updates (2025-12-18 evening session)
+
+### Bug fixes
+
+**1. Firestore document not created on Google sign-in**
+- **Root cause:** `createUserProfile()` returned early without creating document when Google account lacked a `displayName` (common with Google Workspace accounts)
+- **Fix:** Now always creates document with full 20+ field schema, then flags for profile completion if displayName missing
+- **File:** `src/contexts/AuthContext.jsx`
+
+**2. Partial documents created by updateUserProfile**
+- **Root cause:** Using `merge: true` on non-existent documents creates partial documents with only the passed fields
+- **Fix:** Added `ensureUserDocumentExists()` helper that checks if document exists before any merge operation; if not, creates it with full schema first
+- **Files:** `src/contexts/AuthContext.jsx` - Updated `updateUserProfile`, `saveSession`, `unsaveSession`, `updateScheduleVisibility`
+
+**3. Dashboard crash for unknown registration status**
+- **Root cause:** `statusConfig[registrationStatus]` returned undefined for status values like "approved"
+- **Fix:** Added fallback `|| statusConfig.pending` and added 'approved' as alias for 'registered' in hasFullAccess check
+- **File:** `src/pages/Dashboard.jsx`
+
+**4. Admin panel access denied for ADMIN_EMAILS users**
+- **Root cause:** Cloud Function `isAdmin()` only checked Firestore `role` field, not the hardcoded ADMIN_EMAILS list that Dashboard.jsx uses
+- **Fix:** Added ADMIN_EMAILS list to Cloud Functions and updated `isAdmin()` to check both email list and role field
+- **File:** `functions/index.js`
+
+**5. Airtable API 401 error in getSiteContent**
+- **Root cause:** Expired Airtable API token
+- **Fix:** Updated `AIRTABLE_API_KEY` Firebase secret with new token
+- **Command:** `firebase functions:secrets:set AIRTABLE_API_KEY`
+
+### UX improvements
+
+**Softened pending approval wall**
+- **Before:** Full-page blocker prevented pending users from doing anything
+- **After:** Compact banner at top + full dashboard access
+- Pending users can now:
+  - Complete profile wizard (name, photo, organization, badges)
+  - Edit their profile
+  - View event details and quick links
+- Still gated for pending users:
+  - MySchedule widget shows "Locked" badge and "Build your personal schedule after approval"
+  - Personal schedule builder features
+
+### New files
+
+| File | Purpose |
+|------|---------|
+| `docs/USER_PROFILE_SCHEMA.md` | Complete user document schema with all 20+ fields |
+| `docs/test-user-example.json` | JSON template for creating test users |
+| `scripts/clear-test-users.cjs` | Script for cleaning up test user records |
+
+### Updated admin emails
+
+Removed old emails, updated to current team:
+- `jamditis@gmail.com` (super admin)
+- `murrayst@montclair.edu` (admin)
+- `etiennec@montclair.edu` (admin)
+
+Files updated: `Dashboard.jsx`, `functions/index.js`, `scripts/clear-test-users.cjs`
+
+---
+
+## Pre-launch backlog
+
+### Must-fix before launch
+
+| Item | Priority | Status |
+|------|----------|--------|
+| Test fresh sign-up flow with Denise Shannon | High | Pending |
+| Verify Firestore documents created correctly | High | Pending |
+| Deploy Firebase Storage rules for profile photos | Medium | Pending |
+| Add Attendees table fields in Airtable | Medium | Pending |
+
+### Nice-to-have
+
+| Item | Priority | Status |
+|------|----------|--------|
+| Additional frontend polish (Gemini) | Low | In progress |
+| Email notifications for account approval (via Airtable automation) | Low | Backlog |
+| Firestore security rules for schedule sharing | Low | Backlog |
+
+### Testing checklist
+
+- [ ] New user can sign in with Google (Workspace account)
+- [ ] Firestore document created with all 20+ fields
+- [ ] Profile wizard appears for users without displayName
+- [ ] Pending users see banner + can edit profile
+- [ ] Pending users see "Locked" on MySchedule widget
+- [ ] Approved users have full dashboard access
+- [ ] Admin panel accessible to ADMIN_EMAILS users
+- [ ] Admin can approve pending users
+- [ ] Admin can grant/revoke admin roles
 
 ---
 
