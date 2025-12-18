@@ -5,6 +5,8 @@ import {
   updateProfile,
   GoogleAuthProvider,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   sendSignInLinkToEmail,
   isSignInWithEmailLink,
   signInWithEmailLink
@@ -28,6 +30,7 @@ export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null)
   const [userProfile, setUserProfile] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [authError, setAuthError] = useState(null) // For redirect errors
 
   // Create user profile in Firestore
   // IMPORTANT: 'role' is reserved for system permissions (admin, super_admin)
@@ -183,28 +186,52 @@ export function AuthProvider({ children }) {
     return isSignInWithEmailLink(auth, url)
   }
 
-  // Sign in with Google
+  // Sign in with Google - uses redirect for maximum browser compatibility
   async function loginWithGoogle() {
+    setAuthError(null)
+    const provider = new GoogleAuthProvider()
+
+    // Check if we're on mobile or a browser known to have popup issues
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
+
+    // Use redirect for mobile and Safari (more reliable), popup for desktop Chrome/Firefox/Edge
+    if (isMobile || isSafari) {
+      // Redirect-based auth - page will reload after auth
+      localStorage.setItem('cjs2026_auth_pending', 'google')
+      await signInWithRedirect(auth, provider)
+      return null // Will complete after redirect
+    }
+
+    // Try popup first for desktop browsers
     try {
-      const provider = new GoogleAuthProvider()
       const { user } = await signInWithPopup(auth, provider)
       await createUserProfile(user)
       return user
     } catch (error) {
-      // Handle specific Google auth errors with user-friendly messages
-      if (error.code === 'auth/popup-blocked') {
-        throw new Error('Popup was blocked. Please allow popups for this site.')
-      } else if (error.code === 'auth/popup-closed-by-user') {
-        throw new Error('Sign-in was cancelled.')
-      } else if (error.code === 'auth/cancelled-popup-request') {
-        // Multiple popups - ignore this one
-        return null
-      } else if (error.code === 'auth/network-request-failed') {
+      // If popup fails for any reason, fall back to redirect
+      if (error.code === 'auth/popup-blocked' ||
+          error.code === 'auth/popup-closed-by-user' ||
+          error.code === 'auth/cancelled-popup-request' ||
+          error.code === 'auth/internal-error') {
+        console.log('Popup failed, falling back to redirect:', error.code)
+        localStorage.setItem('cjs2026_auth_pending', 'google')
+        await signInWithRedirect(auth, provider)
+        return null // Will complete after redirect
+      }
+
+      if (error.code === 'auth/network-request-failed') {
         throw new Error('Network error. Please check your connection.')
       }
+
       console.error('Google login error:', error)
       throw error
     }
+  }
+
+  // Clear any pending auth error
+  function clearAuthError() {
+    setAuthError(null)
   }
 
   // Sign out
@@ -213,6 +240,29 @@ export function AuthProvider({ children }) {
     return signOut(auth)
   }
 
+
+  // Handle redirect result on page load (for browsers that used redirect auth)
+  useEffect(() => {
+    async function handleRedirectResult() {
+      try {
+        const result = await getRedirectResult(auth)
+        if (result?.user) {
+          // Successfully signed in via redirect
+          await createUserProfile(result.user)
+          localStorage.removeItem('cjs2026_auth_pending')
+        }
+      } catch (error) {
+        console.error('Redirect auth error:', error)
+        localStorage.removeItem('cjs2026_auth_pending')
+        setAuthError('Failed to complete sign-in. Please try again.')
+      }
+    }
+
+    // Only check for redirect result if we were expecting one
+    if (localStorage.getItem('cjs2026_auth_pending')) {
+      handleRedirectResult()
+    }
+  }, [])
 
   // Listen to auth state changes
   useEffect(() => {
@@ -238,6 +288,8 @@ export function AuthProvider({ children }) {
     currentUser,
     userProfile,
     loading,
+    authError, // For redirect auth errors
+    clearAuthError,
     sendMagicLink,
     completeSignInWithEmailLink,
     isEmailLink,

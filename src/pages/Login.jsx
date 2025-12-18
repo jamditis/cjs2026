@@ -17,8 +17,23 @@ function Login() {
   const [emailSent, setEmailSent] = useState(false)
   const [lastMethod, setLastMethod] = useState(null)
   const [cooldownRemaining, setCooldownRemaining] = useState(0)
+  const [redirectPending, setRedirectPending] = useState(false)
 
-  const { sendMagicLink, loginWithGoogle } = useAuth()
+  const { sendMagicLink, loginWithGoogle, authError, clearAuthError, currentUser } = useAuth()
+
+  // Check for pending redirect on mount
+  useEffect(() => {
+    const pending = localStorage.getItem('cjs2026_auth_pending')
+    if (pending) {
+      setRedirectPending(true)
+      // Clear after a timeout in case redirect never completes
+      const timeout = setTimeout(() => {
+        localStorage.removeItem('cjs2026_auth_pending')
+        setRedirectPending(false)
+      }, 10000) // 10 second timeout
+      return () => clearTimeout(timeout)
+    }
+  }, [])
 
   // Calculate remaining cooldown time
   const calculateCooldown = useCallback(() => {
@@ -30,6 +45,21 @@ function Login() {
     }
     return 0
   }, [])
+
+  // Redirect to dashboard if already logged in
+  useEffect(() => {
+    if (currentUser) {
+      window.location.href = '/dashboard'
+    }
+  }, [currentUser])
+
+  // Show auth errors from redirect flow
+  useEffect(() => {
+    if (authError) {
+      setError(authError)
+      clearAuthError()
+    }
+  }, [authError, clearAuthError])
 
   // Load last sign-in method and check cooldown
   useEffect(() => {
@@ -96,8 +126,15 @@ function Login() {
 
     try {
       const result = await loginWithGoogle()
-      // If null, the popup was cancelled/multiple popups - just reset state
+      // If null, redirect is in progress OR popup was cancelled
+      // For redirect, the page will reload and auth will complete
       if (result === null) {
+        // Check if we're doing a redirect (loading state should stay on)
+        if (localStorage.getItem('cjs2026_auth_pending')) {
+          // Redirect in progress - keep loading state
+          return
+        }
+        // Popup was cancelled - reset loading state
         setLoading(false)
         return
       }
@@ -108,20 +145,49 @@ function Login() {
       // Handle user-friendly error messages from AuthContext
       if (err.message && !err.code) {
         setError(err.message)
-      } else if (err.code === 'auth/popup-closed-by-user') {
-        setError('Sign-in cancelled. Please try again.')
-      } else if (err.code === 'auth/popup-blocked') {
-        setError('Popup was blocked by your browser. Please allow popups for this site or try the email option.')
       } else if (err.code === 'auth/network-request-failed') {
         setError('Network error. Please check your internet connection.')
-      } else if (err.code === 'auth/internal-error') {
-        setError('Google sign-in encountered an error. Please try the email option instead.')
       } else {
         setError('Failed to sign in with Google. Please try the email sign-in option instead.')
       }
-    } finally {
       setLoading(false)
     }
+  }
+
+  // Redirect in progress - show loading state
+  if (redirectPending) {
+    return (
+      <>
+        <Navbar />
+        <div className="min-h-screen bg-paper pt-24 pb-16 flex items-center justify-center px-6">
+          <motion.div
+            className="w-full max-w-md text-center"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <div className="card-sketch p-8">
+              <div className="w-16 h-16 rounded-full bg-brand-teal/10 flex items-center justify-center mx-auto mb-6">
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                >
+                  <svg className="w-8 h-8 text-brand-teal" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+                  </svg>
+                </motion.div>
+              </div>
+              <h1 className="editorial-headline text-2xl md:text-3xl text-brand-ink mb-4">
+                Completing sign-in...
+              </h1>
+              <p className="font-body text-brand-ink/60">
+                Please wait while we finish signing you in with Google.
+              </p>
+            </div>
+          </motion.div>
+        </div>
+        <Footer />
+      </>
+    )
   }
 
   // Success state - email sent
