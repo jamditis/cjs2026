@@ -46,17 +46,43 @@ async function verifyAuthToken(authHeader) {
   };
 }
 
+// Admin emails - fallback for users who should have admin access
+// This must match the ADMIN_EMAILS in Dashboard.jsx
+const ADMIN_EMAILS = [
+  "amditisj@montclair.edu",
+  "jamditis@gmail.com",
+  "murrays@montclair.edu",
+];
+
 /**
- * Check if user has admin role in Firestore
+ * Check if user has admin role in Firestore OR is in ADMIN_EMAILS list
  * @param {string} uid - User ID
+ * @param {string} email - User email (optional, for email-based fallback)
  * @returns {Promise<boolean>} True if user is admin or super_admin
  */
-async function isAdmin(uid) {
+async function isAdmin(uid, email = null) {
+  // First check email-based admin list (fast, no DB read needed)
+  if (email && ADMIN_EMAILS.includes(email)) {
+    return true;
+  }
+
+  // Then check Firestore role field
   const userDoc = await db.collection('users').doc(uid).get();
   if (!userDoc.exists) return false;
 
-  const role = userDoc.data().role;
-  return role === 'admin' || role === 'super_admin';
+  const userData = userDoc.data();
+
+  // Check role field
+  if (userData.role === 'admin' || userData.role === 'super_admin') {
+    return true;
+  }
+
+  // Check email from Firestore if not provided
+  if (!email && userData.email && ADMIN_EMAILS.includes(userData.email)) {
+    return true;
+  }
+
+  return false;
 }
 
 /**
@@ -78,7 +104,7 @@ async function isSuperAdmin(uid) {
  */
 async function requireAdmin(req) {
   const user = await verifyAuthToken(req.headers.authorization);
-  const adminStatus = await isAdmin(user.uid);
+  const adminStatus = await isAdmin(user.uid, user.email);
 
   if (!adminStatus) {
     throw new Error('Unauthorized: Admin access required');
