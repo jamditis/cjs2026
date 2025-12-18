@@ -1,0 +1,43 @@
+{
+  "email": "testuser@example.com",
+  "displayName": "Test McTestface",
+  "photoURL": "https://api.dicebear.com/7.x/avataaars/svg?seed=TestUser",
+
+  "organization": "Test News Organization",
+  "jobTitle": "Senior Test Engineer",
+
+  "website": "testuser.com",
+  "instagram": "testuser",
+  "linkedin": "testuser",
+  "bluesky": "testuser.bsky.social",
+
+  "registrationStatus": "registered",
+  "role": null,
+  "notifyWhenTicketsAvailable": true,
+
+  "eventbriteAttendeeId": "1234567890",
+  "eventbriteOrderId": "9876543210",
+
+  "savedSessions": ["mon-keynote", "mon-session-1", "tue-workshop-1"],
+  "scheduleVisibility": "public",
+
+  "attendedSummits": [2017, 2019, 2022, 2023, 2024, 2025],
+  "badges": [
+    "collab-veteran",
+    "role-technologist",
+    "value-open-source",
+    "misc-data-hound"
+  ],
+  "customBadges": {
+    "philosophy": [
+      { "id": "custom-phil-1", "label": "coffee powered", "emoji": "☕" }
+    ],
+    "misc": [
+      { "id": "custom-misc-1", "label": "keyboard warrior", "emoji": "⌨️" },
+      { "id": "custom-misc-2", "label": "bug hunter", "emoji": "🐛" }
+    ]
+  },
+
+  "createdAt": "2024-12-18T12:00:00Z",
+  "updatedAt": "2024-12-18T12:00:00Z"
+}

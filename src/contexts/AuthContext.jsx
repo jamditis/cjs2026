@@ -33,6 +33,53 @@ export function AuthProvider({ children }) {
   const [authError, setAuthError] = useState(null) // For redirect errors
   const [needsProfileSetup, setNeedsProfileSetup] = useState(false) // True if user authenticated but has no/incomplete profile
 
+  // ============================================
+  // User Profile Schema
+  // ============================================
+  // All user documents should have ALL fields initialized for consistency.
+  // This prevents "undefined" errors and makes queries predictable.
+
+  function getEmptyProfileSchema() {
+    return {
+      // Core identity
+      email: '',
+      displayName: '',
+      photoURL: '',
+
+      // Professional info
+      organization: '',
+      jobTitle: '',
+
+      // Social links
+      website: '',
+      instagram: '',
+      linkedin: '',
+      bluesky: '',
+
+      // Registration & status
+      registrationStatus: 'pending', // pending, registered, confirmed
+      role: null, // null, 'admin', 'super_admin' (system permissions only)
+      notifyWhenTicketsAvailable: false,
+
+      // Eventbrite integration (set by webhook)
+      eventbriteAttendeeId: null,
+      eventbriteOrderId: null,
+
+      // Schedule features
+      savedSessions: [],
+      scheduleVisibility: 'private', // private, attendees_only, public
+
+      // Summit history & badges
+      attendedSummits: [], // Array of years: [2017, 2018, ...]
+      badges: [], // Array of badge IDs
+      customBadges: {}, // { philosophy: [...], misc: [...] }
+
+      // Timestamps
+      createdAt: null,
+      updatedAt: null,
+    }
+  }
+
   // Create user profile in Firestore
   // IMPORTANT: 'role' is reserved for system permissions (admin, super_admin)
   // Use 'jobTitle' for user's job/position at their organization
@@ -55,19 +102,19 @@ export function AuthProvider({ children }) {
           return null
         }
 
-        // Create new profile with required fields
-        await setDoc(userRef, {
+        // Create new profile with ALL fields initialized
+        const newProfile = {
+          ...getEmptyProfileSchema(),
           email,
           displayName: finalDisplayName,
           photoURL: photoURL || '',
           organization: additionalData.organization || '',
-          jobTitle: additionalData.jobTitle || '', // User's job title (NOT system role)
-          // Note: 'role' field is NOT set here - it's only for admin permissions
-          registrationStatus: 'pending', // pending, registered, confirmed
+          jobTitle: additionalData.jobTitle || '',
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp(),
-        })
+        }
 
+        await setDoc(userRef, newProfile)
         setNeedsProfileSetup(false)
       } else {
         // Profile exists - check if it's complete (has required fields)
@@ -99,16 +146,17 @@ export function AuthProvider({ children }) {
 
     const userRef = doc(db, 'users', currentUser.uid)
 
-    await setDoc(userRef, {
+    // Create profile with ALL fields initialized
+    const newProfile = {
+      ...getEmptyProfileSchema(),
       email: email || currentUser.email,
       displayName: displayName.trim(),
       photoURL: currentUser.photoURL || '',
-      organization: '',
-      jobTitle: '',
-      registrationStatus: 'pending',
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
-    }, { merge: true }) // merge: true so we don't overwrite if partial doc exists
+    }
+
+    await setDoc(userRef, newProfile, { merge: true })
 
     setNeedsProfileSetup(false)
     return getUserProfile(currentUser.uid)
