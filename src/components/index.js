@@ -12,3 +12,6 @@ export { default as Footer } from './Footer';
 export { default as Layout } from './Layout';
 export { default as ProtectedRoute } from './ProtectedRoute';
 export { default as ScrollToTop } from './ScrollToTop';
+export { default as AnnouncementBanner } from './AnnouncementBanner';
+export { default as PublicLayout } from './PublicLayout';
+export { default as HeroAnnouncement } from './HeroAnnouncement';

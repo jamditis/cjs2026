@@ -17,6 +17,7 @@ function App() {
         <ContentProvider>
           <AuthProvider>
             <Routes>
+            {/* Public pages */}
             <Route path="/" element={<Home />} />
             <Route path="/schedule" element={<Schedule />} />
             <Route path="/sponsors" element={<Sponsors />} />

@@ -9,7 +9,7 @@ import {
   isSignInWithEmailLink,
   signInWithEmailLink
 } from 'firebase/auth'
-import { doc, setDoc, getDoc, serverTimestamp, arrayUnion, arrayRemove } from 'firebase/firestore'
+import { doc, setDoc, getDoc, serverTimestamp, arrayUnion, arrayRemove, collection, query, where, getDocs } from 'firebase/firestore'
 import { auth, db } from '../firebase'
 
 // Email link settings
@@ -30,6 +30,8 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true)
 
   // Create user profile in Firestore
+  // IMPORTANT: 'role' is reserved for system permissions (admin, super_admin)
+  // Use 'jobTitle' for user's job/position at their organization
   async function createUserProfile(user, additionalData = {}) {
     if (!user) return
 
@@ -38,12 +40,37 @@ export function AuthProvider({ children }) {
 
     if (!snapshot.exists()) {
       const { email, displayName, photoURL } = user
+
+      // Check for existing user with same email (prevents duplicates from different auth providers)
+      const existingUserQuery = query(
+        collection(db, 'users'),
+        where('email', '==', email)
+      )
+      const existingUsers = await getDocs(existingUserQuery)
+
+      if (!existingUsers.empty) {
+        // User with this email already exists - log warning and use existing profile
+        console.warn(`User with email ${email} already exists with different UID. Using existing profile.`)
+        const existingDoc = existingUsers.docs[0]
+        // Update the existing document to also track this UID
+        await setDoc(doc(db, 'users', existingDoc.id), {
+          linkedUIDs: arrayUnion(user.uid),
+          updatedAt: serverTimestamp()
+        }, { merge: true })
+        // Return the existing profile
+        const profile = { id: existingDoc.id, ...existingDoc.data() }
+        setUserProfile(profile)
+        return profile
+      }
+
+      // No existing user - create new profile
       await setDoc(userRef, {
         email,
         displayName: displayName || additionalData.displayName || '',
         photoURL: photoURL || '',
         organization: additionalData.organization || '',
-        role: additionalData.role || '',
+        jobTitle: additionalData.jobTitle || '', // User's job title (NOT system role)
+        // Note: 'role' field is NOT set here - it's only for admin permissions
         registrationStatus: 'pending', // pending, registered, confirmed
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
@@ -54,6 +81,7 @@ export function AuthProvider({ children }) {
   }
 
   // Get user profile from Firestore
+  // Also checks by email if UID lookup fails (handles different auth providers)
   async function getUserProfile(uid) {
     const userRef = doc(db, 'users', uid)
     const snapshot = await getDoc(userRef)
@@ -62,6 +90,19 @@ export function AuthProvider({ children }) {
       setUserProfile(profile)
       return profile
     }
+
+    // If not found by UID, try to find by linkedUIDs (in case of multiple auth providers)
+    const linkedQuery = query(
+      collection(db, 'users'),
+      where('linkedUIDs', 'array-contains', uid)
+    )
+    const linkedResults = await getDocs(linkedQuery)
+    if (!linkedResults.empty) {
+      const profile = { id: linkedResults.docs[0].id, ...linkedResults.docs[0].data() }
+      setUserProfile(profile)
+      return profile
+    }
+
     return null
   }
 

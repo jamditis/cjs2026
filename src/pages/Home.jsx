@@ -7,7 +7,6 @@ import {
   Mail,
   ExternalLink,
   ChevronDown,
-  Feather,
   Globe,
   Share2,
   Mic,
@@ -15,7 +14,7 @@ import {
   ArrowRight,
   History
 } from 'lucide-react'
-import { BlurText, ParticlesBackground } from '../components'
+import { BlurText, ParticlesBackground, HeroAnnouncement } from '../components'
 import Navbar from '../components/Navbar'
 import EmailSignup from '../components/EmailSignup'
 
@@ -309,16 +308,8 @@ function Home() {
                <p className="font-body text-brand-ink/50 mb-10">{getContent('details', 'location', 'Chapel Hill, North Carolina')}</p>
             </motion.div>
 
-            {/* 10th anniversary badge */}
-            <motion.div
-              className="inline-flex items-center gap-2 bg-brand-cardinal/10 border-2 border-brand-cardinal/30 rounded-full px-5 py-2 mb-10 transform hover:scale-105 transition-transform cursor-default"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.7 }}
-            >
-              <Feather className="w-4 h-4 text-brand-cardinal" />
-              <span className="text-brand-cardinal font-body font-medium">{getContent('details', 'badge_text', '10th anniversary edition')}</span>
-            </motion.div>
+            {/* Announcement + Anniversary badge */}
+            <HeroAnnouncement />
 
             {/* Countdown */}
             <div className="mb-10">

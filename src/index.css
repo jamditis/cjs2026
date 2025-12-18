@@ -55,6 +55,21 @@ html {
 }
 
 /* ============================================
+   Announcement Rich Text Content
+   ============================================ */
+.announcement-content a {
+  color: var(--teal-dark);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.announcement-content a:hover {
+  color: var(--teal);
+}
+
+/* ============================================
    Paper/Sketch Texture Background
    ============================================ */
 
@@ -415,4 +430,397 @@ html {
   height: 60px;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 60' preserveAspectRatio='none'%3E%3Cpath d='M0 60 L0 40 L100 25 L200 35 L300 15 L400 30 L500 10 L600 25 L700 20 L800 35 L900 15 L1000 30 L1100 25 L1200 40 L1200 60 Z' fill='%232A9D8F' opacity='0.1'/%3E%3C/svg%3E");
   background-size: 100% 100%;
+}
+
+/* ============================================
+   ADMIN COMMAND CENTER STYLES (PRD v2.1)
+   ============================================ */
+
+/* Admin Theme Variables */
+:root {
+  /* Ink theme (dark) */
+  --admin-ink: #0F172A;
+  --admin-ink-surface: #1E293B;
+  --admin-ink-elevated: #334155;
+  --admin-ink-border: #475569;
+
+  /* Parchment theme (light) */
+  --admin-parchment: #F8FAF1;
+  --admin-parchment-surface: #FFFFFF;
+  --admin-parchment-elevated: #F1F5F9;
+  --admin-parchment-border: #E2E8F0;
+
+  /* Accent colors */
+  --admin-teal: #0D9488;
+  --admin-teal-light: #14B8A6;
+  --admin-lead: #64748B;
+  --admin-amber: #F59E0B;
+  --admin-rose: #F43F5E;
+  --admin-emerald: #10B981;
+}
+
+/* Admin typography */
+.font-admin-heading {
+  font-family: 'Outfit', sans-serif;
+}
+
+.font-admin-body {
+  font-family: 'Outfit', sans-serif;
+}
+
+.font-admin-mono {
+  font-family: 'Space Mono', monospace;
+}
+
+/* Admin theme: Ink (dark mode) */
+.admin-theme-ink {
+  --admin-bg: var(--admin-ink);
+  --admin-surface: var(--admin-ink-surface);
+  --admin-elevated: var(--admin-ink-elevated);
+  --admin-border: var(--admin-ink-border);
+  --admin-text: #F8FAFC;
+  --admin-text-secondary: #94A3B8;
+  --admin-text-muted: #64748B;
+}
+
+/* Admin theme: Parchment (light mode) */
+.admin-theme-parchment {
+  --admin-bg: var(--admin-parchment);
+  --admin-surface: var(--admin-parchment-surface);
+  --admin-elevated: var(--admin-parchment-elevated);
+  --admin-border: var(--admin-parchment-border);
+  --admin-text: #0F172A;
+  --admin-text-secondary: #475569;
+  --admin-text-muted: #94A3B8;
+}
+
+/* Admin base styles */
+.admin-base {
+  background-color: var(--admin-bg);
+  color: var(--admin-text);
+  font-family: 'Outfit', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Technical grid background (80px intervals) */
+.admin-grid-bg {
+  background-color: var(--admin-bg);
+  background-image:
+    linear-gradient(var(--admin-border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--admin-border) 1px, transparent 1px);
+  background-size: 80px 80px;
+  background-position: -1px -1px;
+}
+
+/* Subtle grid (less prominent) */
+.admin-grid-subtle {
+  background-color: var(--admin-bg);
+  background-image:
+    linear-gradient(rgba(100, 116, 139, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(100, 116, 139, 0.08) 1px, transparent 1px);
+  background-size: 80px 80px;
+}
+
+/* Glass-morphism card */
+.admin-glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(13, 148, 136, 0.15);
+  border-radius: 12px;
+}
+
+/* Glass card for light theme */
+.admin-theme-parchment .admin-glass {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(13, 148, 136, 0.2);
+}
+
+/* Glass with teal tint */
+.admin-glass-teal {
+  background: rgba(13, 148, 136, 0.08);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(13, 148, 136, 0.25);
+  border-radius: 12px;
+}
+
+/* Admin surface card (no blur, solid) */
+.admin-surface {
+  background-color: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: 12px;
+}
+
+/* Admin elevated card */
+.admin-elevated {
+  background-color: var(--admin-elevated);
+  border: 1px solid var(--admin-border);
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+}
+
+/* Admin KPI card with gradient */
+.admin-kpi-card {
+  background: linear-gradient(135deg, var(--admin-surface) 0%, var(--admin-elevated) 100%);
+  border: 1px solid var(--admin-border);
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.admin-kpi-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--admin-teal), var(--admin-teal-light));
+}
+
+/* Admin input styles */
+.admin-input {
+  background-color: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: 8px;
+  color: var(--admin-text);
+  font-family: 'Outfit', sans-serif;
+  padding: 0.75rem 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.admin-input:focus {
+  outline: none;
+  border-color: var(--admin-teal);
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+}
+
+.admin-input::placeholder {
+  color: var(--admin-text-muted);
+}
+
+/* Admin button styles */
+.admin-btn-primary {
+  background-color: var(--admin-teal);
+  color: white;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 500;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.admin-btn-primary:hover {
+  background-color: var(--admin-teal-light);
+}
+
+.admin-btn-primary:active {
+  transform: scale(0.98);
+}
+
+.admin-btn-secondary {
+  background-color: transparent;
+  color: var(--admin-text);
+  font-family: 'Outfit', sans-serif;
+  font-weight: 500;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  border: 1px solid var(--admin-border);
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.admin-btn-secondary:hover {
+  background-color: var(--admin-elevated);
+  border-color: var(--admin-teal);
+}
+
+/* Admin status badges */
+.admin-badge {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 400;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.admin-badge-success {
+  background-color: rgba(16, 185, 129, 0.15);
+  color: #10B981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.admin-badge-warning {
+  background-color: rgba(245, 158, 11, 0.15);
+  color: #F59E0B;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.admin-badge-error {
+  background-color: rgba(244, 63, 94, 0.15);
+  color: #F43F5E;
+  border: 1px solid rgba(244, 63, 94, 0.3);
+}
+
+.admin-badge-info {
+  background-color: rgba(13, 148, 136, 0.15);
+  color: #0D9488;
+  border: 1px solid rgba(13, 148, 136, 0.3);
+}
+
+/* Admin progress bar */
+.admin-progress {
+  height: 8px;
+  background-color: var(--admin-elevated);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.admin-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--admin-teal), var(--admin-teal-light));
+  border-radius: 9999px;
+  transition: width 0.5s ease;
+}
+
+/* Admin data table */
+.admin-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.admin-table th {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--admin-text-secondary);
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--admin-border);
+}
+
+.admin-table td {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.875rem;
+  color: var(--admin-text);
+  padding: 1rem;
+  border-bottom: 1px solid var(--admin-border);
+}
+
+.admin-table tbody tr:hover {
+  background-color: var(--admin-elevated);
+}
+
+/* Admin mono text (for IDs, timestamps) */
+.admin-mono {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.8125rem;
+  color: var(--admin-text-secondary);
+}
+
+/* Admin section heading */
+.admin-section-heading {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: 1.5rem;
+  color: var(--admin-text);
+  letter-spacing: -0.01em;
+}
+
+/* Admin metric value */
+.admin-metric {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: 3rem;
+  line-height: 1;
+  color: var(--admin-text);
+}
+
+/* Admin sidebar */
+.admin-sidebar {
+  background-color: var(--admin-surface);
+  border-right: 1px solid var(--admin-border);
+}
+
+/* Admin nav item */
+.admin-nav-item {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 400;
+  font-size: 0.875rem;
+  color: var(--admin-text-secondary);
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.admin-nav-item:hover {
+  background-color: var(--admin-elevated);
+  color: var(--admin-text);
+}
+
+.admin-nav-item.active {
+  background-color: rgba(13, 148, 136, 0.15);
+  color: var(--admin-teal);
+}
+
+/* Scrollbar styling for admin */
+.admin-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.admin-scrollbar::-webkit-scrollbar-track {
+  background: var(--admin-surface);
+}
+
+.admin-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--admin-border);
+  border-radius: 3px;
+}
+
+.admin-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--admin-lead);
+}
+
+/* Admin animations */
+@keyframes admin-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes admin-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.admin-animate-pulse {
+  animation: admin-pulse 2s ease-in-out infinite;
+}
+
+.admin-animate-slide-up {
+  animation: admin-slide-up 0.3s ease-out forwards;
 }

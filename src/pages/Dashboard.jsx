@@ -242,7 +242,7 @@ function Dashboard() {
   const [editData, setEditData] = useState({
     displayName: '',
     organization: '',
-    role: '',
+    jobTitle: '', // User's job title at their organization (NOT system role)
     website: '',
     instagram: '',
     linkedin: '',
@@ -269,7 +269,7 @@ function Dashboard() {
   const [stepperData, setStepperData] = useState({
     displayName: '',
     organization: '',
-    role: '',
+    jobTitle: '', // User's job title at their organization (NOT system role)
     badges: [],
     attendedSummits: [],
     customBadges: {},
@@ -295,13 +295,25 @@ function Dashboard() {
   const isProfileIncomplete = !userProfile?.displayName
   const showTutorial = isProfileIncomplete && !tutorialState.dismissed && !tutorialState.skipUntilComplete
 
+  // Access control: check if user has full dashboard access
+  // Full access granted to: admins, super_admins, registered users, confirmed users
+  const isAdmin = userProfile?.role === 'admin' || userProfile?.role === 'super_admin' ||
+                  ADMIN_EMAILS.includes(currentUser?.email)
+  const hasFullAccess = isAdmin ||
+                        userProfile?.registrationStatus === 'registered' ||
+                        userProfile?.registrationStatus === 'confirmed'
+
   // Initialize edit data when profile loads
   useEffect(() => {
     if (userProfile) {
+      // Support both old 'role' field and new 'jobTitle' field for backwards compatibility
+      // But only use role if it's NOT a system role (admin/super_admin)
+      const jobTitleValue = userProfile.jobTitle ||
+        (userProfile.role && !['admin', 'super_admin'].includes(userProfile.role) ? userProfile.role : '')
       setEditData({
         displayName: userProfile.displayName || '',
         organization: userProfile.organization || '',
-        role: userProfile.role || '',
+        jobTitle: jobTitleValue,
         website: userProfile.website || '',
         instagram: userProfile.instagram || '',
         linkedin: userProfile.linkedin || '',
@@ -452,18 +464,18 @@ function Dashboard() {
       setValidationErrors(prev => ({ ...prev, displayName: null }))
     }
 
-    // Step 4: Organization/Role validation
+    // Step 4: Organization/Job Title validation
     if (stepNumber === 4) {
       const { hasProfanity: orgProfanity } = checkProfanity(stepperData.organization)
-      const { hasProfanity: roleProfanity } = checkProfanity(stepperData.role)
-      if (orgProfanity || roleProfanity) {
+      const { hasProfanity: jobTitleProfanity } = checkProfanity(stepperData.jobTitle)
+      if (orgProfanity || jobTitleProfanity) {
         setValidationErrors({
           organization: orgProfanity ? 'Organization contains inappropriate language' : null,
-          role: roleProfanity ? 'Role contains inappropriate language' : null
+          jobTitle: jobTitleProfanity ? 'Job title contains inappropriate language' : null
         })
         return false
       }
-      setValidationErrors(prev => ({ ...prev, organization: null, role: null }))
+      setValidationErrors(prev => ({ ...prev, organization: null, jobTitle: null }))
     }
 
     return true
@@ -475,13 +487,13 @@ function Dashboard() {
       // Final validation for profanity (shouldn't be needed if validateStep works, but just in case)
       const { hasProfanity: nameProfanity } = checkProfanity(stepperData.displayName)
       const { hasProfanity: orgProfanity } = checkProfanity(stepperData.organization)
-      const { hasProfanity: roleProfanity } = checkProfanity(stepperData.role)
+      const { hasProfanity: jobTitleProfanity } = checkProfanity(stepperData.jobTitle)
 
-      if (nameProfanity || orgProfanity || roleProfanity) {
+      if (nameProfanity || orgProfanity || jobTitleProfanity) {
         setValidationErrors({
           displayName: nameProfanity ? 'Name contains inappropriate language' : null,
           organization: orgProfanity ? 'Organization contains inappropriate language' : null,
-          role: roleProfanity ? 'Role contains inappropriate language' : null
+          jobTitle: jobTitleProfanity ? 'Job title contains inappropriate language' : null
         })
         return
       }
@@ -730,6 +742,95 @@ function Dashboard() {
             </p>
           </motion.div>
 
+          {/* Gated Access View - shown to pending users */}
+          {!hasFullAccess && (
+            <motion.div
+              className="card-sketch p-8 text-center"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+            >
+              <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-brand-teal/10 flex items-center justify-center">
+                <Clock className="w-10 h-10 text-brand-teal" />
+              </div>
+              <h2 className="font-heading text-2xl font-semibold text-brand-ink mb-3">
+                Account pending approval
+              </h2>
+              <p className="font-body text-brand-ink/70 mb-6 max-w-md mx-auto">
+                Your account is awaiting approval. Once you've purchased a ticket or been approved by an administrator,
+                you'll have full access to your dashboard, personal schedule builder, and attendee networking features.
+              </p>
+
+              <div className="space-y-4">
+                {/* Ticket purchase option */}
+                <div className="p-4 rounded-xl bg-brand-cream/50 border border-brand-ink/10">
+                  <div className="flex items-center gap-3 mb-2">
+                    <Ticket className="w-5 h-5 text-brand-teal" />
+                    <h3 className="font-heading font-semibold text-brand-ink">Purchase a ticket</h3>
+                  </div>
+                  <p className="font-body text-sm text-brand-ink/60 mb-3">
+                    Get immediate access by registering for CJS2026.
+                  </p>
+                  <a
+                    href="https://collaborativejournalism.org/cjs2026"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-primary inline-flex items-center gap-2"
+                  >
+                    <Ticket className="w-4 h-4" />
+                    Get tickets
+                  </a>
+                </div>
+
+                {/* Notification option */}
+                {!userProfile?.notifyWhenTicketsAvailable && (
+                  <div className="p-4 rounded-xl bg-white border border-brand-ink/10">
+                    <div className="flex items-center gap-3 mb-2">
+                      <AlertCircle className="w-5 h-5 text-brand-cardinal" />
+                      <h3 className="font-heading font-semibold text-brand-ink">Tickets not available yet?</h3>
+                    </div>
+                    <p className="font-body text-sm text-brand-ink/60 mb-3">
+                      We'll notify you as soon as registration opens.
+                    </p>
+                    <button
+                      onClick={async () => {
+                        await updateUserProfile(currentUser.uid, { notifyWhenTicketsAvailable: true })
+                        setToast({ type: 'success', message: "We'll notify you when tickets are available!" })
+                      }}
+                      className="btn-secondary inline-flex items-center gap-2"
+                    >
+                      Notify me
+                    </button>
+                  </div>
+                )}
+
+                {userProfile?.notifyWhenTicketsAvailable && (
+                  <div className="p-4 rounded-xl bg-brand-teal/5 border border-brand-teal/20">
+                    <div className="flex items-center gap-2 text-brand-teal">
+                      <CheckCircle className="w-5 h-5" />
+                      <span className="font-body font-medium">You're on the notification list</span>
+                    </div>
+                    <p className="font-body text-sm text-brand-ink/60 mt-1">
+                      We'll email you at {currentUser?.email} when tickets become available.
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Contact info */}
+              <p className="font-body text-sm text-brand-ink/50 mt-6">
+                Already purchased a ticket? Contact us at{' '}
+                <a href="mailto:cjs@montclair.edu" className="text-brand-teal hover:underline">
+                  cjs@montclair.edu
+                </a>{' '}
+                to verify your registration.
+              </p>
+            </motion.div>
+          )}
+
+          {/* Full Dashboard - only shown to approved/registered users */}
+          {hasFullAccess && (
+            <>
           {/* Profile Setup Modal */}
           <AnimatePresence>
             {showTutorial && (
@@ -891,20 +992,20 @@ function Dashboard() {
                       {validationErrors.organization && (
                         <p className="text-brand-cardinal text-xs mt-1">{validationErrors.organization}</p>
                       )}
-                      <label>Role / Title</label>
+                      <label>Job title</label>
                       <input
                         type="text"
-                        value={stepperData.role}
+                        value={stepperData.jobTitle}
                         onChange={(e) => {
-                          setStepperData(prev => ({ ...prev, role: e.target.value }))
-                          setValidationErrors(prev => ({ ...prev, role: null }))
+                          setStepperData(prev => ({ ...prev, jobTitle: e.target.value }))
+                          setValidationErrors(prev => ({ ...prev, jobTitle: null }))
                         }}
-                        onBlur={(e) => validateTextField(e.target.value, 'role')}
+                        onBlur={(e) => validateTextField(e.target.value, 'jobTitle')}
                         placeholder="e.g. Reporter, Editor, Director"
-                        className={validationErrors.role ? 'border-brand-cardinal' : ''}
+                        className={validationErrors.jobTitle ? 'border-brand-cardinal' : ''}
                       />
-                      {validationErrors.role && (
-                        <p className="text-brand-cardinal text-xs mt-1">{validationErrors.role}</p>
+                      {validationErrors.jobTitle && (
+                        <p className="text-brand-cardinal text-xs mt-1">{validationErrors.jobTitle}</p>
                       )}
                     </Step>
 
@@ -1443,12 +1544,12 @@ function Dashboard() {
 
                     <div>
                       <label className="block font-body text-sm text-brand-ink/70 mb-1">
-                        Role/Title
+                        Job title
                       </label>
                       <input
                         type="text"
-                        value={editData.role}
-                        onChange={(e) => setEditData({ ...editData, role: e.target.value })}
+                        value={editData.jobTitle}
+                        onChange={(e) => setEditData({ ...editData, jobTitle: e.target.value })}
                         placeholder="e.g. Editor, Reporter, Director"
                         className="w-full px-3 py-2 rounded-lg border-2 border-brand-ink/20 bg-white font-body text-brand-ink text-sm focus:border-brand-teal focus:outline-none transition-colors"
                       />
@@ -1800,9 +1901,10 @@ function Dashboard() {
                         <span className="text-brand-ink/50">Organization:</span> {userProfile.organization}
                       </p>
                     )}
-                    {userProfile?.role && (
+                    {/* Display job title (check both new jobTitle and old role field, excluding system roles) */}
+                    {(userProfile?.jobTitle || (userProfile?.role && !['admin', 'super_admin'].includes(userProfile.role))) && (
                       <p className="font-body text-sm text-brand-ink/70">
-                        <span className="text-brand-ink/50">Role:</span> {userProfile.role}
+                        <span className="text-brand-ink/50">Job title:</span> {userProfile.jobTitle || userProfile.role}
                       </p>
                     )}
 
@@ -1947,6 +2049,8 @@ function Dashboard() {
               )}
             </div>
           </div>
+            </>
+          )}
         </div>
       </div>
       <Footer />

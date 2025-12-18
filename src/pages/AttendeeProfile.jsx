@@ -173,10 +173,10 @@ function AttendeeProfile() {
                   </p>
                 )}
 
-                {/* Role */}
-                {profile?.role && (
+                {/* Job title (check both new jobTitle and old role field, excluding system roles) */}
+                {(profile?.jobTitle || (profile?.role && !['admin', 'super_admin'].includes(profile.role))) && (
                   <p className="font-body text-brand-ink/60 mb-6">
-                    {profile.role}
+                    {profile.jobTitle || profile.role}
                   </p>
                 )}
 
