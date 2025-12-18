@@ -41,6 +41,7 @@ const ADMIN_EMAILS = [
   "amditisj@montclair.edu",
   "jamditis@gmail.com",
   "murrays@montclair.edu",
+  "shannond@montclair.edu",
 ]
 
 // ============================================
