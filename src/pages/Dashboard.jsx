@@ -830,6 +830,20 @@ function Dashboard() {
                 </a>{' '}
                 to verify your registration.
               </p>
+
+              {/* Sign out option */}
+              <div className="mt-6 pt-6 border-t border-brand-ink/10">
+                <p className="font-body text-sm text-brand-ink/50 mb-3">
+                  Signed in as <span className="font-medium text-brand-ink/70">{currentUser?.email}</span>
+                </p>
+                <button
+                  onClick={logout}
+                  className="inline-flex items-center gap-2 text-sm text-brand-ink/60 hover:text-brand-cardinal transition-colors"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Sign out and use a different account
+                </button>
+              </div>
             </motion.div>
           )}
 
