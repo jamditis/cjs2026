@@ -71,6 +71,16 @@ export default function Lanyard({
           />
         </Environment>
       </Canvas>
+
+      {/* Welcome text overlay */}
+      <div className="lanyard-welcome-text">
+        <p className="font-accent text-2xl md:text-3xl text-brand-teal mb-2">
+          Welcome to the 10th annual
+        </p>
+        <p className="font-heading font-bold text-xl md:text-2xl text-brand-ink">
+          Collaborative Journalism Summit!
+        </p>
+      </div>
     </div>
   );
 }
