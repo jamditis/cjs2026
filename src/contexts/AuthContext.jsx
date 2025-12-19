@@ -435,6 +435,29 @@ export function AuthProvider({ children }) {
     return unsubscribe
   }, [])
 
+  // Admin emails for bootstrap access (matches Dashboard.jsx)
+  const ADMIN_EMAILS = [
+    "jamditis@gmail.com",
+    "murrayst@montclair.edu",
+    "etiennec@montclair.edu"
+  ]
+
+  // Check if user has permission to bookmark sessions
+  // Returns true for admins and registered/confirmed users
+  function canBookmarkSessions() {
+    if (!currentUser) return false
+
+    // Check if admin
+    const isAdmin = userProfile?.role === 'admin' ||
+                    userProfile?.role === 'super_admin' ||
+                    ADMIN_EMAILS.includes(currentUser?.email)
+    if (isAdmin) return true
+
+    // Check registration status
+    const status = userProfile?.registrationStatus
+    return status === 'registered' || status === 'confirmed' || status === 'approved'
+  }
+
   const value = {
     currentUser,
     userProfile,
@@ -453,6 +476,7 @@ export function AuthProvider({ children }) {
     unsaveSession,
     isSessionSaved,
     updateScheduleVisibility,
+    canBookmarkSessions,
   }
 
   return (
