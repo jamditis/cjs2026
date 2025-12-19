@@ -218,58 +218,82 @@ export function AuthProvider({ children }) {
 
   // Save a session to user's personal schedule
   async function saveSession(sessionId) {
-    if (!currentUser) return false
+    if (!currentUser) {
+      console.error('saveSession: No current user')
+      return false
+    }
 
-    // Ensure document exists with full schema first
-    await ensureUserDocumentExists(currentUser.uid, currentUser.email)
+    try {
+      console.log('saveSession: Saving session', sessionId, 'for user', currentUser.uid)
 
-    const userRef = doc(db, 'users', currentUser.uid)
-    await setDoc(userRef, {
-      savedSessions: arrayUnion(sessionId),
-      updatedAt: serverTimestamp()
-    }, { merge: true })
+      // Ensure document exists with full schema first
+      await ensureUserDocumentExists(currentUser.uid, currentUser.email)
 
-    // Increment the bookmark count for this session
-    const bookmarkRef = doc(db, 'sessionBookmarks', sessionId)
-    await setDoc(bookmarkRef, {
-      count: increment(1),
-      updatedAt: serverTimestamp()
-    }, { merge: true })
+      const userRef = doc(db, 'users', currentUser.uid)
+      await setDoc(userRef, {
+        savedSessions: arrayUnion(sessionId),
+        updatedAt: serverTimestamp()
+      }, { merge: true })
+      console.log('saveSession: Updated user document')
 
-    // Update local state
-    setUserProfile(prev => ({
-      ...prev,
-      savedSessions: [...(prev?.savedSessions || []), sessionId]
-    }))
-    return true
+      // Increment the bookmark count for this session
+      const bookmarkRef = doc(db, 'sessionBookmarks', sessionId)
+      await setDoc(bookmarkRef, {
+        count: increment(1),
+        updatedAt: serverTimestamp()
+      }, { merge: true })
+      console.log('saveSession: Incremented bookmark count for', sessionId)
+
+      // Update local state
+      setUserProfile(prev => ({
+        ...prev,
+        savedSessions: [...(prev?.savedSessions || []), sessionId]
+      }))
+      return true
+    } catch (error) {
+      console.error('saveSession: Error saving session', sessionId, error)
+      throw error
+    }
   }
 
   // Remove a session from user's personal schedule
   async function unsaveSession(sessionId) {
-    if (!currentUser) return false
+    if (!currentUser) {
+      console.error('unsaveSession: No current user')
+      return false
+    }
 
-    // Ensure document exists with full schema first
-    await ensureUserDocumentExists(currentUser.uid, currentUser.email)
+    try {
+      console.log('unsaveSession: Removing session', sessionId, 'for user', currentUser.uid)
 
-    const userRef = doc(db, 'users', currentUser.uid)
-    await setDoc(userRef, {
-      savedSessions: arrayRemove(sessionId),
-      updatedAt: serverTimestamp()
-    }, { merge: true })
+      // Ensure document exists with full schema first
+      await ensureUserDocumentExists(currentUser.uid, currentUser.email)
 
-    // Decrement the bookmark count for this session
-    const bookmarkRef = doc(db, 'sessionBookmarks', sessionId)
-    await setDoc(bookmarkRef, {
-      count: increment(-1),
-      updatedAt: serverTimestamp()
-    }, { merge: true })
+      const userRef = doc(db, 'users', currentUser.uid)
+      await setDoc(userRef, {
+        savedSessions: arrayRemove(sessionId),
+        updatedAt: serverTimestamp()
+      }, { merge: true })
+      console.log('unsaveSession: Updated user document')
 
-    // Update local state
-    setUserProfile(prev => ({
-      ...prev,
-      savedSessions: (prev?.savedSessions || []).filter(id => id !== sessionId)
-    }))
-    return true
+      // Decrement the bookmark count for this session
+      const bookmarkRef = doc(db, 'sessionBookmarks', sessionId)
+      await setDoc(bookmarkRef, {
+        count: increment(-1),
+        updatedAt: serverTimestamp()
+      }, { merge: true })
+      console.log('unsaveSession: Decremented bookmark count for', sessionId)
+
+      // Update local state
+      setUserProfile(prev => ({
+        ...prev,
+        savedSessions: (prev?.savedSessions || []).filter(id => id !== sessionId)
+      }))
+      return true
+    } catch (error) {
+      console.error('unsaveSession: Error removing session', sessionId, error)
+      throw error
+    }
   }
 
   // Check if a session is saved
