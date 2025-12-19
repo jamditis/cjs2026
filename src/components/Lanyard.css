@@ -11,3 +11,13 @@
 .lanyard-wrapper canvas {
   pointer-events: auto;
 }
+
+.lanyard-welcome-text {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  pointer-events: none;
+  z-index: 10;
+}
