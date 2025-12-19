@@ -24,6 +24,7 @@ function Login() {
   // Check for pending redirect on mount
   useEffect(() => {
     const pending = localStorage.getItem('cjs2026_auth_pending')
+    console.log('[Login] Mount - pending:', pending, 'authLoading:', authLoading, 'currentUser:', currentUser?.uid)
     if (pending) {
       setRedirectPending(true)
     }
@@ -31,15 +32,19 @@ function Login() {
 
   // Clear redirect pending when auth loading completes (whether success or failure)
   useEffect(() => {
+    console.log('[Login] State check - authLoading:', authLoading, 'redirectPending:', redirectPending, 'currentUser:', currentUser?.uid)
     if (!authLoading && redirectPending) {
       // Auth has finished loading - either user is logged in or not
       if (currentUser) {
         // Success - will redirect via the other useEffect
+        console.log('[Login] Auth complete with user, clearing pending')
         localStorage.removeItem('cjs2026_auth_pending')
       } else {
         // Auth finished but no user - redirect might have failed
         // Give it a moment then clear the pending state
+        console.log('[Login] Auth complete but no user, waiting 2s before showing login')
         const timeout = setTimeout(() => {
+          console.log('[Login] Timeout - showing login form')
           localStorage.removeItem('cjs2026_auth_pending')
           setRedirectPending(false)
         }, 2000)
@@ -62,6 +67,7 @@ function Login() {
   // Redirect to dashboard if already logged in
   useEffect(() => {
     if (currentUser) {
+      console.log('[Login] currentUser detected, redirecting to dashboard')
       window.location.href = '/dashboard'
     }
   }, [currentUser])
