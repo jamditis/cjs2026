@@ -1,4 +1,5 @@
 const { onRequest } = require("firebase-functions/v2/https");
+const { onDocumentWritten } = require("firebase-functions/v2/firestore");
 const { defineSecret } = require("firebase-functions/params");
 const admin = require("firebase-admin");
 const cors = require("cors")({ origin: true });
@@ -10,6 +11,7 @@ const db = admin.firestore();
 const AIRTABLE_BASE_ID = "appL8Sn87xUotm4jF";
 const AIRTABLE_TABLE_NAME = "Email signups";
 const AIRTABLE_SITE_CONTENT_TABLE = "tblTZ0F89UMTO8PO0";
+const AIRTABLE_SCHEDULE_TABLE = "Schedule";
 
 // Define the secrets (will be accessed at runtime)
 const airtableApiKey = defineSecret("AIRTABLE_API_KEY");
@@ -1909,3 +1911,77 @@ exports.getEventbriteSyncStatus = onRequest({ cors: true }, async (req, res) => 
 // trigger an email via Zapier/Airtable automation.
 //
 // Original SendGrid-based implementation was removed - see git history if needed.
+
+// ============================================
+// Bookmark Count Sync to Airtable
+// ============================================
+
+/**
+ * Automatically sync bookmark counts to Airtable when they change
+ * Triggers on any write to sessionBookmarks/{sessionId}
+ */
+exports.syncBookmarkCountToAirtable = onDocumentWritten(
+  {
+    document: "sessionBookmarks/{sessionId}",
+    secrets: [airtableApiKey]
+  },
+  async (event) => {
+    const sessionId = event.params.sessionId;
+    const data = event.data?.after?.data();
+    const count = data?.count || 0;
+
+    console.log(`Syncing bookmark count for session ${sessionId}: ${count}`);
+
+    try {
+      // Find the Airtable record by session_id field
+      const searchUrl = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_SCHEDULE_TABLE)}?filterByFormula={session_id}="${sessionId}"`;
+
+      const searchResponse = await fetch(searchUrl, {
+        headers: {
+          "Authorization": `Bearer ${airtableApiKey.value()}`
+        }
+      });
+
+      if (!searchResponse.ok) {
+        console.error(`Airtable search failed: ${searchResponse.status}`);
+        return;
+      }
+
+      const searchData = await searchResponse.json();
+
+      if (!searchData.records || searchData.records.length === 0) {
+        console.log(`No Airtable record found for session_id: ${sessionId}`);
+        return;
+      }
+
+      const recordId = searchData.records[0].id;
+
+      // Update the Bookmarks field
+      const updateResponse = await fetch(
+        `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_SCHEDULE_TABLE)}/${recordId}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Authorization": `Bearer ${airtableApiKey.value()}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            fields: {
+              "Bookmarks": count
+            }
+          })
+        }
+      );
+
+      if (!updateResponse.ok) {
+        const errorText = await updateResponse.text();
+        console.error(`Airtable update failed: ${updateResponse.status} - ${errorText}`);
+        return;
+      }
+
+      console.log(`Successfully synced bookmark count (${count}) for session ${sessionId} to Airtable record ${recordId}`);
+    } catch (error) {
+      console.error(`Error syncing bookmark count for ${sessionId}:`, error);
+    }
+  }
+);

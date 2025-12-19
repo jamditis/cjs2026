@@ -19,21 +19,39 @@ function Login() {
   const [cooldownRemaining, setCooldownRemaining] = useState(0)
   const [redirectPending, setRedirectPending] = useState(false)
 
-  const { sendMagicLink, loginWithGoogle, authError, clearAuthError, currentUser } = useAuth()
+  const { sendMagicLink, loginWithGoogle, authError, clearAuthError, currentUser, loading: authLoading } = useAuth()
 
   // Check for pending redirect on mount
   useEffect(() => {
     const pending = localStorage.getItem('cjs2026_auth_pending')
+    console.log('[Login] Mount - pending:', pending, 'authLoading:', authLoading, 'currentUser:', currentUser?.uid)
     if (pending) {
       setRedirectPending(true)
-      // Clear after a timeout in case redirect never completes
-      const timeout = setTimeout(() => {
-        localStorage.removeItem('cjs2026_auth_pending')
-        setRedirectPending(false)
-      }, 10000) // 10 second timeout
-      return () => clearTimeout(timeout)
     }
   }, [])
+
+  // Clear redirect pending when auth loading completes (whether success or failure)
+  useEffect(() => {
+    console.log('[Login] State check - authLoading:', authLoading, 'redirectPending:', redirectPending, 'currentUser:', currentUser?.uid)
+    if (!authLoading && redirectPending) {
+      // Auth has finished loading - either user is logged in or not
+      if (currentUser) {
+        // Success - will redirect via the other useEffect
+        console.log('[Login] Auth complete with user, clearing pending')
+        localStorage.removeItem('cjs2026_auth_pending')
+      } else {
+        // Auth finished but no user - redirect might have failed
+        // Give it a moment then clear the pending state
+        console.log('[Login] Auth complete but no user, waiting 2s before showing login')
+        const timeout = setTimeout(() => {
+          console.log('[Login] Timeout - showing login form')
+          localStorage.removeItem('cjs2026_auth_pending')
+          setRedirectPending(false)
+        }, 2000)
+        return () => clearTimeout(timeout)
+      }
+    }
+  }, [authLoading, currentUser, redirectPending])
 
   // Calculate remaining cooldown time
   const calculateCooldown = useCallback(() => {
@@ -49,6 +67,7 @@ function Login() {
   // Redirect to dashboard if already logged in
   useEffect(() => {
     if (currentUser) {
+      console.log('[Login] currentUser detected, redirecting to dashboard')
       window.location.href = '/dashboard'
     }
   }, [currentUser])

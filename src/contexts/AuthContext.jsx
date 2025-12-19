@@ -425,27 +425,34 @@ export function AuthProvider({ children }) {
   // Handle redirect result on page load (for browsers that used redirect auth)
   useEffect(() => {
     async function handleRedirectResult() {
+      console.log('[Auth] Checking for redirect result...')
       try {
         const result = await getRedirectResult(auth)
+        console.log('[Auth] getRedirectResult:', result ? `user=${result.user?.email}` : 'no result')
         if (result?.user) {
           // Successfully signed in via redirect
+          console.log('[Auth] Redirect auth successful, creating profile...')
           try {
             await createUserProfile(result.user)
+            console.log('[Auth] Profile created/updated successfully')
           } catch (profileError) {
-            console.log('Profile creation deferred - user will complete setup:', profileError.message)
+            console.log('[Auth] Profile creation deferred:', profileError.message)
             // Don't throw - user is authenticated, they'll complete profile setup in dashboard
           }
           localStorage.removeItem('cjs2026_auth_pending')
+          console.log('[Auth] Cleared pending flag')
         }
       } catch (error) {
-        console.error('Redirect auth error:', error)
+        console.error('[Auth] Redirect auth error:', error.code, error.message)
         localStorage.removeItem('cjs2026_auth_pending')
         setAuthError('Failed to complete sign-in. Please try again.')
       }
     }
 
     // Only check for redirect result if we were expecting one
-    if (localStorage.getItem('cjs2026_auth_pending')) {
+    const pending = localStorage.getItem('cjs2026_auth_pending')
+    console.log('[Auth] Mount - pending redirect:', pending)
+    if (pending) {
       handleRedirectResult()
     }
   }, [])
@@ -453,16 +460,19 @@ export function AuthProvider({ children }) {
   // Listen to auth state changes
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      console.log('[Auth] onAuthStateChanged:', user ? `uid=${user.uid}` : 'no user')
       setCurrentUser(user)
       if (user) {
         try {
           await getUserProfile(user.uid)
+          console.log('[Auth] Profile loaded, setting loading=false')
         } catch (error) {
-          console.error('Error loading user profile:', error)
+          console.error('[Auth] Error loading user profile:', error)
           // Still set loading to false so the app can continue
         }
       } else {
         setUserProfile(null)
+        console.log('[Auth] No user, setting loading=false')
       }
       setLoading(false)
     })
