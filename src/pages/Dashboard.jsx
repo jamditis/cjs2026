@@ -733,7 +733,7 @@ function Dashboard() {
       {needsProfileSetup && <ProfileSetupModal />}
 
       <div className="min-h-screen bg-paper pt-20 lg:pt-24 pb-12 lg:pb-16">
-        <div className="max-w-5xl mx-auto px-4 lg:px-6">
+        <div className="max-w-5xl mx-auto px-4 lg:px-6 overflow-hidden">
           {/* Header */}
           <motion.div
             className="mb-8"
@@ -1195,7 +1195,7 @@ function Dashboard() {
 
           <div className="grid lg:grid-cols-3 gap-6 lg:gap-8">
             {/* Main content - order-2 on mobile so profile shows first */}
-            <div className="lg:col-span-2 space-y-4 lg:space-y-6 order-2 lg:order-1">
+            <div className="lg:col-span-2 space-y-4 lg:space-y-6 order-2 lg:order-1 min-w-0">
               {/* Registration status card */}
               {userProfile?.ticketsPurchased ? (
                 <motion.div
@@ -1404,10 +1404,10 @@ function Dashboard() {
             </div>
 
             {/* Sidebar - order-1 on mobile so profile shows first */}
-            <div className="space-y-4 lg:space-y-6 order-1 lg:order-2">
+            <div className="space-y-4 lg:space-y-6 order-1 lg:order-2 min-w-0">
               {/* Profile card */}
               <motion.div
-                className="card-sketch p-4 lg:p-6 relative"
+                className="card-sketch p-4 lg:p-6 relative overflow-hidden"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
@@ -1854,7 +1854,7 @@ function Dashboard() {
                 ) : (
                   <div className="space-y-3">
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-full bg-brand-teal/10 flex items-center justify-center overflow-hidden">
+                      <div className="w-12 h-12 rounded-full bg-brand-teal/10 flex items-center justify-center overflow-hidden flex-shrink-0">
                         {userProfile?.photoURL || currentUser?.photoURL ? (
                           <img
                             src={userProfile?.photoURL || currentUser?.photoURL}
@@ -1865,11 +1865,11 @@ function Dashboard() {
                           <User className="w-6 h-6 text-brand-teal" />
                         )}
                       </div>
-                      <div>
-                        <p className="font-heading font-semibold text-brand-ink">
+                      <div className="min-w-0 flex-1">
+                        <p className="font-heading font-semibold text-brand-ink truncate">
                           {userProfile?.displayName || 'No name set'}
                         </p>
-                        <p className="font-body text-sm text-brand-ink/60">
+                        <p className="font-body text-sm text-brand-ink/60 truncate">
                           {currentUser?.email}
                         </p>
                       </div>
