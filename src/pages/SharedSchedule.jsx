@@ -146,40 +146,40 @@ function SharedSchedule() {
             <>
               {/* User info header */}
               <motion.div
-                className="card-sketch p-6 mb-8"
+                className="card-sketch p-4 lg:p-6 mb-8"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
               >
-                <div className="flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 rounded-full bg-brand-teal/10 flex items-center justify-center overflow-hidden">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                  <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                    <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-brand-teal/10 flex items-center justify-center overflow-hidden flex-shrink-0">
                       {userData?.photoURL ? (
                         <img
                           src={userData.photoURL}
                           alt=""
-                          className="w-16 h-16 rounded-full object-cover"
+                          className="w-12 h-12 sm:w-16 sm:h-16 rounded-full object-cover"
                         />
                       ) : (
-                        <User className="w-8 h-8 text-brand-teal" />
+                        <User className="w-6 h-6 sm:w-8 sm:h-8 text-brand-teal" />
                       )}
                     </div>
-                    <div>
-                      <h1 className="font-heading font-semibold text-2xl text-brand-ink">
+                    <div className="min-w-0">
+                      <h1 className="font-heading font-semibold text-lg sm:text-2xl text-brand-ink truncate">
                         {userData?.displayName}'s schedule
                       </h1>
                       {userData?.organization && (
-                        <p className="font-body text-brand-ink/60">
+                        <p className="font-body text-sm sm:text-base text-brand-ink/60 truncate">
                           {userData.organization}
                         </p>
                       )}
-                      <p className="font-body text-sm text-brand-ink/50 mt-1">
+                      <p className="font-body text-xs sm:text-sm text-brand-ink/50 mt-1">
                         {savedSessions.length} session{savedSessions.length !== 1 ? 's' : ''} saved
                       </p>
                     </div>
                   </div>
                   <Link
                     to={`/attendee/${uid}`}
-                    className="btn-secondary text-sm flex items-center gap-2"
+                    className="btn-secondary text-sm flex items-center justify-center gap-2 sm:flex-shrink-0"
                   >
                     <User className="w-4 h-4" />
                     View profile
