@@ -1473,10 +1473,53 @@ function SessionsTab({ currentUser, isInk }) {
           <div className="p-8 text-center">
             <Loader2 className="w-6 h-6 animate-spin mx-auto text-[var(--admin-text-muted)]" />
           </div>
-        ) : sessionsWithCounts.length === 0 ? (
+        ) : sessionsWithCounts.length === 0 && Object.keys(bookmarkCounts).length === 0 ? (
           <div className="p-8 text-center text-[var(--admin-text-muted)]">
             <Calendar className="w-8 h-8 mx-auto mb-2 opacity-50" />
             <p>No bookmarkable sessions found</p>
+          </div>
+        ) : sessionsWithCounts.length === 0 && Object.keys(bookmarkCounts).length > 0 ? (
+          <div className="p-4">
+            <div className="p-3 bg-amber-500/10 rounded-lg mb-4">
+              <p className="font-admin-body text-sm text-amber-600">
+                <AlertCircle className="w-4 h-4 inline mr-2" />
+                Schedule data not yet published. Showing raw bookmark counts from Firestore:
+              </p>
+            </div>
+            <div className="divide-y divide-[var(--admin-border)]">
+              {Object.entries(bookmarkCounts)
+                .filter(([, count]) => count > 0)
+                .sort((a, b) => b[1] - a[1])
+                .map(([sessionId, count], index) => {
+                  const tier = getTierBadge(count)
+                  const TierIcon = tier.icon
+                  return (
+                    <div key={sessionId} className="p-4 flex items-center gap-4 hover:bg-[var(--admin-surface-hover)] transition-colors">
+                      <div className="w-8 h-8 rounded-full bg-[var(--admin-surface)] flex items-center justify-center font-admin-heading font-bold text-sm text-[var(--admin-text-muted)]">
+                        {index + 1}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-admin-body font-medium text-[var(--admin-text)] truncate font-mono text-sm">{sessionId}</h4>
+                          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs ${tier.bg} ${tier.text}`}>
+                            <TierIcon className="w-3 h-3" />
+                            {tier.label}
+                          </span>
+                        </div>
+                        <p className="font-admin-body text-xs text-[var(--admin-text-muted)]">
+                          Session ID from Firestore
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className={`px-3 py-1.5 rounded-lg ${count >= 10 ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white' : count >= 5 ? 'bg-amber-500/20 text-amber-600' : 'bg-[var(--admin-surface)] text-[var(--admin-text)]'}`}>
+                          <span className="font-admin-heading font-bold">{count}</span>
+                          <span className="font-admin-body text-xs ml-1 opacity-80">saves</span>
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })}
+            </div>
           </div>
         ) : (
           <div className="divide-y divide-[var(--admin-border)]">
