@@ -361,7 +361,6 @@ export function AuthProvider({ children }) {
 
   // Sign in with Google - always tries popup first, suggests email if blocked
   async function loginWithGoogle() {
-    setAuthError(null)
     const provider = new GoogleAuthProvider()
 
     // Always try popup first - it's more reliable across browsers
