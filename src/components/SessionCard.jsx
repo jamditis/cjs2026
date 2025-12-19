@@ -68,7 +68,7 @@ function getBookmarkTier(count) {
 }
 
 function SessionCard({ session, index = 0, showSaveButton = true, compact = false, bookmarkCount = 0 }) {
-  const { currentUser, userProfile, saveSession, unsaveSession, isSessionSaved } = useAuth()
+  const { currentUser, userProfile, saveSession, unsaveSession, isSessionSaved, canBookmarkSessions } = useAuth()
 
   // Use local state for optimistic UI updates
   const [localSaved, setLocalSaved] = useState(() => {
@@ -86,7 +86,8 @@ function SessionCard({ session, index = 0, showSaveButton = true, compact = fals
     }
   }, [session.id, userProfile?.savedSessions, saving])
 
-  const canSave = currentUser && session.isBookmarkable && showSaveButton
+  // Only allow saving for registered/confirmed users (or admins)
+  const canSave = currentUser && session.isBookmarkable && showSaveButton && canBookmarkSessions()
 
   // Get colors for this session type
   const colors = typeColors[session.type] || typeColors.session
