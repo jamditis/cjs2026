@@ -91,7 +91,7 @@ function processRecords(records) {
       type: (fields.type || fields.Type || 'session').toLowerCase(),
       track: fields.track || fields.Track || null,
       room: fields.room || fields.Room || '',
-      speakers: fields.speakers || fields.Speakers || '',
+      speakers: fields['Speaker names'] || fields.speaker_names || fields.speakers || fields.Speakers || '',
       speakerOrgs: fields.speaker_orgs || fields['Speaker orgs'] || fields.speakerOrgs || '',
       isBookmarkable: fields.is_bookmarkable !== false && fields.Type !== 'break',
       order: fields.order || fields.Order || index + 1,
