@@ -732,8 +732,8 @@ function Dashboard() {
       {/* Profile setup modal - shown when user needs to complete basic profile */}
       {needsProfileSetup && <ProfileSetupModal />}
 
-      <div className="min-h-screen bg-paper pt-24 pb-16">
-        <div className="max-w-5xl mx-auto px-6">
+      <div className="min-h-screen bg-paper pt-20 lg:pt-24 pb-12 lg:pb-16">
+        <div className="max-w-5xl mx-auto px-4 lg:px-6">
           {/* Header */}
           <motion.div
             className="mb-8"
@@ -1193,19 +1193,19 @@ function Dashboard() {
             )}
           </AnimatePresence>
 
-          <div className="grid lg:grid-cols-3 gap-8">
-            {/* Main content */}
-            <div className="lg:col-span-2 space-y-6">
+          <div className="grid lg:grid-cols-3 gap-6 lg:gap-8">
+            {/* Main content - order-2 on mobile so profile shows first */}
+            <div className="lg:col-span-2 space-y-4 lg:space-y-6 order-2 lg:order-1">
               {/* Registration status card */}
               {userProfile?.ticketsPurchased ? (
                 <motion.div
-                  className="card-sketch p-6 bg-brand-green-dark/5 border-brand-green-dark/20"
+                  className="card-sketch p-4 lg:p-6 bg-brand-green-dark/5 border-brand-green-dark/20"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 }}
                 >
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-brand-green-dark/10 flex items-center justify-center">
+                  <div className="flex items-center gap-3 lg:gap-4">
+                    <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-brand-green-dark/10 flex items-center justify-center flex-shrink-0">
                       <CheckCircle className="w-6 h-6 text-brand-green-dark" />
                     </div>
                     <div className="flex-1">
@@ -1230,13 +1230,13 @@ function Dashboard() {
                 </motion.div>
               ) : (
                 <motion.div
-                  className="card-sketch p-6"
+                  className="card-sketch p-4 lg:p-6"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 }}
                 >
-                  <div className="flex items-start gap-4">
-                    <div className={`w-12 h-12 rounded-full ${status.bgClass} flex items-center justify-center`}>
+                  <div className="flex items-start gap-3 lg:gap-4">
+                    <div className={`w-10 h-10 lg:w-12 lg:h-12 rounded-full ${status.bgClass} flex items-center justify-center flex-shrink-0`}>
                       <StatusIcon className={`w-6 h-6 ${status.textClass}`} />
                     </div>
                     <div className="flex-1">
@@ -1291,17 +1291,17 @@ function Dashboard() {
 
               {/* Event details */}
               <motion.div
-                className="card-sketch p-6"
+                className="card-sketch p-4 lg:p-6"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
               >
-                <h2 className="font-heading font-semibold text-xl text-brand-ink mb-4">
+                <h2 className="font-heading font-semibold text-lg lg:text-xl text-brand-ink mb-3 lg:mb-4">
                   Event details
                 </h2>
-                <div className="space-y-4">
-                  <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-full bg-brand-teal/10 flex items-center justify-center">
+                <div className="space-y-3 lg:space-y-4">
+                  <div className="flex items-start gap-3 lg:gap-4">
+                    <div className="w-9 h-9 lg:w-10 lg:h-10 rounded-full bg-brand-teal/10 flex items-center justify-center flex-shrink-0">
                       <Calendar className="w-5 h-5 text-brand-teal" />
                     </div>
                     <div>
@@ -1309,8 +1309,8 @@ function Dashboard() {
                       <p className="font-body text-sm text-brand-ink/60">Monday & Tuesday</p>
                     </div>
                   </div>
-                  <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-full bg-brand-teal/10 flex items-center justify-center">
+                  <div className="flex items-start gap-3 lg:gap-4">
+                    <div className="w-9 h-9 lg:w-10 lg:h-10 rounded-full bg-brand-teal/10 flex items-center justify-center flex-shrink-0">
                       <MapPin className="w-5 h-5 text-brand-teal" />
                     </div>
                     <div>
@@ -1318,8 +1318,8 @@ function Dashboard() {
                       <p className="font-body text-sm text-brand-ink/60">Chapel Hill, North Carolina</p>
                     </div>
                   </div>
-                  <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-full bg-brand-teal/10 flex items-center justify-center">
+                  <div className="flex items-start gap-3 lg:gap-4">
+                    <div className="w-9 h-9 lg:w-10 lg:h-10 rounded-full bg-brand-teal/10 flex items-center justify-center flex-shrink-0">
                       <Clock className="w-5 h-5 text-brand-teal" />
                     </div>
                     <div>
@@ -1365,13 +1365,13 @@ function Dashboard() {
 
               {/* My Schedule section - gated for pending users */}
               <motion.div
-                className={`card-sketch p-6 ${!hasFullAccess ? 'opacity-60' : ''}`}
+                className={`card-sketch p-4 lg:p-6 ${!hasFullAccess ? 'opacity-60' : ''}`}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
               >
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="font-heading font-semibold text-xl text-brand-ink">
+                <div className="flex items-center justify-between mb-3 lg:mb-4">
+                  <h2 className="font-heading font-semibold text-lg lg:text-xl text-brand-ink">
                     My schedule
                   </h2>
                   {hasFullAccess ? (
@@ -1403,16 +1403,16 @@ function Dashboard() {
               </motion.div>
             </div>
 
-            {/* Sidebar */}
-            <div className="space-y-6">
+            {/* Sidebar - order-1 on mobile so profile shows first */}
+            <div className="space-y-4 lg:space-y-6 order-1 lg:order-2">
               {/* Profile card */}
               <motion.div
-                className="card-sketch p-6 relative"
+                className="card-sketch p-4 lg:p-6 relative"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
               >
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center justify-between mb-3 lg:mb-4">
                   <h2 className="font-heading font-semibold text-lg text-brand-ink">
                     Your profile
                   </h2>
