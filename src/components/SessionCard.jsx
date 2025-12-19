@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
-import { Bookmark, BookmarkCheck, Clock, MapPin, Users, Coffee, Utensils, Mic, Lightbulb, BookOpen, Sparkles, Flame } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Bookmark, BookmarkCheck, Clock, MapPin, Users, Coffee, Utensils, Mic, Lightbulb, BookOpen, Sparkles, Flame, ChevronDown } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { typeColors } from '../content/scheduleData'
 
@@ -76,6 +76,7 @@ function SessionCard({ session, index = 0, showSaveButton = true, compact = fals
     return isSessionSaved?.(session.id) || false
   })
   const [saving, setSaving] = useState(false)
+  const [descriptionExpanded, setDescriptionExpanded] = useState(false)
 
   // Sync local state with auth context state, but NOT while saving (to preserve optimistic update)
   useEffect(() => {
@@ -246,9 +247,22 @@ function SessionCard({ session, index = 0, showSaveButton = true, compact = fals
           </div>
         </div>
 
-        {/* Description (truncated on mobile) */}
+        {/* Description (tap to expand on mobile) */}
         {session.description && (
-          <p className="font-body text-xs text-brand-ink/60 mt-2 line-clamp-2 pl-11">{session.description}</p>
+          <button
+            onClick={() => setDescriptionExpanded(!descriptionExpanded)}
+            className="w-full text-left mt-2 pl-11 group"
+          >
+            <p className={`font-body text-xs text-brand-ink/60 ${descriptionExpanded ? '' : 'line-clamp-2'}`}>
+              {session.description}
+            </p>
+            {session.description.length > 100 && (
+              <span className="inline-flex items-center gap-1 text-xs text-brand-teal mt-1">
+                <ChevronDown className={`w-3 h-3 transition-transform ${descriptionExpanded ? 'rotate-180' : ''}`} />
+                {descriptionExpanded ? 'Show less' : 'Show more'}
+              </span>
+            )}
+          </button>
         )}
 
         {/* Speakers */}
