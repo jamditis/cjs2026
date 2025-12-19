@@ -71,14 +71,19 @@ function SessionCard({ session, index = 0, showSaveButton = true, compact = fals
   const { currentUser, userProfile, saveSession, unsaveSession, isSessionSaved } = useAuth()
 
   // Use local state for optimistic UI updates
-  const [localSaved, setLocalSaved] = useState(false)
+  const [localSaved, setLocalSaved] = useState(() => {
+    // Initialize from context on mount
+    return isSessionSaved?.(session.id) || false
+  })
   const [saving, setSaving] = useState(false)
 
-  // Sync local state with auth context state
+  // Sync local state with auth context state, but NOT while saving (to preserve optimistic update)
   useEffect(() => {
-    const saved = isSessionSaved?.(session.id) || false
-    setLocalSaved(saved)
-  }, [isSessionSaved, session.id, userProfile?.savedSessions])
+    if (!saving) {
+      const saved = isSessionSaved?.(session.id) || false
+      setLocalSaved(saved)
+    }
+  }, [session.id, userProfile?.savedSessions, saving])
 
   const canSave = currentUser && session.isBookmarkable && showSaveButton
 
