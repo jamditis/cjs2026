@@ -5,13 +5,9 @@ import {
   updateProfile,
   GoogleAuthProvider,
   signInWithPopup,
-  signInWithRedirect,
-  getRedirectResult,
   sendSignInLinkToEmail,
   isSignInWithEmailLink,
-  signInWithEmailLink,
-  browserLocalPersistence,
-  setPersistence
+  signInWithEmailLink
 } from 'firebase/auth'
 import { doc, setDoc, getDoc, serverTimestamp, arrayUnion, arrayRemove, increment } from 'firebase/firestore'
 import { auth, db } from '../firebase'
@@ -32,7 +28,6 @@ export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null)
   const [userProfile, setUserProfile] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [authError, setAuthError] = useState(null) // For redirect errors
   const [needsProfileSetup, setNeedsProfileSetup] = useState(false) // True if user authenticated but has no/incomplete profile
 
   // ============================================
@@ -364,72 +359,46 @@ export function AuthProvider({ children }) {
     return isSignInWithEmailLink(auth, url)
   }
 
-  // Sign in with Google - uses redirect for maximum browser compatibility
+  // Sign in with Google - always tries popup first, suggests email if blocked
   async function loginWithGoogle() {
     setAuthError(null)
     const provider = new GoogleAuthProvider()
 
-    // Check if we're on mobile or a browser known to have popup issues
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
-    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
-
-    // Use redirect for mobile and Safari (more reliable), popup for desktop Chrome/Firefox/Edge
-    if (isMobile || isSafari) {
-      // Set persistence to local to help with storage partitioning issues on mobile
-      try {
-        await setPersistence(auth, browserLocalPersistence)
-        console.log('[Auth] Set persistence to browserLocalPersistence')
-      } catch (persistError) {
-        console.warn('[Auth] Could not set persistence:', persistError)
-      }
-
-      // Redirect-based auth - page will reload after auth
-      localStorage.setItem('cjs2026_auth_pending', 'google')
-      console.log('[Auth] Starting redirect auth for mobile/Safari')
-      await signInWithRedirect(auth, provider)
-      return null // Will complete after redirect
-    }
-
-    // Try popup first for desktop browsers
+    // Always try popup first - it's more reliable across browsers
+    // Redirect flow has storage partitioning issues on many mobile browsers
     try {
+      console.log('[Auth] Attempting popup auth...')
       const { user } = await signInWithPopup(auth, provider)
+      console.log('[Auth] Popup auth successful:', user.email)
       try {
         await createUserProfile(user)
       } catch (profileError) {
-        console.log('Profile creation deferred - user will complete setup:', profileError.message)
-        // Don't throw - user is authenticated, they'll complete profile setup in dashboard
+        console.log('[Auth] Profile creation deferred:', profileError.message)
       }
       return user
     } catch (error) {
-      // If popup fails for any reason, fall back to redirect
-      if (error.code === 'auth/popup-blocked' ||
-          error.code === 'auth/popup-closed-by-user' ||
-          error.code === 'auth/cancelled-popup-request' ||
-          error.code === 'auth/internal-error') {
-        console.log('Popup failed, falling back to redirect:', error.code)
-        // Set persistence before redirect
-        try {
-          await setPersistence(auth, browserLocalPersistence)
-        } catch (persistError) {
-          console.warn('[Auth] Could not set persistence:', persistError)
-        }
-        localStorage.setItem('cjs2026_auth_pending', 'google')
-        await signInWithRedirect(auth, provider)
-        return null // Will complete after redirect
+      console.log('[Auth] Popup failed:', error.code, error.message)
+
+      // User closed the popup - let them try again
+      if (error.code === 'auth/popup-closed-by-user' ||
+          error.code === 'auth/cancelled-popup-request') {
+        return null // Silent fail - user can click again
       }
 
+      // Popup was blocked - suggest email sign-in
+      if (error.code === 'auth/popup-blocked') {
+        throw new Error('Pop-up was blocked. Please use the email sign-in option below, or allow pop-ups for this site.')
+      }
+
+      // Network error
       if (error.code === 'auth/network-request-failed') {
-        throw new Error('Network error. Please check your connection.')
+        throw new Error('Network error. Please check your connection and try again.')
       }
 
-      console.error('Google login error:', error)
-      throw error
+      // For other errors, suggest email as fallback
+      console.error('[Auth] Google login error:', error)
+      throw new Error('Google sign-in failed. Please try the email sign-in option instead.')
     }
-  }
-
-  // Clear any pending auth error
-  function clearAuthError() {
-    setAuthError(null)
   }
 
   // Sign out
@@ -439,39 +408,9 @@ export function AuthProvider({ children }) {
   }
 
 
-  // Handle redirect result on page load (for browsers that used redirect auth)
+  // Clean up any stale redirect pending flags from previous auth attempts
   useEffect(() => {
-    async function handleRedirectResult() {
-      console.log('[Auth] Checking for redirect result...')
-      try {
-        const result = await getRedirectResult(auth)
-        console.log('[Auth] getRedirectResult:', result ? `user=${result.user?.email}` : 'no result')
-        if (result?.user) {
-          // Successfully signed in via redirect
-          console.log('[Auth] Redirect auth successful, creating profile...')
-          try {
-            await createUserProfile(result.user)
-            console.log('[Auth] Profile created/updated successfully')
-          } catch (profileError) {
-            console.log('[Auth] Profile creation deferred:', profileError.message)
-            // Don't throw - user is authenticated, they'll complete profile setup in dashboard
-          }
-          localStorage.removeItem('cjs2026_auth_pending')
-          console.log('[Auth] Cleared pending flag')
-        }
-      } catch (error) {
-        console.error('[Auth] Redirect auth error:', error.code, error.message)
-        localStorage.removeItem('cjs2026_auth_pending')
-        setAuthError('Failed to complete sign-in. Please try again.')
-      }
-    }
-
-    // Only check for redirect result if we were expecting one
-    const pending = localStorage.getItem('cjs2026_auth_pending')
-    console.log('[Auth] Mount - pending redirect:', pending)
-    if (pending) {
-      handleRedirectResult()
-    }
+    localStorage.removeItem('cjs2026_auth_pending')
   }, [])
 
   // Listen to auth state changes
@@ -501,8 +440,6 @@ export function AuthProvider({ children }) {
     currentUser,
     userProfile,
     loading,
-    authError, // For redirect auth errors
-    clearAuthError,
     needsProfileSetup, // True if user needs to complete profile (no displayName)
     completeProfileSetup, // Function to complete profile setup
     sendMagicLink,
