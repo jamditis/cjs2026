@@ -9,6 +9,7 @@ import * as THREE from 'three';
 // Assets
 import cardGLB from '../assets/lanyard/card.glb';
 import lanyardTexture from '../assets/lanyard/lanyard.png';
+import badgeTexture from '../assets/lanyard/badge.png';
 
 import './Lanyard.css';
 
@@ -171,11 +172,11 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }) {
     dir = new THREE.Vector3();
   const segmentProps = { type: 'dynamic', canSleep: true, colliders: false, angularDamping: 4, linearDamping: 4 };
   const { nodes, materials } = useGLTF(cardGLB);
-  const texture = useTexture(lanyardTexture);
+  const strapTexture = useTexture(lanyardTexture);
+  const cardTexture = useTexture(badgeTexture);
 
-  // Create custom card texture with CJS branding
-  const [, forceUpdate] = useState(0);
-  const [cardTexture] = useState(() => createCardTexture(() => forceUpdate(n => n + 1)));
+  // Flip the card texture vertically to match GLB UV mapping
+  cardTexture.flipY = false;
 
   const [curve] = useState(
     () =>
@@ -228,7 +229,7 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }) {
   });
 
   curve.curveType = 'chordal';
-  texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+  strapTexture.wrapS = strapTexture.wrapT = THREE.RepeatWrapping;
 
   return (
     <>
@@ -278,7 +279,7 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }) {
           depthTest={false}
           resolution={isMobile ? [1000, 2000] : [1000, 1000]}
           useMap
-          map={texture}
+          map={strapTexture}
           repeat={[-4, 1]}
           lineWidth={1}
         />
