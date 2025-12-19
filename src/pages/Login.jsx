@@ -17,41 +17,8 @@ function Login() {
   const [emailSent, setEmailSent] = useState(false)
   const [lastMethod, setLastMethod] = useState(null)
   const [cooldownRemaining, setCooldownRemaining] = useState(0)
-  const [redirectPending, setRedirectPending] = useState(false)
 
-  const { sendMagicLink, loginWithGoogle, authError, clearAuthError, currentUser, loading: authLoading } = useAuth()
-
-  // Check for pending redirect on mount
-  useEffect(() => {
-    const pending = localStorage.getItem('cjs2026_auth_pending')
-    console.log('[Login] Mount - pending:', pending, 'authLoading:', authLoading, 'currentUser:', currentUser?.uid)
-    if (pending) {
-      setRedirectPending(true)
-    }
-  }, [])
-
-  // Clear redirect pending when auth loading completes (whether success or failure)
-  useEffect(() => {
-    console.log('[Login] State check - authLoading:', authLoading, 'redirectPending:', redirectPending, 'currentUser:', currentUser?.uid)
-    if (!authLoading && redirectPending) {
-      // Auth has finished loading - either user is logged in or not
-      if (currentUser) {
-        // Success - will redirect via the other useEffect
-        console.log('[Login] Auth complete with user, clearing pending')
-        localStorage.removeItem('cjs2026_auth_pending')
-      } else {
-        // Auth finished but no user - redirect might have failed
-        // Give it a moment then clear the pending state
-        console.log('[Login] Auth complete but no user, waiting 2s before showing login')
-        const timeout = setTimeout(() => {
-          console.log('[Login] Timeout - showing login form')
-          localStorage.removeItem('cjs2026_auth_pending')
-          setRedirectPending(false)
-        }, 2000)
-        return () => clearTimeout(timeout)
-      }
-    }
-  }, [authLoading, currentUser, redirectPending])
+  const { sendMagicLink, loginWithGoogle, currentUser } = useAuth()
 
   // Calculate remaining cooldown time
   const calculateCooldown = useCallback(() => {
@@ -67,18 +34,9 @@ function Login() {
   // Redirect to dashboard if already logged in
   useEffect(() => {
     if (currentUser) {
-      console.log('[Login] currentUser detected, redirecting to dashboard')
       window.location.href = '/dashboard'
     }
   }, [currentUser])
-
-  // Show auth errors from redirect flow
-  useEffect(() => {
-    if (authError) {
-      setError(authError)
-      clearAuthError()
-    }
-  }, [authError, clearAuthError])
 
   // Load last sign-in method and check cooldown
   useEffect(() => {
@@ -171,42 +129,6 @@ function Login() {
       }
       setLoading(false)
     }
-  }
-
-  // Redirect in progress - show loading state
-  if (redirectPending) {
-    return (
-      <>
-        <Navbar />
-        <div className="min-h-screen bg-paper pt-24 pb-16 flex items-center justify-center px-6">
-          <motion.div
-            className="w-full max-w-md text-center"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <div className="card-sketch p-8">
-              <div className="w-16 h-16 rounded-full bg-brand-teal/10 flex items-center justify-center mx-auto mb-6">
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                >
-                  <svg className="w-8 h-8 text-brand-teal" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
-                  </svg>
-                </motion.div>
-              </div>
-              <h1 className="editorial-headline text-2xl md:text-3xl text-brand-ink mb-4">
-                Completing sign-in...
-              </h1>
-              <p className="font-body text-brand-ink/60">
-                Please wait while we finish signing you in with Google.
-              </p>
-            </div>
-          </motion.div>
-        </div>
-        <Footer />
-      </>
-    )
   }
 
   // Success state - email sent
