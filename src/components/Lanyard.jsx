@@ -8,8 +8,8 @@ import * as THREE from 'three';
 
 // Assets
 import cardGLB from '../assets/lanyard/card.glb';
-import lanyardTexture from '../assets/lanyard/lanyard.png';
 import badgeTexture from '../assets/lanyard/badge.png';
+import strapTextureFile from '../assets/lanyard/strap.png';
 
 import './Lanyard.css';
 
@@ -172,7 +172,7 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }) {
     dir = new THREE.Vector3();
   const segmentProps = { type: 'dynamic', canSleep: true, colliders: false, angularDamping: 4, linearDamping: 4 };
   const { nodes, materials } = useGLTF(cardGLB);
-  const strapTexture = useTexture(lanyardTexture);
+  const strapTexture = useTexture(strapTextureFile);
   const cardTexture = useTexture(badgeTexture);
 
   // Flip the card texture vertically to match GLB UV mapping
