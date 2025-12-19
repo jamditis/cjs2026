@@ -1338,6 +1338,20 @@ function BroadcastTab({ currentUser, isInk }) {
   )
 }
 
+// Format time string for display
+function formatSessionTime(timeStr) {
+  if (!timeStr) return ''
+  if (timeStr.includes('T') || timeStr.includes('Z')) {
+    try {
+      const date = new Date(timeStr)
+      if (!isNaN(date.getTime())) {
+        return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })
+      }
+    } catch (e) { /* fall through */ }
+  }
+  return timeStr
+}
+
 // Sessions Tab - Session popularity analytics
 function SessionsTab({ currentUser, isInk }) {
   const [bookmarkCounts, setBookmarkCounts] = useState({})
@@ -1486,7 +1500,7 @@ function SessionsTab({ currentUser, isInk }) {
                       </span>
                     </div>
                     <p className="font-admin-body text-xs text-[var(--admin-text-muted)]">
-                      {session.day} • {session.startTime} {session.room && `• ${session.room}`}
+                      {session.day} • {formatSessionTime(session.startTime)} {session.room && `• ${session.room}`}
                     </p>
                   </div>
 

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Bookmark, BookmarkCheck, Clock, MapPin, Users, Coffee, Utensils, Mic, Lightbulb, BookOpen, Sparkles, Flame } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
@@ -11,6 +11,30 @@ const typeIcons = {
   break: Coffee,
   special: Sparkles,
   lightning: Lightbulb,
+}
+
+// Format time string - handles ISO dates or already formatted times
+function formatTime(timeStr) {
+  if (!timeStr) return ''
+
+  // If it looks like an ISO date (contains 'T' or 'Z'), parse and format it
+  if (timeStr.includes('T') || timeStr.includes('Z')) {
+    try {
+      const date = new Date(timeStr)
+      if (!isNaN(date.getTime())) {
+        return date.toLocaleTimeString('en-US', {
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: true
+        })
+      }
+    } catch (e) {
+      // Fall through to return original
+    }
+  }
+
+  // Already formatted or unknown format, return as-is
+  return timeStr
 }
 
 // Get badge tier based on bookmark count
@@ -46,21 +70,47 @@ function getBookmarkTier(count) {
 function SessionCard({ session, index = 0, showSaveButton = true, compact = false, bookmarkCount = 0 }) {
   const { currentUser, userProfile, saveSession, unsaveSession, isSessionSaved } = useAuth()
 
-  const isSaved = isSessionSaved?.(session.id) || false
+  // Use local state for optimistic UI updates
+  const [localSaved, setLocalSaved] = useState(false)
+  const [saving, setSaving] = useState(false)
+
+  // Sync local state with auth context state
+  useEffect(() => {
+    const saved = isSessionSaved?.(session.id) || false
+    setLocalSaved(saved)
+  }, [isSessionSaved, session.id, userProfile?.savedSessions])
+
   const canSave = currentUser && session.isBookmarkable && showSaveButton
 
   // Get colors for this session type
   const colors = typeColors[session.type] || typeColors.session
   const Icon = typeIcons[session.type] || Mic
 
+  // Format times
+  const formattedStartTime = formatTime(session.startTime)
+  const formattedEndTime = formatTime(session.endTime)
+
   const handleToggleSave = async (e) => {
     e.stopPropagation()
-    if (!currentUser) return
+    if (!currentUser || saving) return
 
-    if (isSaved) {
-      await unsaveSession(session.id)
-    } else {
-      await saveSession(session.id)
+    // Optimistic update
+    const newSavedState = !localSaved
+    setLocalSaved(newSavedState)
+    setSaving(true)
+
+    try {
+      if (newSavedState) {
+        await saveSession(session.id)
+      } else {
+        await unsaveSession(session.id)
+      }
+    } catch (error) {
+      // Revert on error
+      console.error('Error toggling save:', error)
+      setLocalSaved(!newSavedState)
+    } finally {
+      setSaving(false)
     }
   }
 
@@ -82,7 +132,7 @@ function SessionCard({ session, index = 0, showSaveButton = true, compact = fals
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 text-sm text-brand-ink/60 mb-1">
               <Clock className="w-3 h-3" />
-              <span>{session.startTime}{session.endTime && ` - ${session.endTime}`}</span>
+              <span>{formattedStartTime}{formattedEndTime && ` - ${formattedEndTime}`}</span>
               {session.room && (
                 <>
                   <span className="text-brand-ink/30">|</span>
@@ -110,14 +160,15 @@ function SessionCard({ session, index = 0, showSaveButton = true, compact = fals
             {canSave && (
               <button
                 onClick={handleToggleSave}
+                disabled={saving}
                 className={`p-1.5 rounded-full transition-colors ${
-                  isSaved
+                  localSaved
                     ? 'bg-brand-teal/20 text-brand-teal'
                     : 'bg-brand-ink/5 text-brand-ink/40 hover:text-brand-teal hover:bg-brand-teal/10'
-                }`}
-                title={isSaved ? 'Remove from my schedule' : 'Add to my schedule'}
+                } ${saving ? 'opacity-50' : ''}`}
+                title={localSaved ? 'Remove from my schedule' : 'Add to my schedule'}
               >
-                {isSaved ? <BookmarkCheck className="w-4 h-4" /> : <Bookmark className="w-4 h-4" />}
+                {localSaved ? <BookmarkCheck className="w-4 h-4" /> : <Bookmark className="w-4 h-4" />}
               </button>
             )}
           </div>
@@ -138,9 +189,9 @@ function SessionCard({ session, index = 0, showSaveButton = true, compact = fals
       <div className="flex gap-4">
         {/* Time column */}
         <div className="flex-shrink-0 w-20 text-right">
-          <span className="font-body text-sm text-brand-ink/60">{session.startTime}</span>
-          {session.endTime && session.endTime !== session.startTime && (
-            <span className="font-body text-xs text-brand-ink/40 block">{session.endTime}</span>
+          <span className="font-body text-sm text-brand-ink/60">{formattedStartTime}</span>
+          {formattedEndTime && formattedEndTime !== formattedStartTime && (
+            <span className="font-body text-xs text-brand-ink/40 block">{formattedEndTime}</span>
           )}
         </div>
 
@@ -203,14 +254,15 @@ function SessionCard({ session, index = 0, showSaveButton = true, compact = fals
               {canSave && (
                 <button
                   onClick={handleToggleSave}
+                  disabled={saving}
                   className={`p-2 rounded-full transition-all ${
-                    isSaved
+                    localSaved
                       ? 'bg-brand-teal text-white shadow-md'
                       : 'bg-brand-ink/5 text-brand-ink/40 hover:text-brand-teal hover:bg-brand-teal/10'
-                  }`}
-                  title={isSaved ? 'Remove from my schedule' : 'Add to my schedule'}
+                  } ${saving ? 'opacity-50' : ''}`}
+                  title={localSaved ? 'Remove from my schedule' : 'Add to my schedule'}
                 >
-                  {isSaved ? <BookmarkCheck className="w-5 h-5" /> : <Bookmark className="w-5 h-5" />}
+                  {localSaved ? <BookmarkCheck className="w-5 h-5" /> : <Bookmark className="w-5 h-5" />}
                 </button>
               )}
             </div>
