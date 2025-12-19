@@ -9,7 +9,7 @@ import * as THREE from 'three';
 // Assets
 import cardGLB from '../assets/lanyard/card.glb';
 import badgeTexture from '../assets/lanyard/badge.png';
-import strapTextureFile from '../assets/lanyard/strap.png';
+import strapTextureFile from '../assets/lanyard/strap-black.png';
 
 import './Lanyard.css';
 
