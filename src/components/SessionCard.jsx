@@ -185,13 +185,92 @@ function SessionCard({ session, index = 0, showSaveButton = true, compact = fals
   // Full view for Schedule page
   return (
     <motion.div
-      className={`card-sketch p-5 ${colors.bg} ${colors.border}`}
+      className={`card-sketch p-4 lg:p-5 ${colors.bg} ${colors.border}`}
       initial={{ opacity: 0, x: -20 }}
       whileInView={{ opacity: 1, x: 0 }}
       viewport={{ once: true }}
       transition={{ delay: index * 0.05 }}
     >
-      <div className="flex gap-4">
+      {/* Mobile layout: stacked */}
+      <div className="lg:hidden">
+        {/* Header row: time, icon, title, save button */}
+        <div className="flex items-start gap-3">
+          <div className="flex-shrink-0">
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+              colors.bg.replace('/5', '/20').replace('/10', '/20')
+            } ${colors.text}`}>
+              <Icon className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 text-xs text-brand-ink/60 mb-1">
+              <Clock className="w-3 h-3" />
+              <span>{formattedStartTime}{formattedEndTime && formattedEndTime !== formattedStartTime && ` - ${formattedEndTime}`}</span>
+              {session.room && (
+                <>
+                  <span className="text-brand-ink/30">•</span>
+                  <span>{session.room}</span>
+                </>
+              )}
+            </div>
+            <h4 className="font-heading font-semibold text-brand-ink text-sm leading-tight">{session.title}</h4>
+          </div>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {bookmarkCount > 0 && (() => {
+              const tier = getBookmarkTier(bookmarkCount)
+              const TierIcon = tier.icon
+              return (
+                <span
+                  className={`inline-flex items-center gap-1 text-xs px-1.5 py-0.5 rounded-full ${tier.bgClass} ${tier.textClass}`}
+                  title={`${bookmarkCount} attendee${bookmarkCount !== 1 ? 's' : ''} saved this`}
+                >
+                  <TierIcon className="w-3 h-3" />
+                  {bookmarkCount}
+                </span>
+              )
+            })()}
+            {canSave && (
+              <button
+                onClick={handleToggleSave}
+                disabled={saving}
+                className={`p-1.5 rounded-full transition-all ${
+                  localSaved
+                    ? 'bg-brand-teal text-white shadow-md'
+                    : 'bg-brand-ink/5 text-brand-ink/40 hover:text-brand-teal hover:bg-brand-teal/10'
+                } ${saving ? 'opacity-50' : ''}`}
+                title={localSaved ? 'Remove from my schedule' : 'Add to my schedule'}
+              >
+                {localSaved ? <BookmarkCheck className="w-4 h-4" /> : <Bookmark className="w-4 h-4" />}
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Description (truncated on mobile) */}
+        {session.description && (
+          <p className="font-body text-xs text-brand-ink/60 mt-2 line-clamp-2 pl-11">{session.description}</p>
+        )}
+
+        {/* Speakers */}
+        {session.speakers && (
+          <div className="flex items-center gap-1 text-xs text-brand-ink/50 mt-2 pl-11">
+            <Users className="w-3 h-3 flex-shrink-0" />
+            <span className="line-clamp-1">{session.speakers}</span>
+          </div>
+        )}
+
+        {/* Track badge */}
+        {session.track && (
+          <div className="mt-2 pl-11">
+            <span className={`inline-flex items-center text-xs px-2 py-0.5 rounded-full ${colors.bg} ${colors.text}`}>
+              {session.track}
+            </span>
+          </div>
+        )}
+      </div>
+
+      {/* Desktop layout: horizontal with time column */}
+      <div className="hidden lg:flex gap-4">
         {/* Time column */}
         <div className="flex-shrink-0 w-20 text-right">
           <span className="font-body text-sm text-brand-ink/60">{formattedStartTime}</span>
