@@ -6,9 +6,11 @@ import Footer from '../components/Footer'
 import SessionCard from '../components/SessionCard'
 import { sessionsByDay, sessionTypes, sessionTracks, metadata } from '../content/scheduleData'
 import { useAuth } from '../contexts/AuthContext'
+import { useBookmarkCounts } from '../hooks/useBookmarkCounts'
 
 function Schedule() {
   const { currentUser } = useAuth()
+  const { bookmarkCounts } = useBookmarkCounts()
   const [activeFilters, setActiveFilters] = useState({
     types: [],
     tracks: [],
@@ -259,7 +261,7 @@ function Schedule() {
 
                   <div className="space-y-3">
                     {filteredMonday.map((session, index) => (
-                      <SessionCard key={session.id} session={session} index={index} />
+                      <SessionCard key={session.id} session={session} index={index} bookmarkCount={bookmarkCounts[session.id] || 0} />
                     ))}
                   </div>
                 </motion.div>
@@ -284,7 +286,7 @@ function Schedule() {
 
                   <div className="space-y-3">
                     {filteredTuesday.map((session, index) => (
-                      <SessionCard key={session.id} session={session} index={index} />
+                      <SessionCard key={session.id} session={session} index={index} bookmarkCount={bookmarkCounts[session.id] || 0} />
                     ))}
                   </div>
                 </motion.div>

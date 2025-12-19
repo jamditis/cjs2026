@@ -80,6 +80,17 @@ service cloud.firestore {
       allow create, update, delete: if isAdmin() || isSuperAdmin();
     }
 
+    // Session bookmark counts - public read, authenticated users can update counts
+    // Used for displaying how many attendees have saved each session
+    match /sessionBookmarks/{sessionId} {
+      // Anyone can read bookmark counts (shown on public schedule page)
+      allow read: if true;
+      // Authenticated users can create/update counts (increment/decrement when saving/unsaving)
+      allow create, update: if request.auth != null;
+      // Only admins can delete (reset counts)
+      allow delete: if isAdmin() || isSuperAdmin();
+    }
+
     // Default deny all
     match /{document=**} {
       allow read, write: if false;

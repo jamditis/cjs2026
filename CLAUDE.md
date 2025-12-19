@@ -1027,3 +1027,65 @@ npm run deploy                                        # Full deploy (build + hos
 1. **Google sign-in fails:** Now auto-falls back to redirect; should work on all browsers
 2. **Magic link shows blank page:** Link was already used or expired; request a new one
 3. **Permission denied errors:** Check Firestore rules are deployed; user may not have correct role
+
+---
+
+## Updates (2025-12-19)
+
+### Session bookmark counter badges
+
+Added real-time bookmark counters showing how many attendees have saved each session:
+
+**Features:**
+- Counter badge appears next to bookmark button on Schedule page
+- Badge changes appearance based on popularity:
+  - **Normal (1-4)**: Gray badge with user icon
+  - **Popular (5-9)**: Amber badge with flame icon
+  - **Hot (10+)**: Red/orange gradient badge with pulsing flame icon
+- Real-time updates via Firestore subscription
+- Shows on Schedule page, MySchedule, and SharedSchedule views
+
+**Architecture:**
+- Bookmark counts stored in `sessionBookmarks/{sessionId}` collection
+- `count` field uses Firestore `increment()` for atomic updates
+- `useBookmarkCounts` hook subscribes to counts collection
+- Counts update when any user saves/unsaves a session
+
+**New files:**
+| File | Purpose |
+|------|---------|
+| `src/hooks/useBookmarkCounts.js` | Hook to fetch and subscribe to bookmark counts |
+
+**Files changed:**
+| File | Changes |
+|------|---------|
+| `src/contexts/AuthContext.jsx` | Added increment/decrement on save/unsave |
+| `src/components/SessionCard.jsx` | Added tiered bookmark count badge |
+| `src/pages/Schedule.jsx` | Pass bookmark counts to SessionCard |
+| `src/components/MySchedule.jsx` | Pass bookmark counts to SessionCard |
+| `src/pages/SharedSchedule.jsx` | Pass bookmark counts to SessionCard |
+| `firestore.rules` | Added rules for sessionBookmarks collection |
+
+**Firestore rules for sessionBookmarks:**
+```javascript
+match /sessionBookmarks/{sessionId} {
+  allow read: if true;  // Public read for schedule page
+  allow create, update: if request.auth != null;  // Authenticated users can update counts
+  allow delete: if isAdmin() || isSuperAdmin();  // Admins can reset counts
+}
+```
+
+### Backlog: Airtable sync for bookmark counts
+
+Future enhancement to sync bookmark counts to Airtable for CMS visibility:
+
+**Proposed approach:**
+1. Add `bookmark_count` field to Schedule table in Airtable
+2. Create Cloud Function to sync counts from Firestore to Airtable
+3. Add admin button to manually sync or reset counts
+4. Potentially run scheduled sync daily
+
+**Benefits:**
+- Editors can see session popularity in Airtable
+- Can export popularity data for reporting
+- Can manually override counts if needed
