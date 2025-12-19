@@ -5,9 +5,11 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { getSessionsByIds, sessionsByDay } from '../content/scheduleData'
 import SessionCard from './SessionCard'
+import { useBookmarkCounts } from '../hooks/useBookmarkCounts'
 
 function MySchedule({ compact = false, maxSessions = null, showViewAll = true }) {
   const { userProfile } = useAuth()
+  const { bookmarkCounts } = useBookmarkCounts()
 
   const savedSessionIds = userProfile?.savedSessions || []
   const savedSessions = getSessionsByIds(savedSessionIds)
@@ -58,6 +60,7 @@ function MySchedule({ compact = false, maxSessions = null, showViewAll = true })
             session={session}
             index={index}
             compact={true}
+            bookmarkCount={bookmarkCounts[session.id] || 0}
           />
         ))}
         {showViewAll && savedSessions.length > (maxSessions || 0) && (
@@ -100,7 +103,7 @@ function MySchedule({ compact = false, maxSessions = null, showViewAll = true })
           </h3>
           <div className="space-y-3">
             {mondaySessions.map((session, index) => (
-              <SessionCard key={session.id} session={session} index={index} />
+              <SessionCard key={session.id} session={session} index={index} bookmarkCount={bookmarkCounts[session.id] || 0} />
             ))}
           </div>
         </div>
@@ -117,7 +120,7 @@ function MySchedule({ compact = false, maxSessions = null, showViewAll = true })
           </h3>
           <div className="space-y-3">
             {tuesdaySessions.map((session, index) => (
-              <SessionCard key={session.id} session={session} index={index} />
+              <SessionCard key={session.id} session={session} index={index} bookmarkCount={bookmarkCounts[session.id] || 0} />
             ))}
           </div>
         </div>

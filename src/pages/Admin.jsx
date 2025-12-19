@@ -46,7 +46,9 @@ import {
   ExternalLink,
   Trash2,
   Save,
-  Pencil
+  Pencil,
+  Bookmark,
+  Flame
 } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { useNavigate } from 'react-router-dom'
@@ -58,6 +60,7 @@ const NAV_ITEMS = [
   { id: 'dashboard', label: 'Overview', icon: BarChart3, description: 'System health & metrics' },
   { id: 'broadcast', label: 'Broadcast', icon: Megaphone, description: 'Site announcements' },
   { id: 'attendees', label: 'Attendees', icon: Users, description: 'User management' },
+  { id: 'sessions', label: 'Sessions', icon: Bookmark, description: 'Session popularity' },
   { id: 'activity', label: 'Activity', icon: Activity, description: 'User actions' },
   { id: 'errors', label: 'Errors', icon: AlertTriangle, description: 'System errors' },
   { id: 'jobs', label: 'Jobs', icon: Briefcase, description: 'Background tasks' },
@@ -537,6 +540,7 @@ function AdminPanel() {
               {activeTab === 'dashboard' && <DashboardTab currentUser={currentUser} isInk={isInk} settings={settings} />}
               {activeTab === 'broadcast' && <BroadcastTab currentUser={currentUser} isInk={isInk} />}
               {activeTab === 'attendees' && <AttendeesTab currentUser={currentUser} isInk={isInk} />}
+              {activeTab === 'sessions' && <SessionsTab currentUser={currentUser} isInk={isInk} />}
               {activeTab === 'activity' && <ActivityTab currentUser={currentUser} isInk={isInk} />}
               {activeTab === 'errors' && <ErrorsTab currentUser={currentUser} isInk={isInk} />}
               {activeTab === 'jobs' && <JobsTab currentUser={currentUser} isInk={isInk} />}
@@ -1330,6 +1334,200 @@ function BroadcastTab({ currentUser, isInk }) {
           </div>
         )}
       </div>
+    </div>
+  )
+}
+
+// Sessions Tab - Session popularity analytics
+function SessionsTab({ currentUser, isInk }) {
+  const [bookmarkCounts, setBookmarkCounts] = useState({})
+  const [loading, setLoading] = useState(true)
+  const [sessions, setSessions] = useState([])
+
+  // Fetch bookmark counts from Firestore
+  useEffect(() => {
+    const unsubscribe = onSnapshot(
+      collection(db, 'sessionBookmarks'),
+      (snapshot) => {
+        const counts = {}
+        snapshot.forEach((doc) => {
+          counts[doc.id] = doc.data().count || 0
+        })
+        setBookmarkCounts(counts)
+        setLoading(false)
+      },
+      (error) => {
+        console.error('Error fetching bookmark counts:', error)
+        setLoading(false)
+      }
+    )
+    return () => unsubscribe()
+  }, [])
+
+  // Load session data from static file
+  useEffect(() => {
+    import('../content/scheduleData').then((module) => {
+      const allSessions = [
+        ...(module.sessionsByDay.monday || []),
+        ...(module.sessionsByDay.tuesday || [])
+      ]
+      setSessions(allSessions)
+    })
+  }, [])
+
+  // Combine sessions with bookmark counts and sort by count
+  const sessionsWithCounts = sessions
+    .filter(s => s.isBookmarkable)
+    .map(session => ({
+      ...session,
+      bookmarkCount: bookmarkCounts[session.id] || 0
+    }))
+    .sort((a, b) => b.bookmarkCount - a.bookmarkCount)
+
+  const totalBookmarks = Object.values(bookmarkCounts).reduce((sum, count) => sum + Math.max(0, count), 0)
+  const hotSessions = sessionsWithCounts.filter(s => s.bookmarkCount >= 10)
+  const popularSessions = sessionsWithCounts.filter(s => s.bookmarkCount >= 5 && s.bookmarkCount < 10)
+  const coldSessions = sessionsWithCounts.filter(s => s.bookmarkCount === 0)
+
+  const getTierBadge = (count) => {
+    if (count >= 10) return { label: 'Hot', bg: 'bg-gradient-to-r from-orange-500 to-red-500', text: 'text-white', icon: Flame }
+    if (count >= 5) return { label: 'Popular', bg: 'bg-amber-500/20', text: 'text-amber-600', icon: Flame }
+    if (count > 0) return { label: 'Normal', bg: 'bg-[var(--admin-surface)]', text: 'text-[var(--admin-text-muted)]', icon: Users }
+    return { label: 'Cold', bg: 'bg-blue-500/10', text: 'text-blue-500', icon: AlertCircle }
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Summary cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="admin-card p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-admin-teal/10 flex items-center justify-center">
+              <Bookmark className="w-5 h-5 text-admin-teal" />
+            </div>
+            <div>
+              <p className="font-admin-body text-sm text-[var(--admin-text-muted)]">Total Bookmarks</p>
+              <p className="font-admin-heading text-2xl font-bold text-[var(--admin-text)]">{totalBookmarks}</p>
+            </div>
+          </div>
+        </div>
+        <div className="admin-card p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-r from-orange-500/20 to-red-500/20 flex items-center justify-center">
+              <Flame className="w-5 h-5 text-orange-500" />
+            </div>
+            <div>
+              <p className="font-admin-body text-sm text-[var(--admin-text-muted)]">Hot Sessions</p>
+              <p className="font-admin-heading text-2xl font-bold text-[var(--admin-text)]">{hotSessions.length}</p>
+            </div>
+          </div>
+        </div>
+        <div className="admin-card p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-amber-500/10 flex items-center justify-center">
+              <TrendingUp className="w-5 h-5 text-amber-500" />
+            </div>
+            <div>
+              <p className="font-admin-body text-sm text-[var(--admin-text-muted)]">Popular</p>
+              <p className="font-admin-heading text-2xl font-bold text-[var(--admin-text)]">{popularSessions.length}</p>
+            </div>
+          </div>
+        </div>
+        <div className="admin-card p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
+              <AlertCircle className="w-5 h-5 text-blue-500" />
+            </div>
+            <div>
+              <p className="font-admin-body text-sm text-[var(--admin-text-muted)]">Need Attention</p>
+              <p className="font-admin-heading text-2xl font-bold text-[var(--admin-text)]">{coldSessions.length}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Session list */}
+      <div className="admin-card">
+        <div className="p-4 border-b border-[var(--admin-border)]">
+          <h3 className="font-admin-heading font-semibold text-[var(--admin-text)]">Session Popularity Rankings</h3>
+          <p className="font-admin-body text-sm text-[var(--admin-text-muted)]">
+            Sessions sorted by bookmark count. Hot = 10+, Popular = 5-9, Cold = 0.
+          </p>
+        </div>
+
+        {loading ? (
+          <div className="p-8 text-center">
+            <Loader2 className="w-6 h-6 animate-spin mx-auto text-[var(--admin-text-muted)]" />
+          </div>
+        ) : sessionsWithCounts.length === 0 ? (
+          <div className="p-8 text-center text-[var(--admin-text-muted)]">
+            <Calendar className="w-8 h-8 mx-auto mb-2 opacity-50" />
+            <p>No bookmarkable sessions found</p>
+          </div>
+        ) : (
+          <div className="divide-y divide-[var(--admin-border)]">
+            {sessionsWithCounts.map((session, index) => {
+              const tier = getTierBadge(session.bookmarkCount)
+              const TierIcon = tier.icon
+              return (
+                <div key={session.id} className="p-4 flex items-center gap-4 hover:bg-[var(--admin-surface-hover)] transition-colors">
+                  {/* Rank */}
+                  <div className="w-8 h-8 rounded-full bg-[var(--admin-surface)] flex items-center justify-center font-admin-heading font-bold text-sm text-[var(--admin-text-muted)]">
+                    {index + 1}
+                  </div>
+
+                  {/* Session info */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <h4 className="font-admin-body font-medium text-[var(--admin-text)] truncate">{session.title}</h4>
+                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs ${tier.bg} ${tier.text}`}>
+                        <TierIcon className="w-3 h-3" />
+                        {tier.label}
+                      </span>
+                    </div>
+                    <p className="font-admin-body text-xs text-[var(--admin-text-muted)]">
+                      {session.day} • {session.startTime} {session.room && `• ${session.room}`}
+                    </p>
+                  </div>
+
+                  {/* Bookmark count */}
+                  <div className="flex items-center gap-2">
+                    <div className={`px-3 py-1.5 rounded-lg ${session.bookmarkCount >= 10 ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white' : session.bookmarkCount >= 5 ? 'bg-amber-500/20 text-amber-600' : 'bg-[var(--admin-surface)] text-[var(--admin-text)]'}`}>
+                      <span className="font-admin-heading font-bold">{session.bookmarkCount}</span>
+                      <span className="font-admin-body text-xs ml-1 opacity-80">saves</span>
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* Cold sessions alert */}
+      {coldSessions.length > 0 && (
+        <div className="admin-card p-4 border-l-4 border-blue-500">
+          <h4 className="font-admin-heading font-semibold text-[var(--admin-text)] flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 text-blue-500" />
+            Sessions needing promotion ({coldSessions.length})
+          </h4>
+          <p className="font-admin-body text-sm text-[var(--admin-text-muted)] mt-1 mb-3">
+            These sessions have no bookmarks yet. Consider promoting them in emails or social media.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {coldSessions.slice(0, 5).map(session => (
+              <span key={session.id} className="inline-block px-2 py-1 bg-[var(--admin-surface)] rounded text-xs font-admin-body text-[var(--admin-text)]">
+                {session.title}
+              </span>
+            ))}
+            {coldSessions.length > 5 && (
+              <span className="inline-block px-2 py-1 text-xs font-admin-body text-[var(--admin-text-muted)]">
+                +{coldSessions.length - 5} more
+              </span>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -11,7 +11,7 @@ import {
   isSignInWithEmailLink,
   signInWithEmailLink
 } from 'firebase/auth'
-import { doc, setDoc, getDoc, serverTimestamp, arrayUnion, arrayRemove } from 'firebase/firestore'
+import { doc, setDoc, getDoc, serverTimestamp, arrayUnion, arrayRemove, increment } from 'firebase/firestore'
 import { auth, db } from '../firebase'
 
 // Email link settings
@@ -228,6 +228,14 @@ export function AuthProvider({ children }) {
       savedSessions: arrayUnion(sessionId),
       updatedAt: serverTimestamp()
     }, { merge: true })
+
+    // Increment the bookmark count for this session
+    const bookmarkRef = doc(db, 'sessionBookmarks', sessionId)
+    await setDoc(bookmarkRef, {
+      count: increment(1),
+      updatedAt: serverTimestamp()
+    }, { merge: true })
+
     // Update local state
     setUserProfile(prev => ({
       ...prev,
@@ -248,6 +256,14 @@ export function AuthProvider({ children }) {
       savedSessions: arrayRemove(sessionId),
       updatedAt: serverTimestamp()
     }, { merge: true })
+
+    // Decrement the bookmark count for this session
+    const bookmarkRef = doc(db, 'sessionBookmarks', sessionId)
+    await setDoc(bookmarkRef, {
+      count: increment(-1),
+      updatedAt: serverTimestamp()
+    }, { merge: true })
+
     // Update local state
     setUserProfile(prev => ({
       ...prev,

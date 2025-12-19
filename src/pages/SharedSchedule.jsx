@@ -9,10 +9,12 @@ import Footer from '../components/Footer'
 import SessionCard from '../components/SessionCard'
 import { getSessionsByIds } from '../content/scheduleData'
 import { useAuth } from '../contexts/AuthContext'
+import { useBookmarkCounts } from '../hooks/useBookmarkCounts'
 
 function SharedSchedule() {
   const { uid } = useParams()
   const { currentUser } = useAuth()
+  const { bookmarkCounts } = useBookmarkCounts()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [userData, setUserData] = useState(null)
@@ -220,6 +222,7 @@ function SharedSchedule() {
                             session={session}
                             index={index}
                             showSaveButton={false}
+                            bookmarkCount={bookmarkCounts[session.id] || 0}
                           />
                         ))}
                       </div>
@@ -246,6 +249,7 @@ function SharedSchedule() {
                             session={session}
                             index={index}
                             showSaveButton={false}
+                            bookmarkCount={bookmarkCounts[session.id] || 0}
                           />
                         ))}
                       </div>

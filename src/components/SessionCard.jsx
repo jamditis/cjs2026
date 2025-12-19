@@ -1,6 +1,6 @@
 import React from 'react'
 import { motion } from 'framer-motion'
-import { Bookmark, BookmarkCheck, Clock, MapPin, Users, Coffee, Utensils, Mic, Lightbulb, BookOpen, Sparkles } from 'lucide-react'
+import { Bookmark, BookmarkCheck, Clock, MapPin, Users, Coffee, Utensils, Mic, Lightbulb, BookOpen, Sparkles, Flame } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { typeColors } from '../content/scheduleData'
 
@@ -13,7 +13,37 @@ const typeIcons = {
   lightning: Lightbulb,
 }
 
-function SessionCard({ session, index = 0, showSaveButton = true, compact = false }) {
+// Get badge tier based on bookmark count
+// Returns { tier, icon, bgClass, textClass, label }
+function getBookmarkTier(count) {
+  if (count >= 10) {
+    return {
+      tier: 'hot',
+      icon: Flame,
+      bgClass: 'bg-gradient-to-r from-orange-500 to-red-500',
+      textClass: 'text-white',
+      label: 'Hot session'
+    }
+  }
+  if (count >= 5) {
+    return {
+      tier: 'popular',
+      icon: Flame,
+      bgClass: 'bg-amber-500/20',
+      textClass: 'text-amber-600',
+      label: 'Popular'
+    }
+  }
+  return {
+    tier: 'normal',
+    icon: Users,
+    bgClass: 'bg-brand-ink/5',
+    textClass: 'text-brand-ink/50',
+    label: 'Saved by attendees'
+  }
+}
+
+function SessionCard({ session, index = 0, showSaveButton = true, compact = false, bookmarkCount = 0 }) {
   const { currentUser, userProfile, saveSession, unsaveSession, isSessionSaved } = useAuth()
 
   const isSaved = isSessionSaved?.(session.id) || false
@@ -63,19 +93,34 @@ function SessionCard({ session, index = 0, showSaveButton = true, compact = fals
             </div>
             <h4 className="font-heading font-semibold text-brand-ink truncate">{session.title}</h4>
           </div>
-          {canSave && (
-            <button
-              onClick={handleToggleSave}
-              className={`flex-shrink-0 p-1.5 rounded-full transition-colors ${
-                isSaved
-                  ? 'bg-brand-teal/20 text-brand-teal'
-                  : 'bg-brand-ink/5 text-brand-ink/40 hover:text-brand-teal hover:bg-brand-teal/10'
-              }`}
-              title={isSaved ? 'Remove from my schedule' : 'Add to my schedule'}
-            >
-              {isSaved ? <BookmarkCheck className="w-4 h-4" /> : <Bookmark className="w-4 h-4" />}
-            </button>
-          )}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {bookmarkCount > 0 && (() => {
+              const tier = getBookmarkTier(bookmarkCount)
+              const TierIcon = tier.icon
+              return (
+                <span
+                  className={`inline-flex items-center gap-1 text-xs px-1.5 py-0.5 rounded-full ${tier.bgClass} ${tier.textClass}`}
+                  title={`${bookmarkCount} attendee${bookmarkCount !== 1 ? 's' : ''} saved this`}
+                >
+                  <TierIcon className="w-3 h-3" />
+                  {bookmarkCount}
+                </span>
+              )
+            })()}
+            {canSave && (
+              <button
+                onClick={handleToggleSave}
+                className={`p-1.5 rounded-full transition-colors ${
+                  isSaved
+                    ? 'bg-brand-teal/20 text-brand-teal'
+                    : 'bg-brand-ink/5 text-brand-ink/40 hover:text-brand-teal hover:bg-brand-teal/10'
+                }`}
+                title={isSaved ? 'Remove from my schedule' : 'Add to my schedule'}
+              >
+                {isSaved ? <BookmarkCheck className="w-4 h-4" /> : <Bookmark className="w-4 h-4" />}
+              </button>
+            )}
+          </div>
         </div>
       </motion.div>
     )
@@ -140,20 +185,35 @@ function SessionCard({ session, index = 0, showSaveButton = true, compact = fals
               </div>
             </div>
 
-            {/* Save button */}
-            {canSave && (
-              <button
-                onClick={handleToggleSave}
-                className={`flex-shrink-0 p-2 rounded-full transition-all ${
-                  isSaved
-                    ? 'bg-brand-teal text-white shadow-md'
-                    : 'bg-brand-ink/5 text-brand-ink/40 hover:text-brand-teal hover:bg-brand-teal/10'
-                }`}
-                title={isSaved ? 'Remove from my schedule' : 'Add to my schedule'}
-              >
-                {isSaved ? <BookmarkCheck className="w-5 h-5" /> : <Bookmark className="w-5 h-5" />}
-              </button>
-            )}
+            {/* Bookmark count and save button */}
+            <div className="flex items-center gap-3 flex-shrink-0">
+              {bookmarkCount > 0 && (() => {
+                const tier = getBookmarkTier(bookmarkCount)
+                const TierIcon = tier.icon
+                return (
+                  <span
+                    className={`inline-flex items-center gap-1.5 text-sm px-2.5 py-1 rounded-full ${tier.bgClass} ${tier.textClass} ${tier.tier === 'hot' ? 'shadow-sm' : ''}`}
+                    title={`${bookmarkCount} attendee${bookmarkCount !== 1 ? 's' : ''} saved this`}
+                  >
+                    <TierIcon className={`w-4 h-4 ${tier.tier === 'hot' ? 'animate-pulse' : ''}`} />
+                    {bookmarkCount}
+                  </span>
+                )
+              })()}
+              {canSave && (
+                <button
+                  onClick={handleToggleSave}
+                  className={`p-2 rounded-full transition-all ${
+                    isSaved
+                      ? 'bg-brand-teal text-white shadow-md'
+                      : 'bg-brand-ink/5 text-brand-ink/40 hover:text-brand-teal hover:bg-brand-teal/10'
+                  }`}
+                  title={isSaved ? 'Remove from my schedule' : 'Add to my schedule'}
+                >
+                  {isSaved ? <BookmarkCheck className="w-5 h-5" /> : <Bookmark className="w-5 h-5" />}
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
