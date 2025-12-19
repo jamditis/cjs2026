@@ -1089,3 +1089,16 @@ Future enhancement to sync bookmark counts to Airtable for CMS visibility:
 - Editors can see session popularity in Airtable
 - Can export popularity data for reporting
 - Can manually override counts if needed
+
+### Admin panel: Sessions tab
+
+Added new "Sessions" tab to the admin dashboard showing session popularity analytics:
+
+**Features:**
+- Summary cards: Total bookmarks, Hot sessions (10+), Popular (5-9), Need attention (0)
+- Ranked list of all bookmarkable sessions sorted by popularity
+- Color-coded tier badges (Hot/Popular/Normal/Cold)
+- Alert section highlighting sessions with zero bookmarks that need promotion
+- Real-time updates from Firestore
+
+**Location:** Admin Panel → Sessions (in sidebar)
