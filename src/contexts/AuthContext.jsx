@@ -9,7 +9,9 @@ import {
   getRedirectResult,
   sendSignInLinkToEmail,
   isSignInWithEmailLink,
-  signInWithEmailLink
+  signInWithEmailLink,
+  browserLocalPersistence,
+  setPersistence
 } from 'firebase/auth'
 import { doc, setDoc, getDoc, serverTimestamp, arrayUnion, arrayRemove, increment } from 'firebase/firestore'
 import { auth, db } from '../firebase'
@@ -373,8 +375,17 @@ export function AuthProvider({ children }) {
 
     // Use redirect for mobile and Safari (more reliable), popup for desktop Chrome/Firefox/Edge
     if (isMobile || isSafari) {
+      // Set persistence to local to help with storage partitioning issues on mobile
+      try {
+        await setPersistence(auth, browserLocalPersistence)
+        console.log('[Auth] Set persistence to browserLocalPersistence')
+      } catch (persistError) {
+        console.warn('[Auth] Could not set persistence:', persistError)
+      }
+
       // Redirect-based auth - page will reload after auth
       localStorage.setItem('cjs2026_auth_pending', 'google')
+      console.log('[Auth] Starting redirect auth for mobile/Safari')
       await signInWithRedirect(auth, provider)
       return null // Will complete after redirect
     }
@@ -396,6 +407,12 @@ export function AuthProvider({ children }) {
           error.code === 'auth/cancelled-popup-request' ||
           error.code === 'auth/internal-error') {
         console.log('Popup failed, falling back to redirect:', error.code)
+        // Set persistence before redirect
+        try {
+          await setPersistence(auth, browserLocalPersistence)
+        } catch (persistError) {
+          console.warn('[Auth] Could not set persistence:', persistError)
+        }
         localStorage.setItem('cjs2026_auth_pending', 'google')
         await signInWithRedirect(auth, provider)
         return null // Will complete after redirect
