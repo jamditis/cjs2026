@@ -18,6 +18,13 @@ service cloud.firestore {
     match /users/{userId} {
       // Users can read/write their own profile
       allow read, write: if request.auth != null && request.auth.uid == userId;
+
+      // Allow reading other users' profiles for shared schedules based on visibility
+      // Public schedules - anyone can read
+      allow read: if resource.data.scheduleVisibility == 'public';
+      // Attendees-only schedules - authenticated users can read
+      allow read: if request.auth != null && resource.data.scheduleVisibility == 'attendees_only';
+
       // Admins can read all profiles (for admin panel)
       allow read: if isAdmin() || isSuperAdmin();
       // Admins can update user profiles (except system role)
