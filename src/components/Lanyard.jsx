@@ -16,13 +16,40 @@ import './Lanyard.css';
 extend({ MeshLineGeometry, MeshLineMaterial });
 
 export default function Lanyard({
-  position = [0, 0, 30],
+  position = [0, 0, 25],
   gravity = [0, -40, 0],
-  fov = 20,
+  fov = 25,
   transparent = true,
   onDismiss
 }) {
   const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768);
+  const [anchorPos, setAnchorPos] = useState({ right: 60, top: 20 });
+  const wrapperRef = useRef(null);
+
+  // Position lanyard to hang from the Sign in button
+  useEffect(() => {
+    const updatePosition = () => {
+      const btn = document.getElementById('nav-auth-btn');
+      if (btn) {
+        const rect = btn.getBoundingClientRect();
+        // Center of button, offset for lanyard width
+        const btnCenterX = rect.left + rect.width / 2;
+        const rightPos = window.innerWidth - btnCenterX - 250; // Offset to center strap on button
+        setAnchorPos({
+          right: Math.max(0, rightPos),
+          top: rect.top - 15 // Start above button so strap comes from behind
+        });
+      }
+    };
+
+    updatePosition();
+    window.addEventListener('resize', updatePosition);
+    window.addEventListener('scroll', updatePosition);
+    return () => {
+      window.removeEventListener('resize', updatePosition);
+      window.removeEventListener('scroll', updatePosition);
+    };
+  }, []);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -30,16 +57,23 @@ export default function Lanyard({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // Hide on mobile - too intrusive
+  if (isMobile) return null;
+
   return (
-    <div className="lanyard-wrapper">
-      {/* Dismiss button - more visible with text */}
+    <div
+      ref={wrapperRef}
+      className="lanyard-wrapper"
+      style={{ right: `${anchorPos.right}px`, top: `${anchorPos.top}px` }}
+    >
+      {/* Dismiss button - positioned below badge */}
       {onDismiss && (
         <button
           onClick={onDismiss}
           className="lanyard-dismiss-btn"
           aria-label="Dismiss lanyard"
         >
-          Dismiss lanyard ✕
+          ✕ Close
         </button>
       )}
 

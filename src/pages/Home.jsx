@@ -408,7 +408,16 @@ function Home() {
             </InfoCard>
 
             <InfoCard icon={MapPin} title="Where" delay={0.1} color={getContentMeta('details', 'venue_name')?.color || 'teal'}>
-              <p><strong>{getContent('details', 'venue_name', 'UNC Friday Center')}</strong></p>
+              <p>
+                <a
+                  href="https://maps.google.com/?q=UNC+Friday+Center,+Chapel+Hill,+NC"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-semibold hover:text-brand-teal transition-colors underline decoration-brand-ink/30 hover:decoration-brand-teal"
+                >
+                  {getContent('details', 'venue_name', 'UNC Friday Center')}
+                </a>
+              </p>
               <p className="text-sm">{getContent('details', 'venue_location', 'Chapel Hill, North Carolina')}</p>
               <p className="text-sm mt-2 text-brand-ink/50">{getContent('details', 'venue_note', 'Co-located with INN Days')}</p>
             </InfoCard>
@@ -620,8 +629,12 @@ function Home() {
                 {getContent('footer', 'website_url', 'collaborativejournalism.org')}
               </a>
               <span className="hidden md:inline text-brand-ink/20">•</span>
+              <a href="https://bsky.app/profile/centercoopmedia.bsky.social" target="_blank" rel="noopener noreferrer" className="hover:text-brand-teal transition-colors">
+                Bluesky
+              </a>
+              <span className="hidden md:inline text-brand-ink/20">•</span>
               <a href={`https://twitter.com/${getContent('footer', 'twitter_handle', '@CenterCoopMedia').replace('@', '')}`} target="_blank" rel="noopener noreferrer" className="hover:text-brand-teal transition-colors">
-                {getContent('footer', 'twitter_handle', '@CenterCoopMedia')}
+                X/Twitter
               </a>
             </div>
             <p className="text-brand-ink/30 text-xs mt-8 font-body">
