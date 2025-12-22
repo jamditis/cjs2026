@@ -1052,6 +1052,13 @@ function BroadcastTab({ currentUser, isInk }) {
   const [linkUrl, setLinkUrl] = useState('')
   const [saving, setSaving] = useState(false)
 
+  // Edit state
+  const [editingAnnouncement, setEditingAnnouncement] = useState(null)
+  const [editMessage, setEditMessage] = useState('')
+  const [editType, setEditType] = useState('info')
+  const [editLinkText, setEditLinkText] = useState('')
+  const [editLinkUrl, setEditLinkUrl] = useState('')
+
   // Listen to announcements in real-time
   useEffect(() => {
     const q = query(
@@ -1131,6 +1138,69 @@ function BroadcastTab({ currentUser, isInk }) {
       await deleteDoc(doc(db, 'announcements', id))
     } catch (err) {
       console.error('Failed to delete announcement:', err)
+    }
+  }
+
+  // Start editing an announcement
+  function startEdit(announcement) {
+    setEditingAnnouncement(announcement)
+    setEditMessage(announcement.message || '')
+    setEditType(announcement.type || 'info')
+    // Try to extract link from htmlMessage if present
+    const linkMatch = announcement.htmlMessage?.match(/<a href="([^"]+)"[^>]*>([^<]+)<\/a>/)
+    if (linkMatch) {
+      setEditLinkUrl(linkMatch[1])
+      setEditLinkText(linkMatch[2])
+    } else {
+      setEditLinkUrl('')
+      setEditLinkText('')
+    }
+  }
+
+  // Cancel editing
+  function cancelEdit() {
+    setEditingAnnouncement(null)
+    setEditMessage('')
+    setEditType('info')
+    setEditLinkText('')
+    setEditLinkUrl('')
+  }
+
+  // Generate HTML message for edit
+  function generateEditHtmlMessage() {
+    let html = editMessage.trim()
+    if (editLinkText && editLinkUrl) {
+      if (html.includes(editLinkText)) {
+        html = html.replace(
+          editLinkText,
+          `<a href="${editLinkUrl}" target="_blank" rel="noopener noreferrer">${editLinkText}</a>`
+        )
+      } else {
+        html += ` <a href="${editLinkUrl}" target="_blank" rel="noopener noreferrer">${editLinkText}</a>`
+      }
+    }
+    return html
+  }
+
+  // Save edited announcement
+  async function saveEdit() {
+    if (!editingAnnouncement || !editMessage.trim()) return
+    setSaving(true)
+    try {
+      const htmlMessage = generateEditHtmlMessage()
+      await updateDoc(doc(db, 'announcements', editingAnnouncement.id), {
+        message: editMessage.trim(),
+        htmlMessage: htmlMessage,
+        type: editType,
+        updatedAt: serverTimestamp(),
+        updatedBy: currentUser.uid,
+        updatedByEmail: currentUser.email
+      })
+      cancelEdit()
+    } catch (err) {
+      console.error('Failed to update announcement:', err)
+    } finally {
+      setSaving(false)
     }
   }
 
@@ -1310,6 +1380,13 @@ function BroadcastTab({ currentUser, isInk }) {
                   </div>
                   <div className="flex items-center gap-2">
                     <button
+                      onClick={() => startEdit(announcement)}
+                      className="p-2 rounded-lg text-[var(--admin-text-muted)] hover:text-admin-teal hover:bg-admin-teal/10 transition-colors"
+                      title="Edit"
+                    >
+                      <Pencil className="w-5 h-5" />
+                    </button>
+                    <button
                       onClick={() => toggleActive(announcement)}
                       className={`p-2 rounded-lg transition-colors ${
                         announcement.active
@@ -1334,6 +1411,146 @@ function BroadcastTab({ currentUser, isInk }) {
           </div>
         )}
       </div>
+
+      {/* Edit Modal */}
+      <AnimatePresence>
+        {editingAnnouncement && (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={cancelEdit}
+          >
+            <motion.div
+              className="w-full max-w-lg admin-surface p-6 rounded-2xl shadow-2xl"
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 rounded-xl admin-glass-teal flex items-center justify-center">
+                  <Pencil className="w-5 h-5 text-admin-teal" />
+                </div>
+                <div>
+                  <h3 className="font-admin-heading text-lg font-semibold text-[var(--admin-text)]">Edit announcement</h3>
+                  <p className="font-admin-body text-sm text-[var(--admin-text-secondary)]">
+                    Update the message, type, or link
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block font-admin-body text-sm font-medium text-[var(--admin-text)] mb-2">
+                    Message
+                  </label>
+                  <textarea
+                    value={editMessage}
+                    onChange={(e) => setEditMessage(e.target.value)}
+                    rows={2}
+                    className="admin-input w-full resize-none"
+                  />
+                </div>
+
+                {/* Link fields */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block font-admin-body text-sm font-medium text-[var(--admin-text)] mb-2">
+                      Link text <span className="text-[var(--admin-text-muted)]">(optional)</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={editLinkText}
+                      onChange={(e) => setEditLinkText(e.target.value)}
+                      placeholder="bit.ly/cjs2026"
+                      className="admin-input w-full"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-admin-body text-sm font-medium text-[var(--admin-text)] mb-2">
+                      Link URL <span className="text-[var(--admin-text-muted)]">(optional)</span>
+                    </label>
+                    <input
+                      type="url"
+                      value={editLinkUrl}
+                      onChange={(e) => setEditLinkUrl(e.target.value)}
+                      placeholder="https://bit.ly/cjs2026"
+                      className="admin-input w-full"
+                    />
+                  </div>
+                </div>
+
+                {/* Preview */}
+                {editMessage.trim() && (
+                  <div>
+                    <label className="block font-admin-body text-sm font-medium text-[var(--admin-text)] mb-2">
+                      Preview
+                    </label>
+                    <div className={`p-4 rounded-xl ${
+                      editType === 'warning' ? 'bg-amber-500/10 border-2 border-amber-500/30' :
+                      editType === 'urgent' ? 'bg-brand-cardinal/10 border-2 border-brand-cardinal/30' :
+                      'bg-brand-teal/10 border-2 border-brand-teal/30'
+                    }`}>
+                      <div
+                        className={`font-body font-medium text-sm announcement-content ${
+                          editType === 'warning' ? 'text-amber-600' :
+                          editType === 'urgent' ? 'text-brand-cardinal' :
+                          'text-brand-teal'
+                        }`}
+                        dangerouslySetInnerHTML={{ __html: generateEditHtmlMessage() }}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                <div>
+                  <label className="block font-admin-body text-sm font-medium text-[var(--admin-text)] mb-2">
+                    Type
+                  </label>
+                  <div className="flex gap-3">
+                    {typeOptions.map(opt => {
+                      const Icon = opt.icon
+                      return (
+                        <button
+                          key={opt.value}
+                          onClick={() => setEditType(opt.value)}
+                          className={`flex items-center gap-2 px-4 py-2 rounded-xl border transition-colors ${
+                            editType === opt.value
+                              ? 'border-admin-teal bg-admin-teal/10 text-admin-teal'
+                              : 'border-[var(--admin-border)] text-[var(--admin-text-secondary)] hover:border-[var(--admin-text-secondary)]'
+                          }`}
+                        >
+                          <Icon className="w-4 h-4" />
+                          <span className="font-admin-body text-sm">{opt.label}</span>
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+
+                <div className="flex gap-3 pt-2">
+                  <button
+                    onClick={cancelEdit}
+                    className="flex-1 px-4 py-2.5 rounded-xl border border-[var(--admin-border)] text-[var(--admin-text-secondary)] hover:bg-[var(--admin-elevated)] transition-colors font-admin-body"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={saveEdit}
+                    disabled={saving || !editMessage.trim()}
+                    className="flex-1 admin-btn-primary flex items-center justify-center gap-2"
+                  >
+                    {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                    Save changes
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

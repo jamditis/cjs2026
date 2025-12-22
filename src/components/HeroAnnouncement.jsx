@@ -1,9 +1,31 @@
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, Feather } from 'lucide-react'
+import { X, Feather, Bell, AlertTriangle, AlertCircle } from 'lucide-react'
 import { db } from '../firebase'
 import { collection, query, where, orderBy, limit, onSnapshot } from 'firebase/firestore'
 import { getContent } from '../content/siteContent'
+
+// Type-based styling for announcements
+const typeStyles = {
+  info: {
+    bg: 'bg-brand-teal/10',
+    border: 'border-brand-teal/30',
+    text: 'text-brand-teal',
+    icon: Bell
+  },
+  warning: {
+    bg: 'bg-amber-500/10',
+    border: 'border-amber-500/30',
+    text: 'text-amber-600',
+    icon: AlertTriangle
+  },
+  urgent: {
+    bg: 'bg-brand-cardinal/10',
+    border: 'border-brand-cardinal/30',
+    text: 'text-brand-cardinal',
+    icon: AlertCircle
+  }
+}
 
 /**
  * HeroAnnouncement - Displays announcements inline in the hero section
@@ -68,6 +90,10 @@ export default function HeroAnnouncement() {
   const showAnnouncement = !loading && announcement && !dismissed
   const badgeText = getContent('details', 'badge_text', '10th anniversary edition')
 
+  // Get type-based styling (default to info)
+  const style = typeStyles[announcement?.type] || typeStyles.info
+  const TypeIcon = style.icon
+
   return (
     <div className="flex flex-col items-center gap-4 mb-10">
       {/* Announcement badge (when active) */}
@@ -75,15 +101,18 @@ export default function HeroAnnouncement() {
         {showAnnouncement && (
           <motion.div
             key="announcement"
-            className="relative inline-flex items-center gap-3 bg-brand-teal/10 border-2 border-brand-teal/30 rounded-xl pl-5 pr-3 py-2.5 max-w-lg"
+            className={`relative inline-flex items-center gap-3 ${style.bg} border-2 ${style.border} rounded-xl pl-4 pr-3 py-2.5 max-w-lg`}
             initial={{ opacity: 0, y: -10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10, scale: 0.95 }}
             transition={{ duration: 0.3 }}
           >
+            {/* Type icon */}
+            <TypeIcon className={`w-4 h-4 ${style.text} flex-shrink-0`} />
+
             {/* Rich text content */}
             <div
-              className="text-brand-teal font-body font-medium text-sm sm:text-base announcement-content"
+              className={`${style.text} font-body font-medium text-sm sm:text-base announcement-content`}
               dangerouslySetInnerHTML={{
                 __html: announcement.htmlMessage || announcement.message
               }}
@@ -92,10 +121,10 @@ export default function HeroAnnouncement() {
             {/* Dismiss button */}
             <button
               onClick={dismissAnnouncement}
-              className="p-1.5 rounded-full hover:bg-brand-teal/10 transition-colors flex-shrink-0"
+              className={`p-1.5 rounded-full hover:${style.bg} transition-colors flex-shrink-0`}
               aria-label="Dismiss announcement"
             >
-              <X className="w-4 h-4 text-brand-teal/60 hover:text-brand-teal" />
+              <X className={`w-4 h-4 ${style.text} opacity-60 hover:opacity-100`} />
             </button>
           </motion.div>
         )}
