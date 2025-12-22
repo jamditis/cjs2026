@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Bookmark, BookmarkCheck, Clock, MapPin, Users, Coffee, Utensils, Mic, Lightbulb, BookOpen, Sparkles, Flame, ChevronDown } from 'lucide-react'
+import { Bookmark, BookmarkCheck, Clock, MapPin, Users, Coffee, Utensils, Mic, Lightbulb, BookOpen, Sparkles, ChevronDown } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { typeColors } from '../content/scheduleData'
 
@@ -38,32 +38,33 @@ function formatTime(timeStr) {
 }
 
 // Get badge tier based on bookmark count
+// Uses consistent Users icon across all tiers for clarity
 // Returns { tier, icon, bgClass, textClass, label }
 function getBookmarkTier(count) {
   if (count >= 10) {
     return {
       tier: 'hot',
-      icon: Flame,
-      bgClass: 'bg-gradient-to-r from-orange-500 to-red-500',
+      icon: Users,
+      bgClass: 'bg-brand-teal',
       textClass: 'text-white',
-      label: 'Hot session'
+      label: `${count} attendees saved this session`
     }
   }
   if (count >= 5) {
     return {
       tier: 'popular',
-      icon: Flame,
-      bgClass: 'bg-amber-500/20',
-      textClass: 'text-amber-600',
-      label: 'Popular'
+      icon: Users,
+      bgClass: 'bg-brand-teal/20',
+      textClass: 'text-brand-teal',
+      label: `${count} attendees saved this session`
     }
   }
   return {
     tier: 'normal',
     icon: Users,
-    bgClass: 'bg-brand-ink/5',
-    textClass: 'text-brand-ink/50',
-    label: 'Saved by attendees'
+    bgClass: 'bg-brand-ink/10',
+    textClass: 'text-brand-ink/60',
+    label: `${count} attendee${count !== 1 ? 's' : ''} saved this session`
   }
 }
 
@@ -157,7 +158,7 @@ function SessionCard({ session, index = 0, showSaveButton = true, compact = fals
               return (
                 <span
                   className={`inline-flex items-center gap-1 text-xs px-1.5 py-0.5 rounded-full ${tier.bgClass} ${tier.textClass}`}
-                  title={`${bookmarkCount} attendee${bookmarkCount !== 1 ? 's' : ''} saved this`}
+                  title={tier.label}
                 >
                   <TierIcon className="w-3 h-3" />
                   {bookmarkCount}
@@ -224,7 +225,7 @@ function SessionCard({ session, index = 0, showSaveButton = true, compact = fals
               return (
                 <span
                   className={`inline-flex items-center gap-1 text-xs px-1.5 py-0.5 rounded-full ${tier.bgClass} ${tier.textClass}`}
-                  title={`${bookmarkCount} attendee${bookmarkCount !== 1 ? 's' : ''} saved this`}
+                  title={tier.label}
                 >
                   <TierIcon className="w-3 h-3" />
                   {bookmarkCount}
@@ -343,9 +344,9 @@ function SessionCard({ session, index = 0, showSaveButton = true, compact = fals
                 return (
                   <span
                     className={`inline-flex items-center gap-1.5 text-sm px-2.5 py-1 rounded-full ${tier.bgClass} ${tier.textClass} ${tier.tier === 'hot' ? 'shadow-sm' : ''}`}
-                    title={`${bookmarkCount} attendee${bookmarkCount !== 1 ? 's' : ''} saved this`}
+                    title={tier.label}
                   >
-                    <TierIcon className={`w-4 h-4 ${tier.tier === 'hot' ? 'animate-pulse' : ''}`} />
+                    <TierIcon className="w-4 h-4" />
                     {bookmarkCount}
                   </span>
                 )

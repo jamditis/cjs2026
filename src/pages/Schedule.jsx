@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Calendar, MapPin, Filter, X, Clock, Mail } from 'lucide-react'
+import { Calendar, MapPin, Filter, X, Clock, Mail, Users, Search } from 'lucide-react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import SessionCard from '../components/SessionCard'
@@ -16,10 +16,23 @@ function Schedule() {
     tracks: [],
   })
   const [showFilters, setShowFilters] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
 
-  // Filter sessions based on active filters
+  // Filter sessions based on search query and active filters
   const filterSessions = (sessions) => {
     return sessions.filter(session => {
+      // Search filter - check title, description, speakers, room
+      if (searchQuery.trim()) {
+        const query = searchQuery.toLowerCase()
+        const matchesSearch = (
+          session.title?.toLowerCase().includes(query) ||
+          session.description?.toLowerCase().includes(query) ||
+          session.speakers?.toLowerCase().includes(query) ||
+          session.room?.toLowerCase().includes(query) ||
+          session.track?.toLowerCase().includes(query)
+        )
+        if (!matchesSearch) return false
+      }
       // Type filter
       if (activeFilters.types.length > 0 && !activeFilters.types.includes(session.type)) {
         return false
@@ -44,9 +57,10 @@ function Schedule() {
 
   const clearFilters = () => {
     setActiveFilters({ types: [], tracks: [] })
+    setSearchQuery('')
   }
 
-  const hasActiveFilters = activeFilters.types.length > 0 || activeFilters.tracks.length > 0
+  const hasActiveFilters = activeFilters.types.length > 0 || activeFilters.tracks.length > 0 || searchQuery.trim().length > 0
   const filteredMonday = filterSessions(sessionsByDay.monday || [])
   const filteredTuesday = filterSessions(sessionsByDay.tuesday || [])
 
@@ -75,6 +89,15 @@ function Schedule() {
                 Click the bookmark icon on any session to add it to your personal schedule.
               </p>
             )}
+            {/* Bookmark badge legend */}
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-4 text-xs text-brand-ink/60">
+              <span className="flex items-center gap-1.5">
+                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-brand-ink/10 text-brand-ink/60">
+                  <Users className="w-3 h-3" />3
+                </span>
+                = attendees who saved
+              </span>
+            </div>
           </motion.div>
 
           {/* Event info cards */}
@@ -104,7 +127,14 @@ function Schedule() {
                 <MapPin className="w-6 h-6 text-brand-teal" />
               </div>
               <div>
-                <p className="font-heading font-semibold text-brand-ink">UNC Friday Center</p>
+                <a
+                  href="https://maps.google.com/?q=UNC+Friday+Center,+Chapel+Hill,+NC"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-heading font-semibold text-brand-ink hover:text-brand-teal transition-colors underline decoration-brand-ink/30 hover:decoration-brand-teal"
+                >
+                  UNC Friday Center
+                </a>
                 <p className="font-body text-sm text-brand-ink/60">Chapel Hill, North Carolina</p>
               </div>
             </motion.div>
@@ -147,26 +177,49 @@ function Schedule() {
           {/* Show schedule content only when sessions exist */}
           {hasAnySessions && (
             <>
-              {/* Filters */}
-              {(sessionTypes.length > 1 || sessionTracks.length > 0) && (
-                <motion.div
-                  className="mb-8"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.3 }}
-                >
+              {/* Search and Filters */}
+              <motion.div
+                className="mb-8"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
+              >
+                {/* Search input */}
+                <div className="relative mb-4">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-ink/40" />
+                  <input
+                    type="text"
+                    placeholder="Search sessions, speakers, rooms..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-10 pr-10 py-3 rounded-lg border-2 border-brand-ink/10 bg-white/50 font-body text-sm text-brand-ink placeholder:text-brand-ink/40 focus:outline-none focus:border-brand-teal/50 focus:bg-white transition-colors"
+                  />
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery('')}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-ink/40 hover:text-brand-ink transition-colors"
+                      aria-label="Clear search"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+
+                {/* Filter toggle */}
+                {(sessionTypes.length > 1 || sessionTracks.length > 0) && (
                   <button
                     onClick={() => setShowFilters(!showFilters)}
                     className="flex items-center gap-2 font-body text-sm text-brand-ink/60 hover:text-brand-teal transition-colors"
                   >
                     <Filter className="w-4 h-4" />
-                    {showFilters ? 'Hide filters' : 'Filter sessions'}
-                    {hasActiveFilters && (
+                    {showFilters ? 'Hide filters' : 'Filter by type'}
+                    {(activeFilters.types.length > 0 || activeFilters.tracks.length > 0) && (
                       <span className="bg-brand-teal text-white text-xs px-2 py-0.5 rounded-full">
                         {activeFilters.types.length + activeFilters.tracks.length}
                       </span>
                     )}
                   </button>
+                )}
 
                   {showFilters && (
                     <div className="mt-4 p-4 card-sketch bg-white/50">
@@ -225,8 +278,7 @@ function Schedule() {
                       )}
                     </div>
                   )}
-                </motion.div>
-              )}
+              </motion.div>
 
               {/* Preliminary notice */}
               <motion.div

@@ -69,6 +69,7 @@ function Navbar() {
           {currentUser ? (
             <Link
               to="/dashboard"
+              id="nav-auth-btn"
               className="flex items-center gap-2 btn-primary py-2 px-5 text-sm"
             >
               <User className="w-4 h-4" />
@@ -77,6 +78,7 @@ function Navbar() {
           ) : (
             <Link
               to="/login"
+              id="nav-auth-btn"
               className="flex items-center gap-2 btn-primary py-2 px-5 text-sm"
             >
               <LogIn className="w-4 h-4" />

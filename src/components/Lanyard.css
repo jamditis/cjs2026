@@ -1,10 +1,10 @@
+/* Lanyard wrapper - positioned dynamically via JS to hang from Sign in button */
 .lanyard-wrapper {
-  position: absolute;
-  z-index: 30; /* Below navbar (z-40) */
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
+  position: fixed;
+  z-index: 35; /* Below navbar (z-40) but above content */
+  width: 400px;
+  height: 500px;
+  /* top and right set via inline styles */
   pointer-events: none;
 }
 
@@ -12,10 +12,12 @@
   pointer-events: auto;
 }
 
+/* Dismiss button - positioned below the badge area */
 .lanyard-dismiss-btn {
   position: absolute;
-  top: 5rem; /* Below navbar */
-  right: 1rem;
+  bottom: 0.5rem;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 60;
   pointer-events: auto;
   background: rgba(255, 255, 255, 0.95);
@@ -35,16 +37,21 @@
   background: #fff;
   border-color: #2A9D8F;
   color: #2A9D8F;
-  transform: translateY(-2px);
+  transform: translateX(-50%) translateY(-2px);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 }
 
-/* Mobile adjustments */
+/* Lanyard hidden on mobile via JS - these are fallback styles */
 @media (max-width: 768px) {
-  .lanyard-dismiss-btn {
-    top: 4.5rem;
-    right: 0.75rem;
-    padding: 0.4rem 0.75rem;
-    font-size: 0.75rem;
+  .lanyard-wrapper {
+    display: none;
+  }
+}
+
+/* Large screens - slightly bigger */
+@media (min-width: 1200px) {
+  .lanyard-wrapper {
+    width: 450px;
+    height: 550px;
   }
 }
