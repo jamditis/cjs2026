@@ -1,10 +1,28 @@
-# CJS2026 Claude Commands
+# CJS2026 Claude Commands & Skills
 
-Custom slash commands for the Collaborative Journalism Summit 2026 website.
+Custom slash commands and contextual skills for the Collaborative Journalism Summit 2026 website.
+
+## Two Systems
+
+| System | Location | Purpose |
+|--------|----------|---------|
+| **Slash Commands** | `.claude/commands/` | Quick actions you invoke explicitly |
+| **Skills** | `.claude/skills/` | Deep knowledge that activates contextually |
 
 ## Usage
 
-Type `/command-name` in Claude Code to run any command.
+- **Commands**: Type `/command-name` to run
+- **Skills**: Activate automatically based on task context
+
+## Available Skills (`.claude/skills/`)
+
+| Skill | Activation Triggers |
+|-------|---------------------|
+| `cjs-architecture` | Navigating codebase, architectural decisions |
+| `cms-content-pipeline` | Adding CMS fields, content issues |
+| `firebase-patterns` | Cloud Functions, Firestore, auth |
+| `component-patterns` | Creating components, styling, animations |
+| `validation-testing` | Pre-deployment, debugging failures |
 
 ## Available Commands
 
