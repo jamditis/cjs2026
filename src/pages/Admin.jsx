@@ -54,6 +54,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import { db } from '../firebase'
 import { collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, limit, serverTimestamp, getDoc, setDoc } from 'firebase/firestore'
+import { updates as staticUpdates } from '../content/updatesData'
 
 // Navigation items with icons
 const NAV_ITEMS = [
@@ -3138,7 +3139,7 @@ function UpdatesTab({ currentUser, isInk }) {
       .slice(0, 60)
   }
 
-  // Listen to updates in real-time
+  // Listen to updates in real-time and merge with static updates
   useEffect(() => {
     const q = query(
       collection(db, 'updates'),
@@ -3147,11 +3148,22 @@ function UpdatesTab({ currentUser, isInk }) {
     )
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const items = []
+      const firestoreItems = []
       snapshot.forEach(doc => {
-        items.push({ id: doc.id, ...doc.data() })
+        firestoreItems.push({ id: doc.id, ...doc.data(), isStatic: false })
       })
-      setUpdates(items)
+
+      // Merge: Firestore updates take precedence over static updates by slug
+      const firestoreSlugs = new Set(firestoreItems.map(u => u.slug))
+      const staticItems = staticUpdates
+        .filter(u => !firestoreSlugs.has(u.slug))
+        .map(u => ({ ...u, id: `static-${u.slug}`, isStatic: true }))
+
+      // Combine and sort by date
+      const allItems = [...firestoreItems, ...staticItems]
+        .sort((a, b) => new Date(b.date) - new Date(a.date))
+
+      setUpdates(allItems)
       setLoading(false)
     })
 
@@ -3180,7 +3192,12 @@ function UpdatesTab({ currentUser, isInk }) {
   }
 
   function startEdit(update) {
-    setEditingUpdate(update)
+    // For static updates, we clone them to Firestore for editing
+    if (update.isStatic) {
+      setEditingUpdate(null) // null = creating new
+    } else {
+      setEditingUpdate(update)
+    }
     setFormData({
       title: update.title || '',
       slug: update.slug || '',
@@ -3577,7 +3594,14 @@ function UpdatesTab({ currentUser, isInk }) {
                 <tr key={update.id} className={!update.visible ? 'opacity-50' : ''}>
                   <td>
                     <div>
-                      <p className="font-admin-body font-medium text-[var(--admin-text)]">{update.title}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="font-admin-body font-medium text-[var(--admin-text)]">{update.title}</p>
+                        {update.isStatic && (
+                          <span className="admin-badge text-xs bg-purple-500/20 text-purple-400 border-purple-500/30">
+                            Static
+                          </span>
+                        )}
+                      </div>
                       <p className="text-xs font-admin-mono text-[var(--admin-text-secondary)]">/updates/{update.slug}</p>
                     </div>
                   </td>
@@ -3612,24 +3636,28 @@ function UpdatesTab({ currentUser, isInk }) {
                       <button
                         onClick={() => startEdit(update)}
                         className="p-2 rounded-lg hover:bg-[var(--admin-bg-hover)] text-[var(--admin-text-secondary)] hover:text-admin-teal"
-                        title="Edit"
+                        title={update.isStatic ? 'Clone to Firestore for editing' : 'Edit'}
                       >
                         <Pencil className="w-4 h-4" />
                       </button>
-                      <button
-                        onClick={() => toggleVisible(update)}
-                        className="p-2 rounded-lg hover:bg-[var(--admin-bg-hover)] text-[var(--admin-text-secondary)] hover:text-admin-amber"
-                        title={update.visible ? 'Hide' : 'Show'}
-                      >
-                        {update.visible ? <XCircle className="w-4 h-4" /> : <CheckCircle2 className="w-4 h-4" />}
-                      </button>
-                      <button
-                        onClick={() => deleteUpdate(update.id)}
-                        className="p-2 rounded-lg hover:bg-[var(--admin-bg-hover)] text-[var(--admin-text-secondary)] hover:text-admin-rose"
-                        title="Delete"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                      {!update.isStatic && (
+                        <>
+                          <button
+                            onClick={() => toggleVisible(update)}
+                            className="p-2 rounded-lg hover:bg-[var(--admin-bg-hover)] text-[var(--admin-text-secondary)] hover:text-admin-amber"
+                            title={update.visible ? 'Hide' : 'Show'}
+                          >
+                            {update.visible ? <XCircle className="w-4 h-4" /> : <CheckCircle2 className="w-4 h-4" />}
+                          </button>
+                          <button
+                            onClick={() => deleteUpdate(update.id)}
+                            className="p-2 rounded-lg hover:bg-[var(--admin-bg-hover)] text-[var(--admin-text-secondary)] hover:text-admin-rose"
+                            title="Delete"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -3646,11 +3674,16 @@ function UpdatesTab({ currentUser, isInk }) {
           <div className="text-sm font-admin-body text-[var(--admin-text-secondary)]">
             <p className="font-medium text-[var(--admin-text)] mb-1">How Updates Work</p>
             <ul className="list-disc ml-4 space-y-1">
-              <li>Updates created here are stored in Firestore and display on the website immediately</li>
-              <li>Each update has a unique slug for shareable URLs (e.g., /updates/registration-open)</li>
+              <li><strong>Admin Dashboard edits</strong> → Firestore → Live on website immediately</li>
+              <li><strong>Airtable edits</strong> → Run deploy → Static file regenerated → Live on website</li>
+              <li><span className="text-purple-400">Static</span> updates come from Airtable (edit there or clone here)</li>
+              <li>Firestore updates take precedence over static updates with the same slug</li>
               <li>Featured updates appear prominently at the top of the /updates page</li>
-              <li>Hidden updates are not visible to the public but remain in the database</li>
+              <li>Each update has a unique slug for shareable URLs (e.g., /updates/registration-open)</li>
             </ul>
+            <p className="mt-3 text-xs text-[var(--admin-text-secondary)]">
+              <strong>To sync Airtable → Website:</strong> Trigger a deploy from GitHub Actions or run <code className="font-admin-mono bg-[var(--admin-bg)] px-1 rounded">npm run generate-updates</code> locally
+            </p>
           </div>
         </div>
       </div>
