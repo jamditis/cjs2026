@@ -82,6 +82,46 @@ Base ID: `appL8Sn87xUotm4jF`
 5. media
 6. community
 
+## Updates Table
+
+**Purpose**: News announcements, deadlines, and stories for /updates page
+
+### Fields
+
+| Field | Type | Required |
+|-------|------|----------|
+| `Title` | Text | Yes |
+| `Slug` | Text | Yes (URL-friendly, e.g., "session-pitches-open") |
+| `Summary` | Long text | Yes |
+| `Content` | Long text | No (markdown supported) |
+| `Date` | Date | Yes |
+| `Category` | Select | Yes (Announcements, Deadlines, Events, etc.) |
+| `Type` | Select | Yes (announcement, deadline, story, milestone) |
+| `Color` | Select | No (teal, cardinal, green-dark) |
+| `Featured` | Checkbox | No (prominent display) |
+| `Countdown` | Checkbox | No (deadline countdown) |
+| `CTA Text` | Text | No (button text) |
+| `CTA URL` | Text | No (button link) |
+| `CTA External` | Checkbox | No (opens in new tab) |
+| `Visible` | Checkbox | Yes |
+| `Order` | Number | No |
+
+### Categories
+
+- Announcements
+- Deadlines
+- Events
+- Call for proposals
+- Sponsors
+- Registration
+- 10th anniversary
+- Location
+
+### Shareable URLs
+
+Each update gets a unique URL:
+`summit.collaborativejournalism.org/updates/[slug]`
+
 ## Email Signups Table
 
 **Purpose**: Newsletter signups (written by Cloud Function)

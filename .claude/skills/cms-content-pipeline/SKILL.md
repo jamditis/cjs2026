@@ -34,13 +34,14 @@ Content flows through a **static generation pipeline**:
 
 **Critical insight**: Content is NOT fetched at runtime. It's generated at build time and imported as static JavaScript modules.
 
-## Three Content Tables
+## Four Content Tables
 
 | Table | Script | Output | Primary Consumer |
 |-------|--------|--------|------------------|
 | Site Content | `generate-content.cjs` | `siteContent.js` | Home.jsx |
 | Schedule | `generate-schedule.cjs` | `scheduleData.js` | Schedule.jsx |
 | Organizations | `generate-organizations.cjs` | `organizationsData.js` | Sponsors.jsx |
+| Updates | `generate-updates.cjs` | `updatesData.js` | Updates.jsx, UpdateDetail.jsx |
 
 ## Content Access Patterns
 
