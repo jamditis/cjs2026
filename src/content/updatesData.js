@@ -225,13 +225,13 @@ Learn more at [inn.org](https://inn.org).
   {
     slug: 'registration-coming-soon',
     type: 'announcement',
-    title: 'Registration opens early 2026',
-    summary: 'Sign up for email updates to be the first to know when registration opens. Early bird pricing available for the first 50 registrants.',
+    title: 'Registration opens mid-January 2026',
+    summary: 'Registration opens mid-January alongside our call for session pitches. Space is limited to 150 attendees — register early to secure your spot and book travel.',
     content: `
-Registration for CJS2026 will open in early 2026. Here's what you need to know:
+Registration for CJS2026 opens mid-January 2026 — around the same time we start accepting session pitches. Here's what you need to know:
 
-**Early bird pricing:**
-The first 50 registrants will receive early bird pricing. Sign up for our email list to be notified the moment registration opens.
+**Limited capacity:**
+We're keeping CJS2026 intentionally small — 150 attendees — to foster the kind of connections that lead to real partnerships. Register early so you can book flights and hotels well in advance.
 
 **What's included:**
 - Full access to all CJS2026 sessions (June 8-9)

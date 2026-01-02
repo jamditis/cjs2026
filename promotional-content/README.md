@@ -51,7 +51,7 @@ promotional-content/
 | Jan 2 | Campaign launch | 10th anniversary, pitch deadline push |
 | Jan 31 | Session pitch deadline | Final pitch reminders |
 | Feb | Schedule preview | Programming themes reveal |
-| March | Registration opens | Early bird push |
+| March | Registration opens | Registration launch |
 | April | Speaker announcements | Keynote reveals, session spotlights |
 | May | Final push | Logistics, countdown |
 | June 8-9 | Summit | Live coverage |
@@ -86,8 +86,7 @@ Before publishing, search and replace these placeholders with actual values:
 - `[KEYNOTE_SPEAKER]` — Actual keynote speaker name
 - `[SESSION_TITLE]` — Actual session titles
 - `[SPEAKER_NAME]` — Featured speaker names
-- `[EARLY_BIRD_PRICE]` — Early bird ticket price
-- `[STANDARD_PRICE]` — Standard ticket price
+- `[TICKET_PRICE]` — Registration ticket price
 - `[HOTEL_NAME_1]` — Partner hotel name
 - `[BOOKING_LINK]` — Hotel booking link
 
