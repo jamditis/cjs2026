@@ -65,12 +65,12 @@ The location isn't just convenient. It's strategic. It's where the work is happe
 
 ---
 
-## POST 4: Early Bird Registration Launch
+## POST 4: Registration Launch
 
 **Post Text:**
-The question isn't whether to attend CJS2026. It's whether you'll get the early bird rate.
+The question isn't whether to attend CJS2026. It's whether you'll secure your spot before we fill up.
 
-Registration just opened for our 10th anniversary summit in Chapel Hill, NC (June 8-9). Early bird pricing ends March 1.
+Registration just opened for our 10th anniversary summit in Chapel Hill, NC (June 8-9). Space is limited to 150 attendees.
 
 Here's what you're getting:
 • Two days of sessions led by practitioners, not consultants
@@ -84,7 +84,7 @@ If you've been to CJS before, you know the value. If you haven't, ask someone wh
 
 **Hashtags:** #CJS2026 #CollaborativeJournalism #ProfessionalDevelopment #JournalismEvents
 
-**Image Suggestion:** Clean, professional graphic with early bird pricing + dates + "10th Anniversary" badge
+**Image Suggestion:** Clean, professional graphic with pricing + dates + "10th Anniversary" badge
 
 ---
 
@@ -313,27 +313,24 @@ The gap between academia and practice is shrinking in journalism. CJS is where t
 
 ---
 
-## POST 15: Registration Deadline Approaching
+## POST 15: Registration Filling Up
 
 **Post Text:**
-Early bird registration for CJS2026 ends March 1.
+CJS2026 is limited to 150 attendees.
 
-That's [X] days to save [AMOUNT] on your registration.
+Why? Because the summit only works when conversations can go deep and everyone can connect.
 
-Quick math:
-• Standard registration: [PRICE]
-• Early bird: [EARLY PRICE]
-• Savings: [DIFFERENCE]
+Last year's summit sold out. We expect the same this year.
 
-That's [difference converted to practical terms—e.g., "enough for hotel night" or "your flight from [coast]"].
+If you're still thinking about it, stop thinking. Just register.
 
-Stop thinking about it. Just register.
+June 8-9 in Chapel Hill, NC. Our 10th anniversary. Don't miss it.
 
-**CTA:** Lock in early bird rate: [LINK]
+**CTA:** Secure your spot: [LINK]
 
-**Hashtags:** #CJS2026 #EarlyBird #CollaborativeJournalism #RegisterNow
+**Hashtags:** #CJS2026 #LimitedCapacity #CollaborativeJournalism #RegisterNow
 
-**Image Suggestion:** Countdown clock graphic with pricing comparison
+**Image Suggestion:** "Limited to 150" graphic with registration CTA
 
 ---
 
@@ -388,7 +385,7 @@ Plus: direct access to editors and organizations who might become your next clie
 **Post Text:**
 60 days until CJS2026.
 
-Session schedule drops next week. Early bird registration ends soon. Hotel block is filling up.
+Session schedule drops next week. Spots are filling up fast. Hotel block is going quickly.
 
 Here's what we know so far:
 • [X] newsrooms registered

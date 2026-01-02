@@ -205,11 +205,11 @@ Registration opens [DATE] for June 8-9 in Chapel Hill. More details: collaborati
 
 ---
 
-### Tweet 2.7 - Early Bird Heads Up
+### Tweet 2.7 - Registration Reminder
 **Text:**
-Pro tip: When registration opens on [DATE], there will be early bird pricing. Get on our email list now for first access: [LINK]. CJS2026, June 8-9, Chapel Hill, NC. #CJS2026
+Pro tip: When registration opens, spots fill fast. We're keeping CJS2026 intentionally small—150 attendees. Get on our email list for first access: [LINK]. June 8-9, Chapel Hill, NC. #CJS2026
 
-**Image Note:** "Early Bird Alert" graphic with email signup CTA
+**Image Note:** "Limited Spots" graphic with email signup CTA
 **Type:** List building
 
 ---
@@ -248,19 +248,19 @@ February check-in: Speakers confirmed. Registration page nearly ready. Hotel blo
 
 ### Tweet 3.1 - Registration Launch
 **Text:**
-Registration for CJS2026 is now open. June 8-9 in Chapel Hill, NC. Early bird pricing through [DATE]. Two days of sessions, case studies, and conversations with 300 collaborative journalism practitioners. Register: [LINK]. #CJS2026
+Registration for CJS2026 is now open. June 8-9 in Chapel Hill, NC. Space is limited to 150 attendees. Two days of sessions, case studies, and conversations with collaborative journalism practitioners. Register: [LINK]. #CJS2026
 
 **Image Note:** Bold "REGISTRATION OPEN" graphic with pricing and link
 **Type:** Major announcement
 
 ---
 
-### Tweet 3.2 - Early Bird Reminder
+### Tweet 3.2 - Limited Capacity Reminder
 **Text:**
-Early bird pricing for CJS2026 ends [DATE]. Save [AMOUNT] when you register now for our June 8-9 summit in Chapel Hill. Your newsroom budget will thank you. Register: [LINK]. #CJS2026 #CollaborativeJournalism
+CJS2026 is intentionally small—150 attendees—so conversations can go deep and everyone can connect. Register now for our June 8-9 summit in Chapel Hill to secure your spot. Register: [LINK]. #CJS2026 #CollaborativeJournalism
 
-**Image Note:** Price comparison graphic showing early bird vs. regular pricing
-**Type:** Pricing incentive
+**Image Note:** "Limited to 150 Attendees" graphic
+**Type:** Urgency builder
 
 ---
 
@@ -278,7 +278,7 @@ DAY 2 SESSIONS: [List 3-4 compelling session titles]. Plus lightning talks, case
 Full program: [LINK]. Sessions are participatory, schedules allow for hallway conversations, and you can build your personal schedule once you register.
 
 **Text (5/5):**
-June 8-9, Chapel Hill, NC. Early bird pricing through [DATE]. Register: [LINK]. See you there. #CJS2026 #CollaborativeJournalism
+June 8-9, Chapel Hill, NC. Limited to 150 attendees. Register: [LINK]. See you there. #CJS2026 #CollaborativeJournalism
 
 **Image Note:** Program overview graphic showing day-by-day structure
 **Type:** Program reveal thread
@@ -339,11 +339,11 @@ Another CJS2026 session you won't want to miss: "[SESSION TITLE]" with [NAME]. [
 
 ---
 
-### Tweet 3.10 - Early Bird Final Week
+### Tweet 3.10 - Spots Filling Up
 **Text:**
-One week left for early bird pricing on CJS2026. Save [AMOUNT] when you register by [DATE]. June 8-9 in Chapel Hill, NC. Program: [LINK]. Register: [LINK]. #CJS2026
+CJS2026 spots are going fast. We're capped at 150 attendees to keep the summit intimate. Don't wait. June 8-9 in Chapel Hill, NC. Program: [LINK]. Register: [LINK]. #CJS2026
 
-**Image Note:** Countdown clock graphic showing "7 DAYS LEFT"
+**Image Note:** "Spots filling up" graphic
 **Type:** Urgency / deadline
 
 ---
@@ -357,11 +357,11 @@ CJS2026 attendees leave with: actionable frameworks, potential partner contacts,
 
 ---
 
-### Tweet 3.12 - Early Bird Last Call
+### Tweet 3.12 - Limited Capacity Reminder
 **Text:**
-Early bird pricing for CJS2026 ends tonight at midnight ET. Register now and save [AMOUNT]: [LINK]. June 8-9, Chapel Hill, NC. #CJS2026
+CJS2026 is limited to 150 attendees. Once we're full, we're full. Secure your spot now: [LINK]. June 8-9, Chapel Hill, NC. #CJS2026
 
-**Image Note:** "LAST CALL" graphic with clock and registration link
+**Image Note:** "Limited to 150" graphic with registration link
 **Type:** Final urgency push
 
 ---

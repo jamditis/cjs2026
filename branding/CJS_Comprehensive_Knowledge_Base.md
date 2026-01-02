@@ -661,14 +661,14 @@ This document synthesizes essential information, learnings, best practices, and 
 
 ### Registration pricing structure
 
-**2025 pricing model:**
-- Early bird: $199 (ends Feb 1 or when sold out)
-- General admission: $299
+**2026 pricing model:**
+- Standard registration: $299
+- Student/freelance rate: [TBD]
 - Scholarship tickets: Available via email to summit@collaborativejournalism.org
 
 **Pricing philosophy:**
 - Keep accessible but sustainable
-- Early bird creates urgency
+- Limited capacity (150 attendees) creates urgency
 - Scholarship ensures no barrier to participation
 
 ### Revenue streams
@@ -722,7 +722,7 @@ This document synthesizes essential information, learnings, best practices, and 
 
 **6-8 months before (December 2025 - February 2026):**
 - Announce date, location, theme
-- Open registration with early bird pricing
+- Open registration (limited to 150 attendees)
 - Initial social media campaign
 - Email announcement to past attendees
 - 1-2 social posts per week
@@ -737,7 +737,7 @@ This document synthesizes essential information, learnings, best practices, and 
 **2-4 months before (April - June 2026):**
 - Daily social media posts
 - Spotlight speakers and sessions
-- Share early bird countdown
+- Share capacity updates (spots remaining)
 - Highlight local collaborative journalism scene
 - Registration push
 

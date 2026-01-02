@@ -150,7 +150,7 @@ Last year sold out in three weeks. The year before, two weeks.
 
 Set a reminder. Get your budget approved. Talk to your editor.
 
-June 8-9 in Chapel Hill. Early bird pricing ends two weeks after registration opens.
+June 8-9 in Chapel Hill. Space is limited to 150 attendees.
 
 **Timing:** Two weeks before registration opens
 
@@ -164,7 +164,7 @@ Registration is open for CJS2026.
 
 June 8-9 in Chapel Hill, North Carolina. Our 10th anniversary summit.
 
-Limited spots. Early bird pricing ends March 15.
+Limited to 150 attendees. Spots filling fast.
 
 Every CJS attendee I've talked to says they wish they'd attended sooner. They wish they'd found this community years ago.
 
@@ -174,9 +174,9 @@ This is your chance. Register at collaborativejournalism.org/cjs2026
 
 ---
 
-### Post 10: Early Bird Reminder
+### Post 10: Spots Filling Up
 **Text:**
-Early bird pricing for CJS2026 ends this Sunday.
+CJS2026 is capped at 150 attendees. Spots are going fast.
 
 I know March budgets are tight. I know it's hard to justify conference costs when you're running a small newsroom.
 
@@ -188,9 +188,9 @@ Here's what past attendees say made it worth it:
 
 The ROI isn't immediate. But it's real.
 
-Save $100 if you register by March 15.
+Don't wait until we're sold out.
 
-**Timing:** 3-4 days before early bird deadline
+**Timing:** Mid-March
 
 ---
 

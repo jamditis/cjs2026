@@ -98,12 +98,12 @@ Registration is open for CJS2026. June 8-9 in Chapel Hill. 10th anniversary summ
 
 ---
 
-### Post 10: Early Bird Reminder
+### Post 10: Spots Filling Up
 **Text:**
-Early bird pricing ends March 15. If you're on the fence: every CJS attendee I've talked to says they wish they'd come sooner. This is where real partnerships form. Register at collaborativejournalism.org/cjs2026
+CJS2026 is capped at 150 attendees. If you're on the fence: every CJS attendee I've talked to says they wish they'd come sooner. This is where real partnerships form. Register at collaborativejournalism.org/cjs2026
 
 **Timing:** Early March
-**Visual suggestion:** Price comparison graphic
+**Visual suggestion:** "Limited to 150" graphic
 
 ---
 
