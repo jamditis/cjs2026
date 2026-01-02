@@ -3174,9 +3174,11 @@ function UpdatesTab({ currentUser, isInk }) {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [showForm, setShowForm] = useState(false)
+  const [conflict, setConflict] = useState(null) // { currentDoc, theirChanges }
 
   // Form state for new/edit
   const [editingUpdate, setEditingUpdate] = useState(null)
+  const [originalUpdatedAt, setOriginalUpdatedAt] = useState(null) // For optimistic locking
   const [formData, setFormData] = useState({
     title: '',
     slug: '',
@@ -3252,6 +3254,8 @@ function UpdatesTab({ currentUser, isInk }) {
       ctaExternal: false
     })
     setEditingUpdate(null)
+    setOriginalUpdatedAt(null)
+    setConflict(null)
     setShowForm(false)
   }
 
@@ -3259,9 +3263,13 @@ function UpdatesTab({ currentUser, isInk }) {
     // For static updates, we clone them to Firestore for editing
     if (update.isStatic) {
       setEditingUpdate(null) // null = creating new
+      setOriginalUpdatedAt(null)
     } else {
       setEditingUpdate(update)
+      // Capture the updatedAt timestamp for optimistic locking
+      setOriginalUpdatedAt(update.updatedAt || null)
     }
+    setConflict(null) // Clear any previous conflict
     setFormData({
       title: update.title || '',
       slug: update.slug || '',
@@ -3281,7 +3289,7 @@ function UpdatesTab({ currentUser, isInk }) {
     setShowForm(true)
   }
 
-  async function saveUpdate() {
+  async function saveUpdate(forceOverwrite = false) {
     if (!formData.title.trim() || !formData.slug.trim()) {
       alert('Title and slug are required')
       return
@@ -3312,6 +3320,27 @@ function UpdatesTab({ currentUser, isInk }) {
       }
 
       if (editingUpdate) {
+        // Optimistic locking: check if document was modified since we started editing
+        if (!forceOverwrite && originalUpdatedAt) {
+          const currentDoc = await getDoc(doc(db, 'updates', editingUpdate.id))
+          if (currentDoc.exists()) {
+            const currentData = currentDoc.data()
+            const currentUpdatedAt = currentData.updatedAt?.toMillis?.() || 0
+            const originalUpdatedAtMs = originalUpdatedAt?.toMillis?.() || originalUpdatedAt?.seconds * 1000 || 0
+
+            if (currentUpdatedAt > originalUpdatedAtMs) {
+              // Conflict detected!
+              setConflict({
+                currentDoc: currentData,
+                modifiedBy: currentData.updatedByEmail || 'another user',
+                modifiedAt: currentData.updatedAt?.toDate?.() || new Date()
+              })
+              setSaving(false)
+              return
+            }
+          }
+        }
+
         await updateDoc(doc(db, 'updates', editingUpdate.id), updateData)
       } else {
         updateData.createdAt = serverTimestamp()
@@ -3319,6 +3348,7 @@ function UpdatesTab({ currentUser, isInk }) {
         updateData.createdByEmail = currentUser.email
         await addDoc(collection(db, 'updates'), updateData)
       }
+      setConflict(null)
       resetForm()
     } catch (err) {
       console.error('Failed to save update:', err)
@@ -3326,6 +3356,26 @@ function UpdatesTab({ currentUser, isInk }) {
     } finally {
       setSaving(false)
     }
+  }
+
+  // Handle conflict resolution
+  function handleDiscardMyChanges() {
+    setConflict(null)
+    resetForm()
+  }
+
+  function handleOverwriteTheirChanges() {
+    setConflict(null)
+    saveUpdate(true) // Force overwrite
+  }
+
+  function handleRefreshAndEdit() {
+    // Find the latest version from our real-time updates list
+    const latestVersion = updates.find(u => u.id === editingUpdate?.id)
+    if (latestVersion) {
+      startEdit(latestVersion)
+    }
+    setConflict(null)
   }
 
   async function toggleVisible(update) {
@@ -3681,6 +3731,85 @@ function UpdatesTab({ currentUser, isInk }) {
                       {editingUpdate ? 'Save Changes' : 'Create Update'}
                     </>
                   )}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Conflict Resolution Modal */}
+      <AnimatePresence>
+        {conflict && (
+          <motion.div
+            className="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            {/* Backdrop */}
+            <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
+
+            {/* Modal */}
+            <motion.div
+              className="relative w-full max-w-md admin-surface rounded-2xl shadow-2xl overflow-hidden"
+              initial={{ scale: 0.95, opacity: 0, y: 8 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 8 }}
+              transition={{ type: "spring", duration: 0.3, bounce: 0.1 }}
+            >
+              {/* Header */}
+              <div className="px-6 pt-6 pb-4 text-center">
+                <div className="w-14 h-14 rounded-full bg-amber-500/10 flex items-center justify-center mx-auto mb-4">
+                  <AlertTriangle className="w-7 h-7 text-amber-500" />
+                </div>
+                <h3 className="font-admin-heading text-xl font-semibold text-[var(--admin-text)] mb-2">
+                  Conflict Detected
+                </h3>
+                <p className="font-admin-body text-[var(--admin-text-secondary)]">
+                  This update was modified while you were editing.
+                </p>
+              </div>
+
+              {/* Conflict details */}
+              <div className="px-6 pb-4">
+                <div className="p-4 rounded-xl bg-[var(--admin-elevated)] border border-[var(--admin-border)]">
+                  <div className="flex items-center gap-2 text-sm font-admin-body text-[var(--admin-text-secondary)] mb-2">
+                    <User className="w-4 h-4" />
+                    <span>Modified by:</span>
+                    <span className="font-medium text-[var(--admin-text)]">{conflict.modifiedBy}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm font-admin-body text-[var(--admin-text-secondary)]">
+                    <Clock className="w-4 h-4" />
+                    <span>At:</span>
+                    <span className="font-medium text-[var(--admin-text)]">
+                      {conflict.modifiedAt?.toLocaleString?.() || 'Unknown time'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="px-6 pb-6 space-y-2">
+                <button
+                  onClick={handleRefreshAndEdit}
+                  className="w-full admin-btn-primary flex items-center justify-center gap-2"
+                >
+                  <RefreshCw className="w-4 h-4" />
+                  Load their changes & continue editing
+                </button>
+                <button
+                  onClick={handleOverwriteTheirChanges}
+                  className="w-full px-4 py-2.5 rounded-xl font-admin-body text-sm font-medium text-amber-500 bg-amber-500/10 border border-amber-500/30 hover:bg-amber-500/20 transition-all flex items-center justify-center gap-2"
+                >
+                  <AlertTriangle className="w-4 h-4" />
+                  Overwrite with my changes
+                </button>
+                <button
+                  onClick={handleDiscardMyChanges}
+                  className="w-full px-4 py-2.5 rounded-xl font-admin-body text-sm font-medium text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)] hover:bg-[var(--admin-elevated)] transition-all"
+                >
+                  Discard my changes
                 </button>
               </div>
             </motion.div>
