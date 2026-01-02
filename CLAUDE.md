@@ -53,7 +53,8 @@ Before completing any task that touches user-visible text or content:
 - Footer content
 - **Sponsors section** (Organizations with "Sponsor" checkbox checked)
 - Schedule sessions (Schedule table)
-- Any field accessed via `getContent()`, `getContentMeta()`, `timeline`, `stats`, or `sponsors`
+- **News/Updates page** (Updates table) - announcements, deadlines, stories
+- Any field accessed via `getContent()`, `getContentMeta()`, `timeline`, `stats`, `sponsors`, or `updates`
 
 ### What is NOT controlled by Airtable CMS
 
@@ -133,8 +134,50 @@ Before completing any task that touches user-visible text or content:
 **NPM scripts:**
 ```bash
 npm run generate-organizations  # Pull sponsors from Airtable
-npm run generate-all            # Generate content, schedule, AND organizations
+npm run generate-all            # Generate content, schedule, organizations, AND updates
 ```
+
+### Updates table (for News/Updates page)
+
+**Table:** Updates (in same base: appL8Sn87xUotm4jF)
+
+**Purpose:** News announcements, deadline reminders, and stories that display on the `/updates` page and individual update pages at `/updates/[slug]`.
+
+**Required fields:**
+
+| Field | Type | Description | Required |
+|-------|------|-------------|----------|
+| `Title` | Single line text | Update headline | Yes |
+| `Slug` | Single line text | URL-friendly identifier (e.g., "session-pitches-open") | Yes |
+| `Summary` | Long text | Short description for list view | Yes |
+| `Content` | Long text | Full article content (markdown supported) | No |
+| `Date` | Date | Publication date | Yes |
+| `Category` | Single select | Announcements, Deadlines, Events, etc. | Yes |
+| `Type` | Single select | announcement, deadline, story, milestone | Yes |
+| `Color` | Single select | teal, cardinal, green-dark | No |
+| `Featured` | Checkbox | Show in featured section on updates page | No |
+| `Countdown` | Checkbox | Show countdown timer (for deadline items) | No |
+| `CTA Text` | Single line text | Button text (e.g., "Learn more") | No |
+| `CTA URL` | Single line text | Button link (e.g., "/contact") | No |
+| `CTA External` | Checkbox | Opens link in new tab | No |
+| `Visible` | Checkbox | Show on website | Yes |
+| `Order` | Number | Sort order (lower = first within same date) | No |
+
+**How it works:**
+1. Add an update to the "Updates" table in Airtable
+2. Set a unique Slug for the shareable URL
+3. Check "Visible" to publish
+4. Optionally check "Featured" for prominent display
+5. Deploy triggers `npm run generate-updates` which updates `src/content/updatesData.js`
+6. Updates display on `/updates` page, each with shareable URL at `/updates/[slug]`
+
+**NPM scripts:**
+```bash
+npm run generate-updates        # Pull updates from Airtable
+npm run generate-all            # Generate all content including updates
+```
+
+**Note:** The generate-updates.cjs script includes default updates that display if the Airtable table doesn't exist yet. Once you create the table, the defaults are replaced by your Airtable content.
 
 ---
 
@@ -178,6 +221,7 @@ The visual identity has shifted from the legacy "Red/Montserrat" tech conference
 - `src/content/siteContent.js` - Homepage content, stats, timeline
 - `src/content/scheduleData.js` - Schedule sessions
 - `src/content/organizationsData.js` - Sponsors data
+- `src/content/updatesData.js` - News/updates content
 
 **Static:**
 - `src/content/timeline-data.json` - Legacy timeline data (now in Airtable)

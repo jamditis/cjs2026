@@ -16,9 +16,9 @@ function Navbar() {
   }, [])
 
   const navLinks = [
+    { name: 'Updates', path: '/updates' },
     { name: 'Schedule', path: '/schedule' },
     { name: 'Sponsors', path: '/sponsors' },
-    { name: 'Code of conduct', path: '/code-of-conduct' },
     { name: 'Contact', path: '/contact' },
   ]
 

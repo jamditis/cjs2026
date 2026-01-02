@@ -11,7 +11,8 @@
     "generate-content": "node scripts/generate-content.cjs",
     "generate-schedule": "node scripts/generate-schedule.cjs",
     "generate-organizations": "node scripts/generate-organizations.cjs",
-    "generate-all": "node scripts/generate-content.cjs && node scripts/generate-schedule.cjs && node scripts/generate-organizations.cjs",
+    "generate-updates": "node scripts/generate-updates.cjs",
+    "generate-all": "node scripts/generate-content.cjs && node scripts/generate-schedule.cjs && node scripts/generate-organizations.cjs && node scripts/generate-updates.cjs",
     "update-content": "node scripts/generate-content.cjs && npm run build && firebase deploy --only hosting"
   },
   "repository": {
