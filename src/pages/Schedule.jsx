@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Calendar, MapPin, Filter, X, Clock, Mail, Users, Search } from 'lucide-react'
+import { Calendar, MapPin, Filter, X, Clock, Mail, Users, Search, Lightbulb } from 'lucide-react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import SessionCard from '../components/SessionCard'
@@ -157,20 +157,36 @@ function Schedule() {
               <p className="font-body text-brand-ink/70 max-w-md mx-auto mb-6">
                 We're putting together an incredible lineup of sessions, workshops, and speakers for CJS2026. Check back soon for the full schedule.
               </p>
-              <a
-                href="https://collaborativejournalism.us5.list-manage.com/subscribe?u=7f46611cb324e9e193acda7cc&id=2e8bb60c9c"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block bg-brand-teal/5 border-2 border-brand-teal/20 rounded-lg p-6 max-w-md mx-auto hover:border-brand-teal/40 hover:bg-brand-teal/10 transition-colors"
-              >
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <Mail className="w-5 h-5 text-brand-teal" />
-                  <p className="font-body font-medium text-brand-ink">Stay in the loop</p>
-                </div>
-                <p className="font-body text-sm text-brand-ink/60">
-                  Sign up for the Collaborative Journalism Newsletter for updates on CJS2026 and all things collaboration.
-                </p>
-              </a>
+              <div className="grid md:grid-cols-2 gap-4 max-w-2xl mx-auto">
+                <a
+                  href="https://airtable.com/appL8Sn87xUotm4jF/pag23Y1hW5Y58hSy0/form"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block bg-brand-cardinal/5 border-2 border-brand-cardinal/20 rounded-lg p-6 hover:border-brand-cardinal/40 hover:bg-brand-cardinal/10 transition-colors"
+                >
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <Lightbulb className="w-5 h-5 text-brand-cardinal" />
+                    <p className="font-body font-medium text-brand-ink">Pitch a session</p>
+                  </div>
+                  <p className="font-body text-sm text-brand-ink/60">
+                    Have an idea for a session, workshop, or discussion? We want to hear from you.
+                  </p>
+                </a>
+                <a
+                  href="https://collaborativejournalism.us5.list-manage.com/subscribe?u=7f46611cb324e9e193acda7cc&id=2e8bb60c9c"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block bg-brand-teal/5 border-2 border-brand-teal/20 rounded-lg p-6 hover:border-brand-teal/40 hover:bg-brand-teal/10 transition-colors"
+                >
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <Mail className="w-5 h-5 text-brand-teal" />
+                    <p className="font-body font-medium text-brand-ink">Stay in the loop</p>
+                  </div>
+                  <p className="font-body text-sm text-brand-ink/60">
+                    Sign up for the Collaborative Journalism Newsletter for updates on CJS2026.
+                  </p>
+                </a>
+              </div>
             </motion.div>
           )}
 
@@ -280,7 +296,7 @@ function Schedule() {
                   )}
               </motion.div>
 
-              {/* Preliminary notice */}
+              {/* Preliminary notice with pitch CTA */}
               <motion.div
                 className="bg-brand-cardinal/10 border-2 border-brand-cardinal/20 rounded-lg p-6 mb-12 text-center"
                 initial={{ opacity: 0 }}
@@ -288,9 +304,18 @@ function Schedule() {
                 transition={{ delay: 0.3 }}
               >
                 <p className="font-accent text-xl text-brand-cardinal mb-2">Preliminary schedule</p>
-                <p className="font-body text-brand-ink/70">
-                  Session topics and speakers will be announced in spring 2026. Sign up for updates to be the first to know.
+                <p className="font-body text-brand-ink/70 mb-4">
+                  Session topics and speakers will be announced in spring 2026.
                 </p>
+                <a
+                  href="https://airtable.com/appL8Sn87xUotm4jF/pag23Y1hW5Y58hSy0/form"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 font-body text-sm text-brand-cardinal hover:underline"
+                >
+                  <Lightbulb className="w-4 h-4" />
+                  Have a session idea? Pitch it here →
+                </a>
               </motion.div>
 
               {/* Monday */}

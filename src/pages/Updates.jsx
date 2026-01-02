@@ -13,7 +13,8 @@ import {
   Bell,
   TrendingUp,
   MapPin,
-  Loader2
+  Loader2,
+  Lightbulb
 } from 'lucide-react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
@@ -164,6 +165,7 @@ function DeadlineCountdown({ date }) {
 // Quick links section
 function QuickLinks() {
   const links = [
+    { icon: Lightbulb, label: 'Pitch a session', path: 'https://airtable.com/appL8Sn87xUotm4jF/pag23Y1hW5Y58hSy0/form', external: true },
     { icon: Calendar, label: 'View schedule', path: '/schedule' },
     { icon: Users, label: 'See sponsors', path: '/sponsors' },
     { icon: MapPin, label: 'Event details', path: '/#details' },
@@ -172,10 +174,12 @@ function QuickLinks() {
   return (
     <div className="flex flex-wrap gap-3 justify-center">
       {links.map((link) => (
-        link.path.startsWith('/#') ? (
+        link.external || link.path.startsWith('/#') ? (
           <a
             key={link.path}
             href={link.path}
+            target={link.external ? '_blank' : undefined}
+            rel={link.external ? 'noopener noreferrer' : undefined}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-brand-ink/10 hover:border-brand-teal hover:bg-brand-teal/5 transition-all font-body text-sm text-brand-ink/70 hover:text-brand-teal"
           >
             <link.icon className="w-4 h-4" />

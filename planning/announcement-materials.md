@@ -5,6 +5,7 @@ Save-the-date announcement for the 10th anniversary Collaborative Journalism Sum
 **Links:**
 - Website: https://collaborativejournalism.org/cjs2026
 - Direct: https://cjs2026.web.app
+- Session pitch form: https://airtable.com/appL8Sn87xUotm4jF/pag23Y1hW5Y58hSy0/form
 
 ---
 
@@ -185,7 +186,8 @@ Secondary: #Journalism #MediaCollaboration #NorthCarolina #ChapelHill
 2. **Chapel Hill, NC** — June 8–9, 2026 at UNC Friday Center
 3. **Co-located with INN Days** — Two events, one trip
 4. **Registration opens early 2026** — Sign up now for updates
-5. **"Prepare to partner"** — The tagline
+5. **Session pitches open** — Submit your session idea by January 31, 2026
+6. **"Prepare to partner"** — The tagline
 
 ## Tone
 
