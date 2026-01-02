@@ -1,11 +1,11 @@
-# 7 Reasons to Join Us at CJS2026 in Chapel Hill
+# 7 Reasons to Join Us at CJS2026 in Pittsburgh
 
 **By [Author Name]**
 *Estimated read time: 6 minutes*
 
 ---
 
-Registration for the 10th anniversary Collaborative Journalism Summit is opening soon, and if you're wondering whether CJS2026 is worth the time and travel, here are seven reasons why this year's gathering in Chapel Hill should be on your calendar.
+Registration for the 10th anniversary Collaborative Journalism Summit is opening soon, and if you're wondering whether CJS2026 is worth the time and travel, here are seven reasons why this year's gathering in Pittsburgh should be on your calendar.
 
 ## 1. Learn From Real Projects, Not Theory
 
@@ -19,7 +19,7 @@ Previous attendees consistently say the practical, real-world focus is what make
 
 Some of the most valuable outcomes of CJS happen between sessions. The editor you meet at lunch becomes your partner on a future investigation. The project manager you talk with over coffee shares the MOU template that saves you weeks of work. The reporter struggling with the same challenges becomes an ongoing sounding board.
 
-Over 1,500 people have attended CJS over the past decade. Many of them will be in Chapel Hill. Whether you're looking for potential partners, seeking advice on a current collaboration, or just want to connect with others doing this work, CJS provides two days of concentrated networking with people who understand collaborative journalism.
+Over 1,500 people have attended CJS over the past decade. Many of them will be in Pittsburgh. Whether you're looking for potential partners, seeking advice on a current collaboration, or just want to connect with others doing this work, CJS provides two days of concentrated networking with people who understand collaborative journalism.
 
 And because we cap attendance to keep the event manageable, you can actually have meaningful conversations instead of just collecting business cards.
 
@@ -46,18 +46,18 @@ Struggling to get organizational buy-in for collaboration? Others have faced tha
 
 The collective knowledge in the room at CJS is substantial. The summit creates structured opportunities to tap into it.
 
-## 5. See the Southeast's Collaborative Journalism Innovations
+## 5. Explore Pittsburgh's Collaborative Journalism Landscape
 
-This is CJS's first time in the Southeast, and that's significant. The region has been building impressive collaborative journalism initiatives that don't always get national attention.
+Pittsburgh has become a hub for innovative journalism, with newsrooms like PublicSource leading the way in collaborative approaches. The region showcases impressive partnerships worth learning from.
 
-You'll learn from Southeast collaborations that are:
-- Serving rural communities where traditional newsroom models no longer work
-- Coordinating statewide coverage networks
+You'll connect with collaborations that are:
+- Serving communities across Pennsylvania and the Midwest
+- Coordinating statewide coverage networks (like Spotlight PA)
 - Building metro-area partnerships that reach underserved communities
-- Creating sustainable models in markets without deep philanthropic infrastructure
+- Creating sustainable models in markets navigating post-industrial transitions
 - Addressing regional issues that cross state lines
 
-Whether you work in the Southeast or elsewhere, these models offer lessons applicable to your context.
+Whether you work in the Pittsburgh region or elsewhere, these models offer lessons applicable to your context.
 
 ## 6. Mark a Milestone in Collaborative Journalism's Evolution
 
@@ -77,13 +77,13 @@ Many successful collaborations involve nonprofit newsrooms. Understanding nonpro
 
 The overlap between the collaborative journalism community and the nonprofit news community is significant. Being able to participate in both CJS and INN Days means you can deepen relationships and learning across both events.
 
-Even if you only attend CJS, the co-location means more people will be in Chapel Hill, creating additional networking opportunities.
+Even if you only attend CJS, more people will be in Pittsburgh, creating additional networking opportunities. *(Note: INN Days co-location status TBD for Pittsburgh location.)*
 
 ## The Practical Details
 
 **When:** June 8-9, 2026
 
-**Where:** UNC Friday Center, Chapel Hill, North Carolina
+**Where:** Pittsburgh, Pennsylvania (venue TBD)
 
 **Cost:** Registration details coming soon. We work to keep costs accessible and have limited scholarship support available.
 
@@ -104,9 +104,9 @@ CJS isn't a general journalism conference. It's specifically focused on collabor
 
 For newsrooms already doing collaborative work, CJS helps you do it better. For newsrooms considering collaboration, CJS provides the knowledge and connections to get started effectively.
 
-## Join Us in Chapel Hill
+## Join Us in Pittsburgh
 
-The Collaborative Journalism Summit has spent ten years building a community of practitioners committed to proving that journalism is stronger together. That community will gather in Chapel Hill this June to learn, connect, and push this work forward.
+The Collaborative Journalism Summit has spent ten years building a community of practitioners committed to proving that journalism is stronger together. That community will gather in Pittsburgh this June to learn, connect, and push this work forward.
 
 We hope you'll be part of it.
 
@@ -114,4 +114,4 @@ We hope you'll be part of it.
 
 ---
 
-**Tags:** CJS2026, collaborative journalism, journalism conference, Chapel Hill, journalism professional development, journalism networking, Center for Cooperative Media, INN Days
+**Tags:** CJS2026, collaborative journalism, journalism conference, Pittsburgh, journalism professional development, journalism networking, Center for Cooperative Media

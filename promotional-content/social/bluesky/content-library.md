@@ -12,7 +12,7 @@
 
 ### Post 1: Announcement
 **Text:**
-CJS2026 is coming to Chapel Hill, NC on June 8-9. Our 10th anniversary summit. Theme: "From experiment to ecosystem." Registration opens in March. Mark your calendars. collaborativejournalism.org/cjs2026
+CJS2026 is coming to Pittsburgh, PA on June 8-9. Our 10th anniversary summit. Theme: "From experiment to ecosystem." Registration opens in March. Mark your calendars. collaborativejournalism.org/cjs2026
 
 **Timing:** Early January (announcement week)
 **Visual suggestion:** Save-the-date graphic with venue image
@@ -30,7 +30,7 @@ Have a session idea for CJS2026? We want to hear from you. Pitch deadline is Jan
 
 ### Post 3: 10th Anniversary Reflection
 **Text:**
-10 years of CJS. Started in Montclair. Went virtual during COVID. Landed in Chicago, DC, Detroit, Denver. Now Chapel Hill for our anniversary. What a decade of collaboration. See you in June.
+10 years of CJS. Started in Montclair. Went virtual during COVID. Landed in Chicago, DC, Detroit, Denver. Now Pittsburgh for our anniversary. What a decade of collaboration. See you in June.
 
 **Timing:** Late January
 **Visual suggestion:** Timeline graphic or montage
@@ -80,7 +80,7 @@ Indie journalists and small newsrooms: CJS2026 is for you. No corporate PR panel
 
 ### Post 8: Registration Coming Soon
 **Text:**
-Registration for CJS2026 opens in two weeks. Chapel Hill, June 8-9. Limited spots. We keep it small so conversations can go deep. Get ready.
+Registration for CJS2026 opens in two weeks. Pittsburgh, June 8-9. Limited spots. We keep it small so conversations can go deep. Get ready.
 
 **Timing:** Mid-February
 **Visual suggestion:** Countdown graphic
@@ -91,7 +91,7 @@ Registration for CJS2026 opens in two weeks. Chapel Hill, June 8-9. Limited spot
 
 ### Post 9: Registration Launch
 **Text:**
-Registration is open for CJS2026. June 8-9 in Chapel Hill. 10th anniversary summit. Limited spots available. Grab yours: collaborativejournalism.org/cjs2026
+Registration is open for CJS2026. June 8-9 in Pittsburgh. 10th anniversary summit. Limited spots available. Grab yours: collaborativejournalism.org/cjs2026
 
 **Timing:** Registration opening day
 **Visual suggestion:** Bold "Register Now" graphic
@@ -118,7 +118,7 @@ You should come to CJS2026 if you're: tired of doing journalism alone, ready to 
 
 ### Post 12: Venue Preview
 **Text:**
-The UNC Friday Center in Chapel Hill is the perfect spot for our 10th anniversary. Walking distance to restaurants, beautiful campus setting, spaces designed for collaboration. Can't wait to see you there.
+The [VENUE TBD] in Pittsburgh is the perfect spot for our 10th anniversary. Walking distance to restaurants, beautiful campus setting, spaces designed for collaboration. Can't wait to see you there.
 
 **Timing:** Late March
 **Visual suggestion:** Venue photos or campus shots
@@ -158,7 +158,7 @@ The CJS community keeps growing. Alumni from 2017 still partnering. New attendee
 
 ### Post 16: Last Call
 **Text:**
-One month until CJS2026. A few spots left. If you've been waiting to register, this is your sign. June 8-9 in Chapel Hill. Don't miss the 10th anniversary. collaborativejournalism.org/cjs2026
+One month until CJS2026. A few spots left. If you've been waiting to register, this is your sign. June 8-9 in Pittsburgh. Don't miss the 10th anniversary. collaborativejournalism.org/cjs2026
 
 **Timing:** Early May
 **Visual suggestion:** Countdown timer or urgency graphic
@@ -176,7 +176,7 @@ Packing for CJS2026? Bring: your current challenges, ideas you want to test, an 
 
 ### Post 18: Final Logistics
 **Text:**
-CJS2026 is two weeks away. Check your email for venue details, schedule, and networking tips. First-timers: don't be shy. This community welcomes everyone. See you in Chapel Hill.
+CJS2026 is two weeks away. Check your email for venue details, schedule, and networking tips. First-timers: don't be shy. This community welcomes everyone. See you in Pittsburgh.
 
 **Timing:** Late May
 **Visual suggestion:** Checklist or getting ready graphic
@@ -187,7 +187,7 @@ CJS2026 is two weeks away. Check your email for venue details, schedule, and net
 
 ### Post 19: Day 1 Morning
 **Text:**
-Good morning, Chapel Hill. CJS2026 kicks off in a few hours. 10 years of collaboration starts today. Tag your posts with #CJS2026 so we can all follow along.
+Good morning, Pittsburgh. CJS2026 kicks off in a few hours. 10 years of collaboration starts today. Tag your posts with #CJS2026 so we can all follow along.
 
 **Timing:** June 8 morning
 **Visual suggestion:** Morning photo from venue

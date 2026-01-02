@@ -9,7 +9,7 @@ Ten years ago, collaborative journalism was still trying to prove itself. Newsro
 
 Today, collaboration is woven into how many newsrooms operate. It's not a special project or a one-time experiment. It's part of the ecosystem.
 
-That evolution — from experiment to ecosystem — is the theme for CJS2026 in Chapel Hill. Understanding that journey helps us see where collaborative journalism needs to go next.
+That evolution — from experiment to ecosystem — is the theme for CJS2026 in Pittsburgh. Understanding that journey helps us see where collaborative journalism needs to go next.
 
 ## What "Experiment" Meant
 
@@ -103,12 +103,12 @@ It also means we have a responsibility to maintain and improve the ecosystem. Th
 
 ## Join the Conversation
 
-At CJS2026 in Chapel Hill this June, we'll explore what "from experiment to ecosystem" means in practice. We'll celebrate how far collaborative journalism has come. We'll examine what the ecosystem still needs. And we'll chart the path forward together.
+At CJS2026 in Pittsburgh this June, we'll explore what "from experiment to ecosystem" means in practice. We'll celebrate how far collaborative journalism has come. We'll examine what the ecosystem still needs. And we'll chart the path forward together.
 
 Because that's what an ecosystem does: it supports all of us doing this work, and all of us have a role in strengthening it.
 
-**CJS2026: June 8-9, 2026 | Chapel Hill, NC | Register at summit.collaborativejournalism.org**
+**CJS2026: June 8-9, 2026 | Pittsburgh, PA | Register at summit.collaborativejournalism.org**
 
 ---
 
-**Tags:** CJS2026, collaborative journalism, journalism innovation, media ecosystem, journalism collaboration, Center for Cooperative Media, journalism future, Chapel Hill
+**Tags:** CJS2026, collaborative journalism, journalism innovation, media ecosystem, journalism collaboration, Center for Cooperative Media, journalism future, Pittsburgh

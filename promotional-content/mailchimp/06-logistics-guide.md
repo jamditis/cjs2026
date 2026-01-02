@@ -9,48 +9,49 @@
 ## Subject line options
 
 1. Everything you need to know before CJS2026
-2. Your guide to Chapel Hill: Travel, hotels, and what to expect
+2. Your guide to Pittsburgh: Travel, hotels, and what to expect
 3. Planning your trip to CJS2026
 
 ---
 
 ## Preview text
 
-Hotel blocks, travel tips, venue details, and what to expect at the 10th anniversary summit. Three weeks until Chapel Hill.
+Hotel blocks, travel tips, venue details, and what to expect at the 10th anniversary summit. Three weeks until Pittsburgh.
 
 ---
 
 ## Email body
 
-The summit is three weeks away. Here's everything you need to know to plan your trip to Chapel Hill.
+The summit is three weeks away. Here's everything you need to know to plan your trip to Pittsburgh.
 
 ### Venue details
 
-**UNC Friday Center**
-100 Friday Center Drive
-Chapel Hill, North Carolina 27517
+**[VENUE_NAME]**
+[VENUE_ADDRESS]
+Pittsburgh, Pennsylvania [ZIP]
 
-The Friday Center is located on the UNC Chapel Hill campus, about 20 minutes from Raleigh-Durham International Airport (RDU). The venue offers:
+[Venue description and amenities TBD]
 - Accessible parking (free for summit attendees)
 - Multiple session rooms and workshop spaces
 - Outdoor areas for networking between sessions
 - Cafeteria and coffee service throughout both days
 
-**What to wear:** Business casual. Chapel Hill in June is warm and humid — dress comfortably. Many sessions will be interactive, so plan accordingly.
+**What to wear:** Business casual. Pittsburgh in June is warm — dress comfortably. Many sessions will be interactive, so plan accordingly.
 
 ### Travel and transportation
 
 **By air:**
-Raleigh-Durham International Airport (RDU) is the closest airport, with direct flights from most major cities. Ground transportation options:
-- Rental car (20-minute drive to venue)
+Pittsburgh International Airport (PIT) is the closest airport, with direct flights from most major cities. Ground transportation options:
+- Rental car ([X]-minute drive to venue)
 - Rideshare services (Uber/Lyft available)
 - Taxi service
+- Light rail/bus options available
 
 **By car:**
-Free parking is available at the Friday Center. The venue is easily accessible from I-40.
+Free parking is available at the venue. Pittsburgh is easily accessible from major highways.
 
 **Local transportation:**
-Chapel Hill is a college town with good walkability in downtown areas. The Friday Center is a short drive from downtown Chapel Hill and Carrboro.
+Pittsburgh has good public transit options. The venue is accessible by [transit details TBD].
 
 ### Hotel recommendations
 
@@ -115,11 +116,11 @@ Email summit@collaborativejournalism.org with questions about logistics, accessi
 Look for Center for Cooperative Media and INN staff wearing [IDENTIFYING_ITEM — e.g., teal lanyards]. We're here to help.
 
 **Accessibility:**
-The Friday Center is fully accessible. If you need specific accommodations, please email us at summit@collaborativejournalism.org by [DATE] so we can prepare.
+The venue is fully accessible. If you need specific accommodations, please email us at summit@collaborativejournalism.org by [DATE] so we can prepare.
 
 ---
 
-We're looking forward to welcoming you to Chapel Hill. This community has built something remarkable over the past ten years — we're excited to celebrate it together.
+We're looking forward to welcoming you to Pittsburgh. This community has built something remarkable over the past ten years — we're excited to celebrate it together.
 
 See you soon.
 
@@ -145,8 +146,8 @@ Link: [SCHEDULE_LINK]
 ## Footer
 
 **2026 Collaborative Journalism Summit**
-June 8–9, 2026 | Chapel Hill, North Carolina
-UNC Friday Center | 100 Friday Center Drive
+June 8–9, 2026 | Pittsburgh, Pennsylvania
+[VENUE_NAME] | [VENUE_ADDRESS]
 
 Questions? Email summit@collaborativejournalism.org
 

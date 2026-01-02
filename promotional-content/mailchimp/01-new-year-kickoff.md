@@ -16,7 +16,7 @@
 
 ## Preview text
 
-Ten years of collaborative journalism. One big celebration in Chapel Hill. Pitch deadline: January 31.
+Ten years of collaborative journalism. One big celebration in Pittsburgh. Pitch deadline: January 31.
 
 ---
 
@@ -28,12 +28,12 @@ This is a big one for us. The 2026 Collaborative Journalism Summit marks our 10t
 
 Since that first summit in Montclair in 2017, we've gathered nearly 1,500 attendees across eight cities. We've watched one-time experiments become established newsroom practices. We've seen informal partnerships turn into lasting networks. We've built something together.
 
-**This June in Chapel Hill, we're celebrating how far we've come — and where we're headed next.**
+**This June in Pittsburgh, we're celebrating how far we've come — and where we're headed next.**
 
 ### What you need to know right now
 
 **When:** June 8–9, 2026
-**Where:** UNC Friday Center, Chapel Hill, North Carolina
+**Where:** Pittsburgh, Pennsylvania (venue TBD)
 **Co-located with:** INN Days (June 9–11)
 **Theme:** From experiment to ecosystem
 
@@ -55,14 +55,14 @@ We'll announce the program in late February and open registration in March.
 
 This summit has always been about the community we build together. We're grateful you're part of it.
 
-See you in Chapel Hill.
+See you in Pittsburgh.
 
 **Stefanie Murray**
 Director, Center for Cooperative Media
 
 ---
 
-**P.S.** Can't make it to North Carolina but want to contribute? Session pitches from remote presenters are welcome — we'll work with you on format.
+**P.S.** Can't make it to Pittsburgh but want to contribute? Session pitches from remote presenters are welcome — we'll work with you on format.
 
 ---
 
@@ -79,7 +79,7 @@ Link: https://summit.collaborativejournalism.org
 ## Footer
 
 **2026 Collaborative Journalism Summit**
-June 8–9, 2026 | Chapel Hill, North Carolina
+June 8–9, 2026 | Pittsburgh, Pennsylvania
 Hosted by the Center for Cooperative Media and the Institute for Nonprofit News
 Presenting sponsor: Knight Foundation
 

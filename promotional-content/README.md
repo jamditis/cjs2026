@@ -1,6 +1,6 @@
 # CJS2026 Promotional Content Library
 
-Strategic multimedia content for promoting the 10th anniversary Collaborative Journalism Summit (June 8-9, 2026, Chapel Hill, NC).
+Strategic multimedia content for promoting the 10th anniversary Collaborative Journalism Summit (June 8-9, 2026, Pittsburgh, PA).
 
 **Created:** January 2, 2026
 **Campaign window:** January - June 2026
@@ -24,7 +24,7 @@ promotional-content/
 │   └── 08-see-you-there.md      # June 7 - Day before
 ├── medium/
 │   ├── 01-decade-of-collaboration.md  # 10-year retrospective
-│   ├── 02-why-chapel-hill.md    # Location announcement
+│   ├── 02-why-chapel-hill.md    # Location announcement (⚠️ NEEDS REWRITE for Pittsburgh)
 │   ├── 03-call-for-pitches.md   # Session pitch CTA
 │   ├── 04-experiment-to-ecosystem.md  # Theme thought leadership
 │   ├── 05-reasons-to-attend.md  # Value proposition
@@ -137,8 +137,8 @@ Before publishing, search and replace these placeholders with actual values:
 ## Key messages
 
 1. **10th anniversary milestone** — A decade of proving journalism is stronger together
-2. **Chapel Hill, NC** — June 8-9, 2026 at UNC Friday Center
-3. **Co-located with INN Days** — Two events, one trip (June 9-11)
+2. **Pittsburgh, PA** — June 8-9, 2026 (venue TBD)
+3. **Co-located with INN Days** — Two events, one trip (June 9-11) *(TBD - confirm co-location)*
 4. **Theme: "From experiment to ecosystem"** — Collaborative journalism has matured
 5. **Tagline: "Prepare to partner"**
 

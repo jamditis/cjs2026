@@ -9,7 +9,7 @@ In 2017, a small group of journalists, editors, and newsroom leaders gathered in
 
 That first gathering proved something important. Collaborative journalism wasn't just a nice idea or a temporary response to shrinking resources. It was a fundamental shift in how journalism could work.
 
-Now, as we prepare for the 10th anniversary of CJS in Chapel Hill, North Carolina, on June 8-9, 2026, we're celebrating more than a decade of gatherings. We're marking the evolution of collaborative journalism from an experiment to an established ecosystem.
+Now, as we prepare for the 10th anniversary of CJS in Pittsburgh, Pennsylvania, on June 8-9, 2026, we're celebrating more than a decade of gatherings. We're marking the evolution of collaborative journalism from an experiment to an established ecosystem.
 
 ## The Evolution from Experiment to Ecosystem
 
@@ -31,9 +31,9 @@ Through a decade of summits, certain truths have emerged:
 
 **Diversity strengthens the work.** The most effective collaborations bring together newsrooms of different sizes, business models, and communities. They include voices that haven't traditionally been in the room.
 
-## Looking Ahead to Chapel Hill
+## Looking Ahead to Pittsburgh
 
-For this 10th anniversary summit, we're heading to the Southeast, a region where collaborative journalism is thriving in innovative ways. The UNC Friday Center in Chapel Hill provides the perfect setting to gather, and co-locating with INN Days (June 9-11) creates even more opportunities for connection and learning.
+For this 10th anniversary summit, we're heading to Pittsburgh, Pennsylvania — a city that embodies collaborative spirit and innovation. [Venue TBD] provides the setting for our gathering, and we're exploring opportunities for connection and learning across the journalism community.
 
 We're planning sessions that honor where we've been while pushing forward. Expect conversations about:
 
@@ -57,10 +57,10 @@ This year's tagline — "Prepare to partner" — is both an invitation and a cha
 
 We've spent ten years proving that journalism is stronger together. Now it's time to build on that foundation for the next decade.
 
-Join us in Chapel Hill this June. Let's celebrate how far we've come and chart where we're going next.
+Join us in Pittsburgh this June. Let's celebrate how far we've come and chart where we're going next.
 
 **Registration for CJS2026 opens soon. For updates and more information, visit summit.collaborativejournalism.org or contact summit@collaborativejournalism.org.**
 
 ---
 
-**Tags:** collaborative journalism, CJS2026, journalism collaboration, local news, journalism innovation, Center for Cooperative Media, UNC, Chapel Hill
+**Tags:** collaborative journalism, CJS2026, journalism collaboration, local news, journalism innovation, Center for Cooperative Media, Pittsburgh

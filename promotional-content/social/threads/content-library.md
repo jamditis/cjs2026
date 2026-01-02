@@ -12,7 +12,7 @@
 
 ### Post 1: Announcement
 **Text:**
-CJS2026 is coming to Chapel Hill, North Carolina on June 8-9.
+CJS2026 is coming to Pittsburgh, Pennsylvania on June 8-9.
 
 This is our 10th anniversary summit. A decade of bringing journalists together to form real partnerships and build collaborative projects that last.
 
@@ -56,7 +56,7 @@ Went virtual during COVID. Didn't stop us. The partnerships kept forming.
 
 Chicago. DC. Detroit. Denver.
 
-Now Chapel Hill for the 10th anniversary.
+Now Pittsburgh for the 10th anniversary.
 
 From experiment to ecosystem. That's the journey.
 
@@ -75,7 +75,7 @@ Because journalism is stronger together. Because small newsrooms can't compete w
 
 Because every year, attendees tell us CJS changed their journalism practice. They met partners. Launched projects. Found their people.
 
-That's why we keep doing this. See you in Chapel Hill.
+That's why we keep doing this. See you in Pittsburgh.
 
 **Timing:** Late January
 **Engagement:** Invite responses about collaboration challenges
@@ -150,7 +150,7 @@ Last year sold out in three weeks. The year before, two weeks.
 
 Set a reminder. Get your budget approved. Talk to your editor.
 
-June 8-9 in Chapel Hill. Space is limited to 150 attendees.
+June 8-9 in Pittsburgh. Space is limited to 150 attendees.
 
 **Timing:** Two weeks before registration opens
 
@@ -162,7 +162,7 @@ June 8-9 in Chapel Hill. Space is limited to 150 attendees.
 **Text:**
 Registration is open for CJS2026.
 
-June 8-9 in Chapel Hill, North Carolina. Our 10th anniversary summit.
+June 8-9 in Pittsburgh, Pennsylvania. Our 10th anniversary summit.
 
 Limited to 150 attendees. Spots filling fast.
 
@@ -204,21 +204,21 @@ What they have in common: They believe journalism is better when we work togethe
 
 If that's you, CJS2026 is for you.
 
-June 8-9 in Chapel Hill. Register at collaborativejournalism.org/cjs2026
+June 8-9 in Pittsburgh. Register at collaborativejournalism.org/cjs2026
 
 **Timing:** Mid-March
 
 ---
 
-### Post 12: Chapel Hill Preview
+### Post 12: Pittsburgh Preview
 **Text:**
-Why Chapel Hill for our 10th anniversary?
+Why Pittsburgh for our 10th anniversary?
 
 It's the perfect size. Walkable downtown. Great food scene. UNC campus nearby. Spaces designed for collaboration.
 
-The UNC Friday Center venue has everything we need: Workshop rooms. Networking spaces. Natural light. Good coffee.
+The [VENUE TBD] venue has everything we need: Workshop rooms. Networking spaces. Natural light. Good coffee.
 
-Plus, Chapel Hill has a strong local journalism community that understands collaboration. Felt right for the anniversary.
+Plus, Pittsburgh has a strong local journalism community that understands collaboration. Felt right for the anniversary.
 
 Can't wait to show you around. June 8-9.
 
@@ -255,7 +255,7 @@ At CJS2026, [Speaker Name] will lead a session on [topic]. [One sentence about w
 
 "[Quote from speaker about why collaboration matters or what they hope attendees take away]"
 
-Join us June 8-9 in Chapel Hill.
+Join us June 8-9 in Pittsburgh.
 Register: collaborativejournalism.org/cjs2026
 
 **Timing:** Throughout April (can post 4-5 speaker spotlights)
@@ -309,7 +309,7 @@ Every year, attendees form partnerships that continue years later. Co-publishing
 
 The summit is two days. The community lasts.
 
-June 8-9 in Chapel Hill. Don't miss the 10th anniversary.
+June 8-9 in Pittsburgh. Don't miss the 10th anniversary.
 
 Register: collaborativejournalism.org/cjs2026
 
@@ -323,7 +323,7 @@ Practical details for CJS2026:
 
 Days: Sunday June 8 and Monday June 9
 Hours: 9am-5pm both days (registration starts at 8am)
-Venue: UNC Friday Center, Chapel Hill
+Venue: [VENUE TBD], Pittsburgh
 Meals: Breakfast, lunch, and snacks included
 Evening: No formal programming, but we'll share restaurant recommendations
 
@@ -366,13 +366,13 @@ If you're registered for CJS2026, check your email. We just sent:
 - Detailed venue directions and parking info
 - Full schedule with session descriptions
 - List of registered attendees (with permission)
-- Chapel Hill restaurant recommendations
+- Pittsburgh restaurant recommendations
 - Hotel suggestions if you're staying overnight
 - Networking tips for first-timers
 
 Can't find the email? Check spam or DM us.
 
-See you in Chapel Hill in TWO WEEKS.
+See you in Pittsburgh in TWO WEEKS.
 
 **Timing:** Late May (about 2 weeks before event)
 
@@ -382,7 +382,7 @@ See you in Chapel Hill in TWO WEEKS.
 
 ### Post 21: Day 1 Morning - Travel Day
 **Text:**
-Headed to Chapel Hill for CJS2026?
+Headed to Pittsburgh for CJS2026?
 
 Safe travels. See you tomorrow morning.
 
@@ -399,7 +399,7 @@ Let's do this.
 
 ### Post 22: Day 1 Morning
 **Text:**
-Good morning, Chapel Hill.
+Good morning, Pittsburgh.
 
 CJS2026 starts in two hours.
 
@@ -445,7 +445,7 @@ Highlights:
 
 Tomorrow we go deeper. More workshops. More connections. More collaboration.
 
-Chapel Hill restaurants are about to get very busy with journalists talking partnerships over dinner.
+Pittsburgh restaurants are about to get very busy with journalists talking partnerships over dinner.
 
 See you tomorrow morning.
 
@@ -529,9 +529,9 @@ This happens every year at CJS. What partnership will you form?
 
 ---
 
-### Bonus 3: Why Chapel Hill
+### Bonus 3: Why Pittsburgh
 **Text:**
-Fun fact: Chapel Hill has a strong tradition of collaborative journalism.
+Fun fact: Pittsburgh has a strong tradition of collaborative journalism.
 
 UNC's journalism school has been teaching collaborative reporting for years. Local newsrooms regularly partner on investigations. The community understands that journalism is stronger together.
 
@@ -612,7 +612,7 @@ Revenue models that will be discussed at CJS2026:
 
 Not theory. Real practitioners sharing real results.
 
-June 8-9 in Chapel Hill.
+June 8-9 in Pittsburgh.
 
 **Timing:** April-May
 **Tone:** Practical, specific

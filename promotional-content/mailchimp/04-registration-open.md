@@ -16,20 +16,20 @@
 
 ## Preview text
 
-Register now for CJS2026 in Chapel Hill. Space is limited to 150 attendees.
+Register now for CJS2026 in Pittsburgh. Space is limited to 150 attendees.
 
 ---
 
 ## Email body
 
-Registration is now open for the 2026 Collaborative Journalism Summit in Chapel Hill, North Carolina.
+Registration is now open for the 2026 Collaborative Journalism Summit in Pittsburgh, Pennsylvania.
 
 After ten years and nearly 1,500 attendees across eight cities, we're gathering again to learn, connect, and build the future of collaborative journalism together.
 
 ### Event details
 
 **When:** June 8–9, 2026
-**Where:** UNC Friday Center, Chapel Hill, North Carolina
+**Where:** Pittsburgh, Pennsylvania (venue TBD)
 **Who:** 130–150 journalists, editors, funders, and researchers
 **Theme:** From experiment to ecosystem
 
@@ -64,10 +64,9 @@ The full schedule will be published in April. You'll be able to build your perso
 
 ### Planning your trip
 
-**Venue:** UNC Friday Center
-100 Friday Center Drive, Chapel Hill, NC 27517
+**Venue:** TBD (Pittsburgh, PA)
 
-**Airport:** Raleigh-Durham International Airport (RDU) — 20 minutes from venue
+**Airport:** Pittsburgh International Airport (PIT)
 
 **Hotel recommendations and travel details:** [LOGISTICS_LINK]
 
@@ -77,7 +76,7 @@ The full schedule will be published in April. You'll be able to build your perso
 
 We're grateful to Knight Foundation, our presenting sponsor, for making this 10th anniversary summit possible.
 
-Looking forward to seeing you in Chapel Hill.
+Looking forward to seeing you in Pittsburgh.
 
 **Stefanie Murray**
 Director, Center for Cooperative Media
@@ -101,7 +100,7 @@ Link: [LOGISTICS_LINK or summit.collaborativejournalism.org/logistics]
 ## Footer
 
 **2026 Collaborative Journalism Summit**
-June 8–9, 2026 | Chapel Hill, North Carolina
+June 8–9, 2026 | Pittsburgh, Pennsylvania
 Presented by the Center for Cooperative Media and the Institute for Nonprofit News
 Presenting sponsor: Knight Foundation
 

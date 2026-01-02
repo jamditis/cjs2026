@@ -5,7 +5,7 @@
 
 ---
 
-As we build the program for CJS2026 in Chapel Hill this June, we wanted to give you an early look at the themes, topics, and session formats taking shape. While the full schedule won't be finalized until session pitches are reviewed, here's what you can expect from the 10th anniversary summit.
+As we build the program for CJS2026 in Pittsburgh this June, we wanted to give you an early look at the themes, topics, and session formats taking shape. While the full schedule won't be finalized until session pitches are reviewed, here's what you can expect from the 10th anniversary summit.
 
 ## Opening: The Ecosystem We've Built
 
@@ -111,11 +111,11 @@ Because this is CJS's 10th anniversary, we're including special programming:
 - Reflections on lessons learned from collaborations that didn't work out
 - A forward-looking discussion on collaborative journalism's next decade
 
-## Regional Focus: Southeast Collaborations
+## Regional Focus: Pennsylvania and Midwest Collaborations
 
-Taking advantage of our Chapel Hill location, we'll highlight Southeast collaborative journalism initiatives and the lessons they offer.
+Taking advantage of our Pittsburgh location, we'll highlight Pennsylvania and Midwest collaborative journalism initiatives and the lessons they offer.
 
-From statewide networks to metro-area partnerships to cross-border collaborations, the Southeast is producing models worth learning from. Sessions will feature these collaborations and explore what makes them work.
+From statewide networks like Spotlight PA to metro-area partnerships to cross-border collaborations, the region is producing models worth learning from. Sessions will feature these collaborations and explore what makes them work.
 
 ## What's Still Taking Shape
 
@@ -126,14 +126,14 @@ This means the schedule reflects what the collaborative journalism community nee
 ## Save the Date
 
 **CJS2026: June 8-9, 2026**
-**UNC Friday Center, Chapel Hill, North Carolina**
+**Pittsburgh, Pennsylvania (venue TBD)**
 
 **Registration opens soon.** For updates and the full schedule as it's finalized, visit summit.collaborativejournalism.org.
 
 Have questions about the program? Want to suggest a topic we should include? Email summit@collaborativejournalism.org.
 
-See you in Chapel Hill.
+See you in Pittsburgh.
 
 ---
 
-**Tags:** CJS2026, collaborative journalism, Chapel Hill, conference program, journalism conference, journalism innovation, Center for Cooperative Media, journalism professional development
+**Tags:** CJS2026, collaborative journalism, Pittsburgh, conference program, journalism conference, journalism innovation, Center for Cooperative Media, journalism professional development

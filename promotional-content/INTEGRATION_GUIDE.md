@@ -77,23 +77,20 @@ These promotional content placeholders link to external platforms:
 - Create a standalone Notion/Google Doc page
 
 **Content to include:**
-- Airport information (RDU - Raleigh-Durham International)
+- Airport information (PIT - Pittsburgh International)
 - Ground transportation options
 - Hotel blocks with booking codes
-- Parking at UNC Friday Center
+- Parking at venue (TBD)
 - Local dining recommendations
 - Accessibility information
 - What to pack
 
 ### 4. Hotel booking `[HOTEL_NAME_1]`, `[BOOKING_LINK]`
 
-**Action:** Negotiate hotel block rates with Chapel Hill area hotels.
+**Action:** Negotiate hotel block rates with Pittsburgh area hotels near the venue.
 
-**Suggested hotels near UNC Friday Center:**
-- The Siena Hotel
-- Hampton Inn Chapel Hill
-- Sheraton Chapel Hill Hotel
-- AC Hotel by Marriott Chapel Hill Downtown
+**Suggested hotels (TBD based on venue location):**
+- *Update once venue is confirmed*
 
 **When secured:** Update promotional content with hotel names and booking links/codes.
 
@@ -122,7 +119,7 @@ Before publishing each piece of promotional content:
 - [ ] `[LOGISTICS_LINK]` → Travel/logistics page URL
 - [ ] `[HOTEL_NAME_1]` → Hotel name
 - [ ] `[BOOKING_LINK]` → Hotel booking URL or code
-- [ ] `[PARKING_INFO]` → UNC Friday Center parking details
+- [ ] `[PARKING_INFO]` → Venue parking details (TBD)
 
 **For speaker announcements (April onwards):**
 - [ ] `[KEYNOTE_SPEAKER]` → Actual speaker name

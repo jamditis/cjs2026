@@ -9,7 +9,7 @@
 ## Subject line options
 
 1. Tomorrow: CJS2026 begins
-2. See you tomorrow in Chapel Hill
+2. See you tomorrow in Pittsburgh
 3. We're ready for you at CJS2026
 
 ---
@@ -22,7 +22,7 @@ Doors open at 8:00 AM. Keynote starts at 9:00 AM. Here's everything you need for
 
 ## Email body
 
-Tomorrow morning, we gather in Chapel Hill for the 10th annual Collaborative Journalism Summit.
+Tomorrow morning, we gather in Pittsburgh for the 10th annual Collaborative Journalism Summit.
 
 The coffee is ordered. The name badges are printed. The speakers are ready. We're excited to welcome you.
 
@@ -44,7 +44,7 @@ Join us for dinner, drinks, and a toast to ten years of building this community 
 
 ### What to know for tomorrow
 
-**Parking:** Free parking is available at the UNC Friday Center. Follow signs for summit parking when you arrive.
+**Parking:** Free parking is available at the venue. Follow signs for summit parking when you arrive.
 
 **What to bring:**
 - Government ID (for badge pickup)
@@ -53,14 +53,14 @@ Join us for dinner, drinks, and a toast to ten years of building this community 
 - Questions, challenges, and ideas to share
 - An openness to new partnerships
 
-**Accessibility:** The Friday Center is fully accessible. If you need specific accommodations, find a CCM or INN staff member at the registration desk.
+**Accessibility:** The venue is fully accessible. If you need specific accommodations, find a CCM or INN staff member at the registration desk.
 
 **WiFi:** Network name and password will be on signs throughout the venue.
 
 ### Connect with other attendees
 
 **Sunday evening meetup (tonight):**
-We've heard that many of you are already in Chapel Hill. An informal gathering is happening tonight at [LOCATION_TBD] around [TIME_TBD]. Check the CJS Slack for details and to coordinate with other early arrivals.
+We've heard that many of you are already in Pittsburgh. An informal gathering is happening tonight at [LOCATION_TBD] around [TIME_TBD]. Check the CJS Slack for details and to coordinate with other early arrivals.
 
 **Join the Slack workspace:** [SLACK_LINK]
 
@@ -100,8 +100,8 @@ Link: [DIRECTIONS_LINK]
 ## Footer
 
 **2026 Collaborative Journalism Summit**
-June 8–9, 2026 | Chapel Hill, North Carolina
-UNC Friday Center | 100 Friday Center Drive
+June 8–9, 2026 | Pittsburgh, Pennsylvania
+[VENUE_NAME] | [VENUE_ADDRESS]
 
 **Tomorrow:** Doors open at 8:00 AM | Keynote at 9:00 AM
 

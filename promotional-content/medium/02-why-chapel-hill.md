@@ -1,4 +1,21 @@
-# Why We're Heading to Chapel Hill for CJS2026
+# ⚠️ THIS ARTICLE NEEDS COMPLETE REWRITE FOR PITTSBURGH
+
+**STATUS:** Location changed from Chapel Hill, NC to Pittsburgh, PA (January 2026)
+
+**ACTION NEEDED:** This entire article was written about Chapel Hill and the Southeast. It needs to be completely rewritten to focus on Pittsburgh and the Pennsylvania/Midwest region. Consider:
+- Pittsburgh's collaborative journalism landscape (PublicSource, Pittsburgh Post-Gazette partnerships, etc.)
+- Pennsylvania and regional collaboratives (Spotlight PA, PA Post, etc.)
+- Pittsburgh as a "bridges" city - connecting regions
+- Pittsburgh venue (TBD) details
+- Pittsburgh International Airport (PIT), hotels, local attractions
+- INN Days co-location status (TBD - confirm if still co-located)
+- Pittsburgh's journalism education programs (Point Park, Pitt, etc.)
+
+Suggested new title: "Why We're Heading to Pittsburgh for CJS2026"
+
+---
+
+# ~~Why We're Heading to Chapel Hill for CJS2026~~ (OUTDATED - DO NOT USE)
 
 **By [Author Name]**
 *Estimated read time: 5 minutes*
@@ -7,7 +24,7 @@
 
 For nine years, the Collaborative Journalism Summit has traveled across the country — from Montclair to Philadelphia, Chicago to Detroit, Washington DC to Denver. Each location has been chosen intentionally, connecting the summit to communities where collaborative journalism is thriving.
 
-For our 10th anniversary, we're heading to Chapel Hill, North Carolina, and the UNC Friday Center. Here's why the Southeast is the perfect place to mark this milestone.
+~~For our 10th anniversary, we're heading to Chapel Hill, North Carolina, and the UNC Friday Center. Here's why the Southeast is the perfect place to mark this milestone.~~ **OUTDATED - Pittsburgh, PA is the new location.**
 
 ## A Region Leading in Collaborative Innovation
 
