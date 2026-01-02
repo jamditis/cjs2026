@@ -21,7 +21,7 @@ Our 10th anniversary summit. A decade of bringing journalists together to build 
 Theme: "From experiment to ecosystem"
 Tagline: "Prepare to partner"
 
-Registration opens in March. Link in bio for updates.
+Registration opens mid-January. Link in bio for updates.
 
 #CJS2026 #CollaborativeJournalism #Journalism #Chapel Hill #MediaCollaboration #JournalismSummit #10thAnniversary
 
@@ -131,7 +131,7 @@ Instead:
 
 Two days focused on doing collaborative journalism, not just talking about it.
 
-Registration opens in March. Are you ready?
+Registration is open now. Are you ready?
 
 #CJS2026 #CollaborativeJournalism #JournalismConference #MediaInnovation #Partnership
 
@@ -176,7 +176,7 @@ June 8-9, 2026. Mark your calendars.
 
 Stories like this happen every year at CJS. What partnership will you form at CJS2026?
 
-Registration opens March 1.
+Registration is open now. Space is limited to 150.
 
 #CJS2026 #CollaborativeJournalism #Testimonial #JournalismPartnership #SuccessStory
 
@@ -226,7 +226,7 @@ REGISTRATION IS OPEN for CJS2026.
 
 Limited spots available. We keep it intimate so real partnerships can form.
 
-Early bird pricing ends March 15.
+Space is limited to 150 attendees.
 
 Register now → Link in bio
 
@@ -235,7 +235,7 @@ Register now → Link in bio
 **Visual Suggestion:**
 - Bold "REGISTRATION OPEN" graphic
 - Event details clearly visible
-- Early bird deadline callout
+- Limited capacity callout
 - Strong CTA
 - Can animate as video/reel for extra reach
 
@@ -244,26 +244,26 @@ Register now → Link in bio
 
 ---
 
-### Post 10: Early Bird Reminder
+### Post 10: Spots Filling Up
 **Caption:**
-Early bird pricing ends THIS WEEKEND.
+CJS2026 spots are filling up.
 
-Save $100 when you register for CJS2026 by March 15.
+We keep attendance small — just 150 people — so real partnerships can form.
 
-Every past attendee we've talked to says they wish they'd come sooner. This is where real partnerships form. Don't wait.
+Every past attendee we've talked to says they wish they'd come sooner. This is where collaborations start. Don't wait.
 
 Register at collaborativejournalism.org/cjs2026
 Link in bio.
 
-#CJS2026 #EarlyBird #CollaborativeJournalism #LastChance #RegisterNow
+#CJS2026 #RegisterNow #CollaborativeJournalism #LimitedSpots #ChapelHill
 
 **Visual Suggestion:**
-- Price comparison graphic (early bird vs. regular)
+- Capacity update graphic
+- "X spots remaining" or percentage filled
 - Urgency without being pushy
-- Clear savings callout
-- Timer or deadline visual
+- Clean, on-brand design
 
-**Timing:** 3-4 days before early bird deadline
+**Timing:** Mid-registration period when spots are filling
 
 ---
 

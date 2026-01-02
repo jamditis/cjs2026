@@ -63,7 +63,6 @@ These promotional content placeholders link to external platforms:
 **Recommended:** Use Eventbrite (consistent with past summits).
 
 **Ticket types to configure:**
-- Early bird (first 50 registrants)
 - Standard registration
 - Student/freelancer rate (if applicable)
 - Scholarship/complimentary
@@ -132,9 +131,8 @@ Before publishing each piece of promotional content:
 - [ ] `[SPEAKER_ORG]` → Speaker organization
 
 **For pricing content:**
-- [ ] `[EARLY_BIRD_PRICE]` → Early bird ticket price
-- [ ] `[STANDARD_PRICE]` → Standard ticket price
-- [ ] `[EARLY_BIRD_DEADLINE]` → Cutoff date for early bird
+- [ ] `[TICKET_PRICE]` → Registration ticket price
+- [ ] `[STUDENT_PRICE]` → Student/freelancer rate (if applicable)
 
 ---
 
@@ -175,7 +173,7 @@ Add UTM tracking to links in emails and social posts:
 - `cjs2026_kickoff` - January launch
 - `cjs2026_pitches` - Session pitch deadline
 - `cjs2026_registration` - Registration open
-- `cjs2026_earlybird` - Early bird push
+- `cjs2026_launch` - Registration launch
 - `cjs2026_speakers` - Speaker announcements
 - `cjs2026_logistics` - Travel/hotel info
 - `cjs2026_countdown` - Final countdown

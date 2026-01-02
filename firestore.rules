@@ -98,6 +98,17 @@ service cloud.firestore {
       allow delete: if isAdmin() || isSuperAdmin();
     }
 
+    // Updates (news/announcements) - public read for visible, admin write
+    // Used for the /updates page and individual update pages
+    match /updates/{updateId} {
+      // Public read for visible updates only
+      allow read: if resource.data.visible == true;
+      // Admins can read all updates (including hidden)
+      allow read: if isAdmin() || isSuperAdmin();
+      // Only admins can create, update, delete
+      allow create, update, delete: if isAdmin() || isSuperAdmin();
+    }
+
     // Default deny all
     match /{document=**} {
       allow read, write: if false;

@@ -59,6 +59,7 @@ import { collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, order
 const NAV_ITEMS = [
   { id: 'dashboard', label: 'Overview', icon: BarChart3, description: 'System health & metrics' },
   { id: 'broadcast', label: 'Broadcast', icon: Megaphone, description: 'Site announcements' },
+  { id: 'updates', label: 'Updates', icon: FileText, description: 'News & updates content' },
   { id: 'attendees', label: 'Attendees', icon: Users, description: 'User management' },
   { id: 'sessions', label: 'Sessions', icon: Bookmark, description: 'Session popularity' },
   { id: 'activity', label: 'Activity', icon: Activity, description: 'User actions' },
@@ -539,6 +540,7 @@ function AdminPanel() {
             >
               {activeTab === 'dashboard' && <DashboardTab currentUser={currentUser} isInk={isInk} settings={settings} />}
               {activeTab === 'broadcast' && <BroadcastTab currentUser={currentUser} isInk={isInk} />}
+              {activeTab === 'updates' && <UpdatesTab currentUser={currentUser} isInk={isInk} />}
               {activeTab === 'attendees' && <AttendeesTab currentUser={currentUser} isInk={isInk} />}
               {activeTab === 'sessions' && <SessionsTab currentUser={currentUser} isInk={isInk} />}
               {activeTab === 'activity' && <ActivityTab currentUser={currentUser} isInk={isInk} />}
@@ -3122,6 +3124,561 @@ function AuditTab({ currentUser, isInk }) {
           </table>
         </div>
       )}
+    </div>
+  )
+}
+
+// Updates Tab - News/Updates content management
+function UpdatesTab({ currentUser, isInk }) {
+  const [updates, setUpdates] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [showForm, setShowForm] = useState(false)
+
+  // Form state for new/edit
+  const [editingUpdate, setEditingUpdate] = useState(null)
+  const [formData, setFormData] = useState({
+    title: '',
+    slug: '',
+    summary: '',
+    content: '',
+    type: 'announcement',
+    category: 'Announcements',
+    date: new Date().toISOString().split('T')[0],
+    featured: false,
+    visible: true,
+    countdown: false,
+    color: 'teal',
+    ctaText: '',
+    ctaUrl: '',
+    ctaExternal: false
+  })
+
+  // Generate slug from title
+  function generateSlug(title) {
+    return title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '')
+      .slice(0, 60)
+  }
+
+  // Listen to updates in real-time
+  useEffect(() => {
+    const q = query(
+      collection(db, 'updates'),
+      orderBy('date', 'desc'),
+      limit(50)
+    )
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const items = []
+      snapshot.forEach(doc => {
+        items.push({ id: doc.id, ...doc.data() })
+      })
+      setUpdates(items)
+      setLoading(false)
+    })
+
+    return () => unsubscribe()
+  }, [])
+
+  function resetForm() {
+    setFormData({
+      title: '',
+      slug: '',
+      summary: '',
+      content: '',
+      type: 'announcement',
+      category: 'Announcements',
+      date: new Date().toISOString().split('T')[0],
+      featured: false,
+      visible: true,
+      countdown: false,
+      color: 'teal',
+      ctaText: '',
+      ctaUrl: '',
+      ctaExternal: false
+    })
+    setEditingUpdate(null)
+    setShowForm(false)
+  }
+
+  function startEdit(update) {
+    setEditingUpdate(update)
+    setFormData({
+      title: update.title || '',
+      slug: update.slug || '',
+      summary: update.summary || '',
+      content: update.content || '',
+      type: update.type || 'announcement',
+      category: update.category || 'Announcements',
+      date: update.date || new Date().toISOString().split('T')[0],
+      featured: update.featured || false,
+      visible: update.visible !== false,
+      countdown: update.countdown || false,
+      color: update.color || 'teal',
+      ctaText: update.cta?.text || '',
+      ctaUrl: update.cta?.url || '',
+      ctaExternal: update.cta?.external || false
+    })
+    setShowForm(true)
+  }
+
+  async function saveUpdate() {
+    if (!formData.title.trim() || !formData.slug.trim()) {
+      alert('Title and slug are required')
+      return
+    }
+
+    setSaving(true)
+    try {
+      const updateData = {
+        title: formData.title.trim(),
+        slug: formData.slug.trim(),
+        summary: formData.summary.trim(),
+        content: formData.content.trim(),
+        type: formData.type,
+        category: formData.category,
+        date: formData.date,
+        featured: formData.featured,
+        visible: formData.visible,
+        countdown: formData.countdown,
+        color: formData.color,
+        cta: formData.ctaText ? {
+          text: formData.ctaText.trim(),
+          url: formData.ctaUrl.trim(),
+          external: formData.ctaExternal
+        } : null,
+        updatedAt: serverTimestamp(),
+        updatedBy: currentUser.uid,
+        updatedByEmail: currentUser.email
+      }
+
+      if (editingUpdate) {
+        await updateDoc(doc(db, 'updates', editingUpdate.id), updateData)
+      } else {
+        updateData.createdAt = serverTimestamp()
+        updateData.createdBy = currentUser.uid
+        updateData.createdByEmail = currentUser.email
+        await addDoc(collection(db, 'updates'), updateData)
+      }
+      resetForm()
+    } catch (err) {
+      console.error('Failed to save update:', err)
+      alert('Failed to save update: ' + err.message)
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  async function toggleVisible(update) {
+    try {
+      await updateDoc(doc(db, 'updates', update.id), {
+        visible: !update.visible
+      })
+    } catch (err) {
+      console.error('Failed to toggle visibility:', err)
+    }
+  }
+
+  async function toggleFeatured(update) {
+    try {
+      await updateDoc(doc(db, 'updates', update.id), {
+        featured: !update.featured
+      })
+    } catch (err) {
+      console.error('Failed to toggle featured:', err)
+    }
+  }
+
+  async function deleteUpdate(id) {
+    if (!window.confirm('Delete this update? This cannot be undone.')) return
+    try {
+      await deleteDoc(doc(db, 'updates', id))
+    } catch (err) {
+      console.error('Failed to delete update:', err)
+    }
+  }
+
+  const typeOptions = [
+    { value: 'announcement', label: 'Announcement' },
+    { value: 'deadline', label: 'Deadline' },
+    { value: 'story', label: 'Story' },
+    { value: 'milestone', label: 'Milestone' }
+  ]
+
+  const categoryOptions = [
+    'Announcements', 'Deadlines', 'Registration', 'Speakers',
+    'Location', 'Events', 'Sponsors', '10th anniversary', 'Call for proposals'
+  ]
+
+  const colorOptions = [
+    { value: 'teal', label: 'Teal', class: 'bg-admin-teal' },
+    { value: 'cardinal', label: 'Cardinal', class: 'bg-rose-500' },
+    { value: 'green-dark', label: 'Green', class: 'bg-emerald-700' }
+  ]
+
+  const getTypeStyle = (type) => {
+    switch (type) {
+      case 'deadline': return 'admin-badge-warning'
+      case 'story': return 'admin-badge-info'
+      case 'milestone': return 'admin-badge-success'
+      default: return 'admin-badge-info'
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-24">
+        <Loader2 className="w-8 h-8 text-admin-teal animate-spin" />
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-8 max-w-6xl">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl admin-glass-teal flex items-center justify-center">
+            <FileText className="w-5 h-5 text-admin-teal" />
+          </div>
+          <div>
+            <h3 className="font-admin-heading text-lg font-semibold text-[var(--admin-text)]">Updates & News</h3>
+            <p className="font-admin-body text-sm text-[var(--admin-text-secondary)]">
+              Manage content for the /updates page • {updates.length} total
+            </p>
+          </div>
+        </div>
+        <button
+          onClick={() => { resetForm(); setShowForm(true); }}
+          className="admin-button-primary"
+        >
+          <span className="mr-2">+</span> New Update
+        </button>
+      </div>
+
+      {/* Form (Create/Edit) */}
+      {showForm && (
+        <div className="admin-surface p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h4 className="font-admin-heading text-lg font-semibold text-[var(--admin-text)]">
+              {editingUpdate ? 'Edit Update' : 'Create New Update'}
+            </h4>
+            <button onClick={resetForm} className="text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)]">
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            {/* Title */}
+            <div className="md:col-span-2">
+              <label className="block text-sm font-admin-body text-[var(--admin-text-secondary)] mb-1">Title *</label>
+              <input
+                type="text"
+                value={formData.title}
+                onChange={(e) => {
+                  setFormData(prev => ({
+                    ...prev,
+                    title: e.target.value,
+                    slug: editingUpdate ? prev.slug : generateSlug(e.target.value)
+                  }))
+                }}
+                className="admin-input"
+                placeholder="Update title"
+              />
+            </div>
+
+            {/* Slug */}
+            <div>
+              <label className="block text-sm font-admin-body text-[var(--admin-text-secondary)] mb-1">
+                Slug * <span className="text-xs">(URL: /updates/{formData.slug || '...'})</span>
+              </label>
+              <input
+                type="text"
+                value={formData.slug}
+                onChange={(e) => setFormData(prev => ({ ...prev, slug: e.target.value }))}
+                className="admin-input font-mono text-sm"
+                placeholder="url-friendly-slug"
+              />
+            </div>
+
+            {/* Date */}
+            <div>
+              <label className="block text-sm font-admin-body text-[var(--admin-text-secondary)] mb-1">Date</label>
+              <input
+                type="date"
+                value={formData.date}
+                onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))}
+                className="admin-input"
+              />
+            </div>
+
+            {/* Type */}
+            <div>
+              <label className="block text-sm font-admin-body text-[var(--admin-text-secondary)] mb-1">Type</label>
+              <select
+                value={formData.type}
+                onChange={(e) => setFormData(prev => ({ ...prev, type: e.target.value }))}
+                className="admin-input"
+              >
+                {typeOptions.map(opt => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Category */}
+            <div>
+              <label className="block text-sm font-admin-body text-[var(--admin-text-secondary)] mb-1">Category</label>
+              <select
+                value={formData.category}
+                onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
+                className="admin-input"
+              >
+                {categoryOptions.map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Color */}
+            <div>
+              <label className="block text-sm font-admin-body text-[var(--admin-text-secondary)] mb-1">Color</label>
+              <select
+                value={formData.color}
+                onChange={(e) => setFormData(prev => ({ ...prev, color: e.target.value }))}
+                className="admin-input"
+              >
+                {colorOptions.map(opt => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Summary */}
+            <div className="md:col-span-2">
+              <label className="block text-sm font-admin-body text-[var(--admin-text-secondary)] mb-1">Summary</label>
+              <textarea
+                value={formData.summary}
+                onChange={(e) => setFormData(prev => ({ ...prev, summary: e.target.value }))}
+                className="admin-input"
+                rows={2}
+                placeholder="Brief summary for list views"
+              />
+            </div>
+
+            {/* Content */}
+            <div className="md:col-span-2">
+              <label className="block text-sm font-admin-body text-[var(--admin-text-secondary)] mb-1">
+                Content <span className="text-xs">(Markdown supported)</span>
+              </label>
+              <textarea
+                value={formData.content}
+                onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
+                className="admin-input font-mono text-sm"
+                rows={8}
+                placeholder="Full content with **markdown** support..."
+              />
+            </div>
+
+            {/* CTA Section */}
+            <div className="md:col-span-2 p-4 rounded-lg admin-glass">
+              <label className="block text-sm font-admin-body text-[var(--admin-text-secondary)] mb-3">Call to Action (optional)</label>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <input
+                  type="text"
+                  value={formData.ctaText}
+                  onChange={(e) => setFormData(prev => ({ ...prev, ctaText: e.target.value }))}
+                  className="admin-input"
+                  placeholder="Button text"
+                />
+                <input
+                  type="text"
+                  value={formData.ctaUrl}
+                  onChange={(e) => setFormData(prev => ({ ...prev, ctaUrl: e.target.value }))}
+                  className="admin-input"
+                  placeholder="/path or https://..."
+                />
+                <label className="flex items-center gap-2 text-sm font-admin-body text-[var(--admin-text-secondary)]">
+                  <input
+                    type="checkbox"
+                    checked={formData.ctaExternal}
+                    onChange={(e) => setFormData(prev => ({ ...prev, ctaExternal: e.target.checked }))}
+                    className="rounded"
+                  />
+                  External link
+                </label>
+              </div>
+            </div>
+
+            {/* Checkboxes */}
+            <div className="md:col-span-2 flex flex-wrap gap-6">
+              <label className="flex items-center gap-2 text-sm font-admin-body text-[var(--admin-text)]">
+                <input
+                  type="checkbox"
+                  checked={formData.visible}
+                  onChange={(e) => setFormData(prev => ({ ...prev, visible: e.target.checked }))}
+                  className="rounded"
+                />
+                Visible
+              </label>
+              <label className="flex items-center gap-2 text-sm font-admin-body text-[var(--admin-text)]">
+                <input
+                  type="checkbox"
+                  checked={formData.featured}
+                  onChange={(e) => setFormData(prev => ({ ...prev, featured: e.target.checked }))}
+                  className="rounded"
+                />
+                Featured
+              </label>
+              <label className="flex items-center gap-2 text-sm font-admin-body text-[var(--admin-text)]">
+                <input
+                  type="checkbox"
+                  checked={formData.countdown}
+                  onChange={(e) => setFormData(prev => ({ ...prev, countdown: e.target.checked }))}
+                  className="rounded"
+                />
+                Show countdown (for deadlines)
+              </label>
+            </div>
+          </div>
+
+          {/* Form Actions */}
+          <div className="flex justify-end gap-3 pt-4 border-t border-[var(--admin-border)]">
+            <button
+              onClick={resetForm}
+              className="admin-button-secondary"
+              disabled={saving}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={saveUpdate}
+              className="admin-button-primary"
+              disabled={saving}
+            >
+              {saving ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Save className="w-4 h-4 mr-2" />
+                  {editingUpdate ? 'Save Changes' : 'Create Update'}
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Updates List */}
+      {updates.length === 0 ? (
+        <div className="admin-surface p-12 text-center">
+          <FileText className="w-12 h-12 text-[var(--admin-text-secondary)] mx-auto mb-4 opacity-50" />
+          <p className="text-[var(--admin-text-secondary)] font-admin-body">No updates yet</p>
+          <p className="text-sm text-[var(--admin-text-secondary)] mt-2">
+            Create your first update to see it here
+          </p>
+        </div>
+      ) : (
+        <div className="admin-surface overflow-hidden">
+          <table className="admin-table">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Type</th>
+                <th>Category</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th className="text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {updates.map((update) => (
+                <tr key={update.id} className={!update.visible ? 'opacity-50' : ''}>
+                  <td>
+                    <div>
+                      <p className="font-admin-body font-medium text-[var(--admin-text)]">{update.title}</p>
+                      <p className="text-xs font-admin-mono text-[var(--admin-text-secondary)]">/updates/{update.slug}</p>
+                    </div>
+                  </td>
+                  <td>
+                    <span className={`admin-badge ${getTypeStyle(update.type)}`}>
+                      {update.type}
+                    </span>
+                  </td>
+                  <td className="font-admin-body text-sm">{update.category}</td>
+                  <td className="font-admin-mono text-sm">{update.date}</td>
+                  <td>
+                    <div className="flex gap-2">
+                      {update.featured && (
+                        <span className="admin-badge admin-badge-warning">Featured</span>
+                      )}
+                      <span className={`admin-badge ${update.visible ? 'admin-badge-success' : 'admin-badge-error'}`}>
+                        {update.visible ? 'Visible' : 'Hidden'}
+                      </span>
+                    </div>
+                  </td>
+                  <td>
+                    <div className="flex justify-end gap-2">
+                      <a
+                        href={`/updates/${update.slug}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-2 rounded-lg hover:bg-[var(--admin-bg-hover)] text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)]"
+                        title="View"
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                      </a>
+                      <button
+                        onClick={() => startEdit(update)}
+                        className="p-2 rounded-lg hover:bg-[var(--admin-bg-hover)] text-[var(--admin-text-secondary)] hover:text-admin-teal"
+                        title="Edit"
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => toggleVisible(update)}
+                        className="p-2 rounded-lg hover:bg-[var(--admin-bg-hover)] text-[var(--admin-text-secondary)] hover:text-admin-amber"
+                        title={update.visible ? 'Hide' : 'Show'}
+                      >
+                        {update.visible ? <XCircle className="w-4 h-4" /> : <CheckCircle2 className="w-4 h-4" />}
+                      </button>
+                      <button
+                        onClick={() => deleteUpdate(update.id)}
+                        className="p-2 rounded-lg hover:bg-[var(--admin-bg-hover)] text-[var(--admin-text-secondary)] hover:text-admin-rose"
+                        title="Delete"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* Info Box */}
+      <div className="p-4 rounded-lg admin-glass border border-[var(--admin-border)]">
+        <div className="flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 text-admin-teal mt-0.5" />
+          <div className="text-sm font-admin-body text-[var(--admin-text-secondary)]">
+            <p className="font-medium text-[var(--admin-text)] mb-1">How Updates Work</p>
+            <ul className="list-disc ml-4 space-y-1">
+              <li>Updates created here are stored in Firestore and display on the website immediately</li>
+              <li>Each update has a unique slug for shareable URLs (e.g., /updates/registration-open)</li>
+              <li>Featured updates appear prominently at the top of the /updates page</li>
+              <li>Hidden updates are not visible to the public but remain in the database</li>
+            </ul>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

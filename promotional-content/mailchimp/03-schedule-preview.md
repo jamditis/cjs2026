@@ -63,7 +63,7 @@ This year we're expecting 130–150 attendees including:
 
 ### What's next
 
-**Registration opens in March** with early bird pricing for the first 50 attendees.
+**Registration opens in March.** Space is limited to 150 attendees.
 
 The full schedule will be published in April. In the meantime, you can start planning your trip to Chapel Hill.
 

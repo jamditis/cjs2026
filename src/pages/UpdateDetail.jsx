@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { useParams, Link, Navigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
@@ -11,11 +11,14 @@ import {
   Linkedin,
   Link as LinkIcon,
   ExternalLink,
-  ArrowRight
+  ArrowRight,
+  Loader2
 } from 'lucide-react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
-import { getUpdateBySlug, getRecentUpdates, getDaysUntil } from '../content/updatesData'
+import { getUpdateBySlug, getRecentUpdates, getDaysUntil, updates as staticUpdates } from '../content/updatesData'
+import { db } from '../firebase'
+import { collection, query, where, getDocs, orderBy, limit } from 'firebase/firestore'
 
 // Share button component
 function ShareButton({ icon: Icon, label, onClick, href }) {
@@ -78,7 +81,77 @@ function RelatedUpdates({ currentSlug }) {
 
 function UpdateDetail() {
   const { slug } = useParams()
-  const update = getUpdateBySlug(slug)
+  const [update, setUpdate] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [allUpdates, setAllUpdates] = useState(staticUpdates)
+
+  // Fetch update from Firestore, fall back to static data
+  useEffect(() => {
+    async function fetchUpdate() {
+      try {
+        // Try Firestore first
+        const q = query(
+          collection(db, 'updates'),
+          where('slug', '==', slug),
+          where('visible', '==', true),
+          limit(1)
+        )
+        const snapshot = await getDocs(q)
+
+        if (!snapshot.empty) {
+          const doc = snapshot.docs[0]
+          setUpdate({ id: doc.id, ...doc.data() })
+        } else {
+          // Fall back to static data
+          const staticUpdate = getUpdateBySlug(slug)
+          setUpdate(staticUpdate)
+        }
+
+        // Also fetch all updates for the sidebar
+        const allQ = query(
+          collection(db, 'updates'),
+          where('visible', '==', true),
+          orderBy('date', 'desc'),
+          limit(10)
+        )
+        const allSnapshot = await getDocs(allQ)
+        const firestoreUpdates = []
+        allSnapshot.forEach(doc => {
+          firestoreUpdates.push({ id: doc.id, ...doc.data() })
+        })
+
+        // Merge with static updates
+        const firestoreSlugs = new Set(firestoreUpdates.map(u => u.slug))
+        const merged = [
+          ...firestoreUpdates,
+          ...staticUpdates.filter(u => !firestoreSlugs.has(u.slug))
+        ].sort((a, b) => new Date(b.date) - new Date(a.date))
+        setAllUpdates(merged)
+
+      } catch (error) {
+        console.error('Error fetching update:', error)
+        // Fall back to static data on error
+        setUpdate(getUpdateBySlug(slug))
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchUpdate()
+  }, [slug])
+
+  // Loading state
+  if (loading) {
+    return (
+      <>
+        <Navbar />
+        <div className="min-h-screen bg-paper pt-24 pb-16 flex items-center justify-center">
+          <Loader2 className="w-8 h-8 text-brand-teal animate-spin" />
+        </div>
+        <Footer />
+      </>
+    )
+  }
 
   // If update not found, redirect to updates page
   if (!update) {

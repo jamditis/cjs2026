@@ -10,13 +10,13 @@
 
 1. Registration is open for CJS2026
 2. Save your spot for the 10th anniversary summit
-3. Early bird registration now open for CJS2026
+3. Reserve your place at the 10th anniversary summit
 
 ---
 
 ## Preview text
 
-Register now for CJS2026 in Chapel Hill. Early bird pricing available for the first 50 attendees.
+Register now for CJS2026 in Chapel Hill. Space is limited to 150 attendees.
 
 ---
 
@@ -35,9 +35,8 @@ After ten years and nearly 1,500 attendees across eight cities, we're gathering 
 
 ### Registration pricing
 
-**Early bird (first 50 registrants):** [EARLY_BIRD_PRICE]
-**Standard registration:** [STANDARD_PRICE]
-**Student/freelance rate:** [REDUCED_PRICE]
+**Standard registration:** [TICKET_PRICE]
+**Student/freelance rate:** [STUDENT_PRICE]
 
 All registration tiers include:
 - Full access to all sessions and workshops

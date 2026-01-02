@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import {
@@ -12,12 +12,15 @@ import {
   ExternalLink,
   Bell,
   TrendingUp,
-  MapPin
+  MapPin,
+  Loader2
 } from 'lucide-react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import EmailSignup from '../components/EmailSignup'
-import { updates, getFeaturedUpdates, getDaysUntil } from '../content/updatesData'
+import { updates as staticUpdates, getDaysUntil } from '../content/updatesData'
+import { db } from '../firebase'
+import { collection, onSnapshot, query, orderBy, where } from 'firebase/firestore'
 
 // Quick stats
 const summitDate = '2026-06-08'
@@ -225,7 +228,43 @@ function StatsBanner() {
 }
 
 function Updates() {
-  const featuredUpdates = getFeaturedUpdates()
+  const [updates, setUpdates] = useState(staticUpdates)
+  const [loading, setLoading] = useState(true)
+
+  // Fetch updates from Firestore and merge with static data
+  useEffect(() => {
+    const q = query(
+      collection(db, 'updates'),
+      where('visible', '==', true),
+      orderBy('date', 'desc')
+    )
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const firestoreUpdates = []
+      snapshot.forEach(doc => {
+        firestoreUpdates.push({ id: doc.id, ...doc.data() })
+      })
+
+      // Merge: Firestore updates override static updates by slug
+      const firestoreSlugs = new Set(firestoreUpdates.map(u => u.slug))
+      const mergedUpdates = [
+        ...firestoreUpdates,
+        ...staticUpdates.filter(u => !firestoreSlugs.has(u.slug))
+      ].sort((a, b) => new Date(b.date) - new Date(a.date))
+
+      setUpdates(mergedUpdates)
+      setLoading(false)
+    }, (error) => {
+      console.error('Error fetching updates:', error)
+      // Fall back to static data on error
+      setUpdates(staticUpdates)
+      setLoading(false)
+    })
+
+    return () => unsubscribe()
+  }, [])
+
+  const featuredUpdates = updates.filter(u => u.featured)
   const timelineUpdates = updates.filter(u => !u.featured)
   const deadlineUpdate = updates.find(u => u.countdown)
 

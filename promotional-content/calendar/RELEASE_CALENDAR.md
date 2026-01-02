@@ -31,7 +31,7 @@
 - Email open rates >30%, click-through >8%
 - Social engagement up 25% YoY
 - Session pitch quality (diverse topics, experienced presenters)
-- Early bird conversion rate >40%
+- Registration conversion rate >40%
 
 ---
 
@@ -45,11 +45,11 @@
 ### February: Program Reveal
 **Core message:** "From experiment to ecosystem: Your 2026 roadmap"
 **Primary CTA:** Review schedule, plan your experience
-**Secondary CTA:** Early bird registration opens
+**Secondary CTA:** Registration opens
 
-### March: Early Bird Push
+### March: Registration Launch
 **Core message:** "Secure your spot at the 10th anniversary summit"
-**Primary CTA:** Register at early bird rate
+**Primary CTA:** Register now (limited to 150 attendees)
 **Secondary CTA:** Book travel to Chapel Hill
 
 ### April: Speakers + Stories
@@ -235,7 +235,7 @@
 - **Mailchimp email:** "Your CJS2026 schedule is here"
   - Full schedule overview
   - Highlighted sessions
-  - Early bird registration opens March 1
+  - Registration opens March 1
   - Link to interactive schedule
 - **Medium post:** "CJS2026 program: From experiment to ecosystem in action"
   - Schedule walkthrough
@@ -267,11 +267,11 @@
 
 **Wednesday, February 25**
 - **Social:**
-  - Twitter/X: "Early bird registration opens in 4 days"
+  - Twitter/X: "Registration opens in 4 days"
   - Instagram: Chapel Hill travel tips
 
 **Friday, February 27**
-- **Mailchimp email:** "Early bird registration opens Monday"
+- **Mailchimp email:** "Registration opens Monday"
   - Pricing preview
   - Schedule reminder
   - INN Days co-location benefits
@@ -281,16 +281,16 @@
 
 ### MARCH 2026
 
-#### Week 1: Mar 2-8 (Early Bird Launch)
-
-**Sunday, March 1** (EARLY BIRD OPENS)
-- **Social (all platforms):**
-  - "Early bird registration is OPEN"
-  - Pricing, deadline (March 31), link
-  - Instagram Stories: Registration walkthrough
+#### Week 1: Mar 2-8 (Registration Push)
 
 **Monday, March 2**
-- **Mailchimp email:** "Secure your early bird rate for CJS2026"
+- **Social (all platforms):**
+  - "Have you registered for CJS2026 yet?"
+  - Pricing, limited capacity (150 attendees), link
+  - Instagram Stories: Registration reminder
+
+**Monday, March 2**
+- **Mailchimp email:** "Spring registration push: CJS2026 spots filling up"
   - Registration CTA
   - Schedule highlights
   - Hotel block information
@@ -329,7 +329,7 @@
 - **Mailchimp email:** "Meet your CJS2026 speakers (Part 1)"
   - 5-6 speaker profiles
   - Session highlights
-  - Early bird reminder (18 days left)
+  - Registration reminder (spots filling up)
 
 #### Week 3: Mar 16-22
 
@@ -346,54 +346,36 @@
 **Friday, March 20**
 - **Social:**
   - Instagram Stories: Chapel Hill photo tour
-  - Twitter/X: "10 days until early bird ends"
+  - Twitter/X: "Have you registered yet? Limited to 150 attendees"
 
 #### Week 4: Mar 23-29
 
 **Monday, March 23**
-- **Mailchimp email:** "One week left: Early bird ends March 31"
-  - Urgency messaging
+- **Mailchimp email:** "Spring registration update: CJS2026 is filling up"
+  - Capacity update messaging
   - Schedule reminder
   - Testimonials from past attendees
   - Hotel block deadline reminder
 
 **Wednesday, March 25**
 - **Social (all platforms):**
-  - "6 days until early bird rate ends"
-  - Instagram: Countdown graphics
+  - Attendee milestone ("X spots remaining")
+  - Instagram: Speaker spotlight
 
 **Friday, March 27**
 - **Social:**
-  - Twitter/X: "Last weekend for early bird"
+  - Twitter/X: "Spring planning: Have you registered for CJS2026?"
   - LinkedIn: ROI of attending CJS
-
-#### Week 5: Mar 30-31
-
-**Sunday, March 29**
-- **Social:**
-  - Instagram Stories: "48 hours until early bird ends"
-  - Twitter/X: Registration reminder
-
-**Monday, March 30**
-- **Social (all platforms):**
-  - "Last 24 hours for early bird pricing"
-  - Final push across all channels
-
-**Tuesday, March 31** (EARLY BIRD DEADLINE)
-- **Social:**
-  - Morning: "Today is the last day for early bird"
-  - Evening: "Final hours" reminder
-  - Late: "Thank you early birds" + transition to standard rate
 
 ---
 
 ### APRIL 2026
 
-#### Week 1: Apr 1-5 (Post-Early Bird)
+#### Week 1: Apr 1-5 (Spring Push)
 
 **Wednesday, April 1**
-- **Mailchimp email:** "Registration still open: Join us in Chapel Hill"
-  - Standard rate announcement
+- **Mailchimp email:** "Registration update: Join us in Chapel Hill"
+  - Capacity update
   - Schedule highlights
   - Speaker spotlights
   - "Why attend" messaging for fence-sitters
@@ -762,7 +744,7 @@
 
 ### Coordination Tactics
 
-**Announcement Days (Schedule, Early Bird, etc.):**
+**Announcement Days (Schedule, Registration, etc.):**
 1. Email goes out first (morning)
 2. Medium post published (midday)
 3. Social posts staggered throughout day:
@@ -834,7 +816,7 @@
 - Leverage speaker/attendee networks
 
 **If registration lags:**
-- Add urgency (early bird deadline, limited spots)
+- Add urgency (limited spots, capacity updates)
 - Testimonials from past attendees
 - Clearer value proposition
 - Payment plan options
@@ -888,4 +870,4 @@
 
 **Document version:** 1.0
 **Last updated:** January 2, 2026
-**Next review:** March 1, 2026 (post-early bird assessment)
+**Next review:** March 1, 2026 (registration progress assessment)
