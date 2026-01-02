@@ -716,9 +716,9 @@ function DashboardTab({ currentUser, isInk, settings }) {
       </div>
 
       {/* Registration funnel */}
-      <div className="admin-surface p-6">
-        <h3 className="font-admin-heading text-lg font-semibold text-[var(--admin-text)] mb-6">Registration funnel</h3>
-        <div className="grid grid-cols-3 gap-6">
+      <div className="admin-surface p-4 sm:p-6">
+        <h3 className="font-admin-heading text-lg font-semibold text-[var(--admin-text)] mb-4 sm:mb-6">Registration funnel</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
           <div className="text-center">
             <div className="w-16 h-16 mx-auto rounded-2xl admin-glass flex items-center justify-center mb-3" style={{ borderColor: 'rgba(245, 158, 11, 0.3)' }}>
               <Clock className="w-8 h-8 text-admin-amber" />
@@ -763,7 +763,7 @@ function DashboardTab({ currentUser, isInk, settings }) {
                 <Clock className="w-5 h-5 text-admin-teal" />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div className="p-4 rounded-xl admin-glass">
                 <p className="font-admin-heading text-xl font-semibold text-[var(--admin-text)]">{stats.signups.last7d}</p>
                 <p className="font-admin-mono text-xs text-[var(--admin-text-muted)]">Last 7 days</p>
@@ -1235,7 +1235,7 @@ function BroadcastTab({ currentUser, isInk }) {
           </div>
 
           {/* Link fields */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
               <label className="block font-admin-body text-sm font-medium text-[var(--admin-text)] mb-2">
                 Link text <span className="text-[var(--admin-text-muted)]">(optional)</span>
@@ -1433,7 +1433,7 @@ function BroadcastTab({ currentUser, isInk }) {
                 </div>
 
                 {/* Link fields */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div>
                     <label className="block font-admin-body text-sm font-medium text-[var(--admin-text)] mb-2">
                       Link text <span className="text-[var(--admin-text-muted)]">(optional)</span>
@@ -1608,7 +1608,7 @@ function SessionsTab({ currentUser, isInk }) {
   return (
     <div className="space-y-6">
       {/* Summary cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <div className="admin-card p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-admin-teal/10 flex items-center justify-center">
@@ -2068,9 +2068,9 @@ function AttendeesTab({ currentUser, isInk }) {
       )}
 
       {/* Filters */}
-      <div className="admin-surface p-4">
-        <div className="flex flex-wrap gap-4">
-          <div className="flex-1 min-w-[250px]">
+      <div className="admin-surface p-3 sm:p-4">
+        <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4">
+          <div className="flex-1 min-w-0 sm:min-w-[200px]">
             <div className="relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--admin-text-muted)]" />
               <input
@@ -2082,26 +2082,28 @@ function AttendeesTab({ currentUser, isInk }) {
               />
             </div>
           </div>
-          <select
-            value={filterBadge}
-            onChange={(e) => setFilterBadge(e.target.value)}
-            className="admin-input"
-          >
-            <option value="">All badges</option>
-            {ALL_BADGES.map(badge => (
-              <option key={badge.id} value={badge.id}>{badge.emoji} {badge.label}</option>
-            ))}
-          </select>
-          <select
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
-            className="admin-input"
-          >
-            <option value="">All statuses</option>
-            <option value="pending">Pending</option>
-            <option value="registered">Registered</option>
-            <option value="confirmed">Confirmed</option>
-          </select>
+          <div className="flex gap-2 sm:gap-4">
+            <select
+              value={filterBadge}
+              onChange={(e) => setFilterBadge(e.target.value)}
+              className="admin-input flex-1 sm:flex-none text-sm"
+            >
+              <option value="">All badges</option>
+              {ALL_BADGES.map(badge => (
+                <option key={badge.id} value={badge.id}>{badge.emoji} {badge.label}</option>
+              ))}
+            </select>
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              className="admin-input flex-1 sm:flex-none text-sm"
+            >
+              <option value="">All statuses</option>
+              <option value="pending">Pending</option>
+              <option value="registered">Registered</option>
+              <option value="confirmed">Confirmed</option>
+            </select>
+          </div>
         </div>
         {(searchTerm || filterBadge || filterStatus) && (
           <div className="mt-3 flex items-center gap-3 font-admin-body text-sm">
@@ -2136,7 +2138,7 @@ function AttendeesTab({ currentUser, isInk }) {
                   </span>
                 </th>
                 <th
-                  className="cursor-pointer hover:text-[var(--admin-text)]"
+                  className="hidden md:table-cell cursor-pointer hover:text-[var(--admin-text)]"
                   onClick={() => toggleSort('organization')}
                 >
                   <span className="inline-flex items-center gap-2">
@@ -2146,7 +2148,7 @@ function AttendeesTab({ currentUser, isInk }) {
                     )}
                   </span>
                 </th>
-                <th>Badges</th>
+                <th className="hidden lg:table-cell">Badges</th>
                 <th
                   className="cursor-pointer hover:text-[var(--admin-text)]"
                   onClick={() => toggleSort('registrationStatus')}
@@ -2158,7 +2160,7 @@ function AttendeesTab({ currentUser, isInk }) {
                     )}
                   </span>
                 </th>
-                <th>Eventbrite</th>
+                <th className="hidden lg:table-cell">Eventbrite</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -2198,14 +2200,14 @@ function AttendeesTab({ currentUser, isInk }) {
                         </div>
                       </div>
                     </td>
-                    <td>
+                    <td className="hidden md:table-cell">
                       <p className="font-admin-body text-[var(--admin-text)]">{attendee.organization || '—'}</p>
                       {/* Show job title (check both new jobTitle and old role field, excluding system roles) */}
                       {(attendee.jobTitle || (attendee.role && !['admin', 'super_admin'].includes(attendee.role))) && (
                         <p className="font-admin-mono text-xs text-[var(--admin-text-muted)]">{attendee.jobTitle || attendee.role}</p>
                       )}
                     </td>
-                    <td>
+                    <td className="hidden lg:table-cell">
                       <div className="flex flex-wrap gap-1">
                         {(attendee.badges || []).slice(0, 3).map(badgeId => {
                           const badge = getBadgeInfo(badgeId)
@@ -2235,7 +2237,7 @@ function AttendeesTab({ currentUser, isInk }) {
                         {attendee.registrationStatus || 'pending'}
                       </span>
                     </td>
-                    <td>
+                    <td className="hidden lg:table-cell">
                       {attendee.eventbriteAttendeeId ? (
                         <span className="font-admin-mono text-xs text-[var(--admin-text-secondary)]" title={`Order: ${attendee.eventbriteOrderId || 'N/A'}`}>
                           {attendee.eventbriteAttendeeId.slice(-8)}
@@ -2245,15 +2247,15 @@ function AttendeesTab({ currentUser, isInk }) {
                       )}
                     </td>
                     <td>
-                      <div className="flex gap-2">
+                      <div className="flex gap-1 sm:gap-2">
                         {attendee.email && (
                           <a
                             href={`mailto:${attendee.email}`}
                             onClick={(e) => e.stopPropagation()}
-                            className="p-2 rounded-lg admin-glass text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)] transition-colors"
+                            className="p-2.5 sm:p-2 rounded-lg admin-glass text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)] transition-colors touch-manipulation"
                             title="Send email"
                           >
-                            <Mail className="w-4 h-4" />
+                            <Mail className="w-5 h-5 sm:w-4 sm:h-4" />
                           </a>
                         )}
                         {attendee.linkedin && (
@@ -2262,25 +2264,25 @@ function AttendeesTab({ currentUser, isInk }) {
                             target="_blank"
                             rel="noopener noreferrer"
                             onClick={(e) => e.stopPropagation()}
-                            className="p-2 rounded-lg admin-glass text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)] transition-colors"
+                            className="hidden sm:block p-2.5 sm:p-2 rounded-lg admin-glass text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)] transition-colors touch-manipulation"
                             title="View LinkedIn"
                           >
-                            <Linkedin className="w-4 h-4" />
+                            <Linkedin className="w-5 h-5 sm:w-4 sm:h-4" />
                           </a>
                         )}
                         <button
                           onClick={(e) => { e.stopPropagation(); openEditModal(attendee); }}
-                          className="p-2 rounded-lg admin-glass text-[var(--admin-text-secondary)] hover:text-admin-teal transition-colors"
+                          className="p-2.5 sm:p-2 rounded-lg admin-glass text-[var(--admin-text-secondary)] hover:text-admin-teal transition-colors touch-manipulation"
                           title="Edit user"
                         >
-                          <Pencil className="w-4 h-4" />
+                          <Pencil className="w-5 h-5 sm:w-4 sm:h-4" />
                         </button>
                         <button
                           onClick={(e) => { e.stopPropagation(); openDeleteModal(attendee); }}
-                          className="p-2 rounded-lg admin-glass text-[var(--admin-text-secondary)] hover:text-admin-rose transition-colors"
+                          className="p-2.5 sm:p-2 rounded-lg admin-glass text-[var(--admin-text-secondary)] hover:text-admin-rose transition-colors touch-manipulation"
                           title="Delete user"
                         >
-                          <Trash2 className="w-4 h-4" />
+                          <Trash2 className="w-5 h-5 sm:w-4 sm:h-4" />
                         </button>
                       </div>
                     </td>
@@ -2294,8 +2296,8 @@ function AttendeesTab({ currentUser, isInk }) {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                       >
-                        <td colSpan={5} className="p-6 bg-[var(--admin-elevated)]">
-                          <div className="grid md:grid-cols-2 gap-8">
+                        <td colSpan={6} className="p-4 sm:p-6 bg-[var(--admin-elevated)]">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
                             <div>
                               <h4 className="font-admin-body text-sm font-semibold text-[var(--admin-text)] mb-4">Contact & social</h4>
                               <div className="space-y-3">
@@ -2385,20 +2387,20 @@ function AttendeesTab({ currentUser, isInk }) {
               onClick={closeEditModal}
             />
             <motion.div
-              className="relative w-full max-w-lg admin-surface p-6 rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto"
+              className="relative w-full max-w-sm sm:max-w-lg admin-surface p-4 sm:p-6 rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto mx-4"
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
             >
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="font-admin-heading text-xl font-semibold text-[var(--admin-text)]">
+              <div className="flex items-center justify-between mb-4 sm:mb-6 sticky top-0 bg-[var(--admin-surface)] py-2 -mt-2 z-10">
+                <h3 className="font-admin-heading text-lg sm:text-xl font-semibold text-[var(--admin-text)]">
                   Edit user
                 </h3>
                 <button
                   onClick={closeEditModal}
-                  className="p-2 rounded-lg admin-glass text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)]"
+                  className="p-2.5 -mr-2 rounded-lg admin-glass text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)] touch-manipulation"
                 >
-                  <X className="w-5 h-5" />
+                  <X className="w-6 h-6" />
                 </button>
               </div>
 
@@ -2491,7 +2493,7 @@ function AttendeesTab({ currentUser, isInk }) {
                 </div>
 
                 {/* Social Links */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div>
                     <label className="block font-admin-body text-sm font-medium text-[var(--admin-text-secondary)] mb-1">
                       Website
@@ -2676,18 +2678,18 @@ function ActivityTab({ currentUser, isInk }) {
             <thead>
               <tr>
                 <th>Type</th>
-                <th>User</th>
-                <th>Details</th>
+                <th className="hidden sm:table-cell">User</th>
+                <th className="hidden md:table-cell">Details</th>
                 <th>Time</th>
               </tr>
             </thead>
             <tbody>
               {logs.map((log) => (
                 <tr key={log.id}>
-                  <td className="font-admin-body">{log.type}</td>
-                  <td className="font-admin-mono text-xs">{log.userId?.slice(0, 8)}...</td>
-                  <td className="font-admin-mono text-xs max-w-xs truncate">{JSON.stringify(log.details)}</td>
-                  <td className="font-admin-mono text-xs">{new Date(log.createdAt).toLocaleString()}</td>
+                  <td className="font-admin-body text-sm">{log.type}</td>
+                  <td className="hidden sm:table-cell font-admin-mono text-xs">{log.userId?.slice(0, 8)}...</td>
+                  <td className="hidden md:table-cell font-admin-mono text-xs max-w-xs truncate">{JSON.stringify(log.details)}</td>
+                  <td className="font-admin-mono text-xs">{new Date(log.createdAt).toLocaleDateString()}</td>
                 </tr>
               ))}
             </tbody>
@@ -2857,14 +2859,14 @@ function JobsTab({ currentUser, isInk }) {
             <tr>
               <th>Job type</th>
               <th>Status</th>
-              <th>Details</th>
+              <th className="hidden md:table-cell">Details</th>
               <th>Time</th>
             </tr>
           </thead>
           <tbody>
             {jobs.map((job) => (
               <tr key={job.id}>
-                <td className="font-admin-body">{job.jobType}</td>
+                <td className="font-admin-body text-sm">{job.jobType}</td>
                 <td>
                   <span className={`admin-badge ${
                     job.status === 'completed' ? 'admin-badge-success'
@@ -2874,8 +2876,8 @@ function JobsTab({ currentUser, isInk }) {
                     {job.status}
                   </span>
                 </td>
-                <td className="font-admin-mono text-xs max-w-xs truncate">{JSON.stringify(job.details)}</td>
-                <td className="font-admin-mono text-xs">{new Date(job.createdAt).toLocaleString()}</td>
+                <td className="hidden md:table-cell font-admin-mono text-xs max-w-xs truncate">{JSON.stringify(job.details)}</td>
+                <td className="font-admin-mono text-xs">{new Date(job.createdAt).toLocaleDateString()}</td>
               </tr>
             ))}
           </tbody>
@@ -3080,20 +3082,20 @@ function AuditTab({ currentUser, isInk }) {
             <thead>
               <tr>
                 <th>Action</th>
-                <th>Admin</th>
-                <th>Target</th>
-                <th>Details</th>
+                <th className="hidden sm:table-cell">Admin</th>
+                <th className="hidden md:table-cell">Target</th>
+                <th className="hidden lg:table-cell">Details</th>
                 <th>Time</th>
               </tr>
             </thead>
             <tbody>
               {logs.map((log) => (
                 <tr key={log.id}>
-                  <td className="font-admin-body">{log.action}</td>
-                  <td className="font-admin-mono text-xs">{log.adminUid?.slice(0, 8)}...</td>
-                  <td className="font-admin-mono text-xs">{log.targetUid?.slice(0, 8) || '—'}...</td>
-                  <td className="font-admin-mono text-xs max-w-xs truncate">{JSON.stringify(log.details)}</td>
-                  <td className="font-admin-mono text-xs">{new Date(log.createdAt).toLocaleString()}</td>
+                  <td className="font-admin-body text-sm">{log.action}</td>
+                  <td className="hidden sm:table-cell font-admin-mono text-xs">{log.adminUid?.slice(0, 8)}...</td>
+                  <td className="hidden md:table-cell font-admin-mono text-xs">{log.targetUid?.slice(0, 8) || '—'}...</td>
+                  <td className="hidden lg:table-cell font-admin-mono text-xs max-w-xs truncate">{JSON.stringify(log.details)}</td>
+                  <td className="font-admin-mono text-xs">{new Date(log.createdAt).toLocaleDateString()}</td>
                 </tr>
               ))}
             </tbody>
@@ -3329,41 +3331,44 @@ function UpdatesTab({ currentUser, isInk }) {
   }
 
   return (
-    <div className="space-y-8 max-w-6xl">
+    <div className="space-y-6 md:space-y-8 max-w-6xl">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl admin-glass-teal flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl admin-glass-teal flex items-center justify-center flex-shrink-0">
             <FileText className="w-5 h-5 text-admin-teal" />
           </div>
           <div>
             <h3 className="font-admin-heading text-lg font-semibold text-[var(--admin-text)]">Updates & News</h3>
             <p className="font-admin-body text-sm text-[var(--admin-text-secondary)]">
-              Manage content for the /updates page • {updates.length} total
+              {updates.length} total updates
             </p>
           </div>
         </div>
         <button
           onClick={() => { resetForm(); setShowForm(true); }}
-          className="admin-button-primary"
+          className="admin-button-primary w-full sm:w-auto justify-center"
         >
           <span className="mr-2">+</span> New Update
         </button>
       </div>
 
-      {/* Form (Create/Edit) */}
+      {/* Form (Create/Edit) - Mobile optimized */}
       {showForm && (
-        <div className="admin-surface p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h4 className="font-admin-heading text-lg font-semibold text-[var(--admin-text)]">
+        <div className="admin-surface p-4 sm:p-6 max-h-[80vh] overflow-y-auto">
+          <div className="flex items-center justify-between mb-4 sm:mb-6 sticky top-0 bg-[var(--admin-surface)] py-2 -mt-2 z-10">
+            <h4 className="font-admin-heading text-base sm:text-lg font-semibold text-[var(--admin-text)]">
               {editingUpdate ? 'Edit Update' : 'Create New Update'}
             </h4>
-            <button onClick={resetForm} className="text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)]">
-              <X className="w-5 h-5" />
+            <button
+              onClick={resetForm}
+              className="p-2 -mr-2 text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)] touch-manipulation"
+            >
+              <X className="w-6 h-6" />
             </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 mb-4">
             {/* Title */}
             <div className="md:col-span-2">
               <label className="block text-sm font-admin-body text-[var(--admin-text-secondary)] mb-1">Title *</label>
@@ -3569,7 +3574,7 @@ function UpdatesTab({ currentUser, isInk }) {
 
       {/* Updates List */}
       {updates.length === 0 ? (
-        <div className="admin-surface p-12 text-center">
+        <div className="admin-surface p-8 sm:p-12 text-center">
           <FileText className="w-12 h-12 text-[var(--admin-text-secondary)] mx-auto mb-4 opacity-50" />
           <p className="text-[var(--admin-text-secondary)] font-admin-body">No updates yet</p>
           <p className="text-sm text-[var(--admin-text-secondary)] mt-2">
@@ -3577,94 +3582,184 @@ function UpdatesTab({ currentUser, isInk }) {
           </p>
         </div>
       ) : (
-        <div className="admin-surface overflow-hidden">
-          <table className="admin-table">
-            <thead>
-              <tr>
-                <th>Title</th>
-                <th>Type</th>
-                <th>Category</th>
-                <th>Date</th>
-                <th>Status</th>
-                <th className="text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {updates.map((update) => (
-                <tr key={update.id} className={!update.visible ? 'opacity-50' : ''}>
-                  <td>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <p className="font-admin-body font-medium text-[var(--admin-text)]">{update.title}</p>
-                        {update.isStatic && (
-                          <span className="admin-badge text-xs bg-purple-500/20 text-purple-400 border-purple-500/30">
-                            Static
-                          </span>
+        <>
+          {/* Mobile Card Layout */}
+          <div className="md:hidden space-y-3">
+            {updates.map((update) => (
+              <div
+                key={update.id}
+                className={`admin-surface p-4 ${!update.visible ? 'opacity-50' : ''}`}
+              >
+                {/* Header row with title and badges */}
+                <div className="flex items-start justify-between gap-3 mb-2">
+                  <div className="flex-1 min-w-0">
+                    <p className="font-admin-body font-medium text-[var(--admin-text)] leading-tight">
+                      {update.title}
+                    </p>
+                    <p className="text-xs font-admin-mono text-[var(--admin-text-secondary)] mt-1 truncate">
+                      /updates/{update.slug}
+                    </p>
+                  </div>
+                  <div className="flex flex-col items-end gap-1">
+                    {update.isStatic && (
+                      <span className="admin-badge text-xs bg-purple-500/20 text-purple-400 border-purple-500/30">
+                        Static
+                      </span>
+                    )}
+                    <span className={`admin-badge text-xs ${update.visible ? 'admin-badge-success' : 'admin-badge-error'}`}>
+                      {update.visible ? 'Visible' : 'Hidden'}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Meta row */}
+                <div className="flex flex-wrap items-center gap-2 mb-3 text-sm">
+                  <span className={`admin-badge ${getTypeStyle(update.type)}`}>
+                    {update.type}
+                  </span>
+                  <span className="text-[var(--admin-text-secondary)]">•</span>
+                  <span className="font-admin-body text-[var(--admin-text-secondary)]">{update.category}</span>
+                  <span className="text-[var(--admin-text-secondary)]">•</span>
+                  <span className="font-admin-mono text-[var(--admin-text-secondary)]">{update.date}</span>
+                  {update.featured && (
+                    <>
+                      <span className="text-[var(--admin-text-secondary)]">•</span>
+                      <span className="admin-badge admin-badge-warning">Featured</span>
+                    </>
+                  )}
+                </div>
+
+                {/* Actions row - larger touch targets */}
+                <div className="flex items-center gap-2 pt-2 border-t border-[var(--admin-border)]">
+                  <a
+                    href={`/updates/${update.slug}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 flex items-center justify-center gap-2 p-3 rounded-lg bg-[var(--admin-bg-hover)] text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)] touch-manipulation"
+                  >
+                    <ExternalLink className="w-5 h-5" />
+                    <span className="text-sm">View</span>
+                  </a>
+                  <button
+                    onClick={() => startEdit(update)}
+                    className="flex-1 flex items-center justify-center gap-2 p-3 rounded-lg bg-[var(--admin-bg-hover)] text-[var(--admin-text-secondary)] hover:text-admin-teal touch-manipulation"
+                  >
+                    <Pencil className="w-5 h-5" />
+                    <span className="text-sm">{update.isStatic ? 'Clone' : 'Edit'}</span>
+                  </button>
+                  {!update.isStatic && (
+                    <>
+                      <button
+                        onClick={() => toggleVisible(update)}
+                        className="p-3 rounded-lg bg-[var(--admin-bg-hover)] text-[var(--admin-text-secondary)] hover:text-admin-amber touch-manipulation"
+                        title={update.visible ? 'Hide' : 'Show'}
+                      >
+                        {update.visible ? <XCircle className="w-5 h-5" /> : <CheckCircle2 className="w-5 h-5" />}
+                      </button>
+                      <button
+                        onClick={() => deleteUpdate(update.id)}
+                        className="p-3 rounded-lg bg-[var(--admin-bg-hover)] text-[var(--admin-text-secondary)] hover:text-admin-rose touch-manipulation"
+                        title="Delete"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop Table Layout */}
+          <div className="hidden md:block admin-surface overflow-hidden">
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Type</th>
+                  <th className="hidden lg:table-cell">Category</th>
+                  <th className="hidden lg:table-cell">Date</th>
+                  <th>Status</th>
+                  <th className="text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {updates.map((update) => (
+                  <tr key={update.id} className={!update.visible ? 'opacity-50' : ''}>
+                    <td>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <p className="font-admin-body font-medium text-[var(--admin-text)]">{update.title}</p>
+                          {update.isStatic && (
+                            <span className="admin-badge text-xs bg-purple-500/20 text-purple-400 border-purple-500/30">
+                              Static
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs font-admin-mono text-[var(--admin-text-secondary)]">/updates/{update.slug}</p>
+                      </div>
+                    </td>
+                    <td>
+                      <span className={`admin-badge ${getTypeStyle(update.type)}`}>
+                        {update.type}
+                      </span>
+                    </td>
+                    <td className="hidden lg:table-cell font-admin-body text-sm">{update.category}</td>
+                    <td className="hidden lg:table-cell font-admin-mono text-sm">{update.date}</td>
+                    <td>
+                      <div className="flex gap-2">
+                        {update.featured && (
+                          <span className="admin-badge admin-badge-warning">Featured</span>
+                        )}
+                        <span className={`admin-badge ${update.visible ? 'admin-badge-success' : 'admin-badge-error'}`}>
+                          {update.visible ? 'Visible' : 'Hidden'}
+                        </span>
+                      </div>
+                    </td>
+                    <td>
+                      <div className="flex justify-end gap-1">
+                        <a
+                          href={`/updates/${update.slug}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-2.5 rounded-lg hover:bg-[var(--admin-bg-hover)] text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)]"
+                          title="View"
+                        >
+                          <ExternalLink className="w-4 h-4" />
+                        </a>
+                        <button
+                          onClick={() => startEdit(update)}
+                          className="p-2.5 rounded-lg hover:bg-[var(--admin-bg-hover)] text-[var(--admin-text-secondary)] hover:text-admin-teal"
+                          title={update.isStatic ? 'Clone to Firestore for editing' : 'Edit'}
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </button>
+                        {!update.isStatic && (
+                          <>
+                            <button
+                              onClick={() => toggleVisible(update)}
+                              className="p-2.5 rounded-lg hover:bg-[var(--admin-bg-hover)] text-[var(--admin-text-secondary)] hover:text-admin-amber"
+                              title={update.visible ? 'Hide' : 'Show'}
+                            >
+                              {update.visible ? <XCircle className="w-4 h-4" /> : <CheckCircle2 className="w-4 h-4" />}
+                            </button>
+                            <button
+                              onClick={() => deleteUpdate(update.id)}
+                              className="p-2.5 rounded-lg hover:bg-[var(--admin-bg-hover)] text-[var(--admin-text-secondary)] hover:text-admin-rose"
+                              title="Delete"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </>
                         )}
                       </div>
-                      <p className="text-xs font-admin-mono text-[var(--admin-text-secondary)]">/updates/{update.slug}</p>
-                    </div>
-                  </td>
-                  <td>
-                    <span className={`admin-badge ${getTypeStyle(update.type)}`}>
-                      {update.type}
-                    </span>
-                  </td>
-                  <td className="font-admin-body text-sm">{update.category}</td>
-                  <td className="font-admin-mono text-sm">{update.date}</td>
-                  <td>
-                    <div className="flex gap-2">
-                      {update.featured && (
-                        <span className="admin-badge admin-badge-warning">Featured</span>
-                      )}
-                      <span className={`admin-badge ${update.visible ? 'admin-badge-success' : 'admin-badge-error'}`}>
-                        {update.visible ? 'Visible' : 'Hidden'}
-                      </span>
-                    </div>
-                  </td>
-                  <td>
-                    <div className="flex justify-end gap-2">
-                      <a
-                        href={`/updates/${update.slug}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="p-2 rounded-lg hover:bg-[var(--admin-bg-hover)] text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)]"
-                        title="View"
-                      >
-                        <ExternalLink className="w-4 h-4" />
-                      </a>
-                      <button
-                        onClick={() => startEdit(update)}
-                        className="p-2 rounded-lg hover:bg-[var(--admin-bg-hover)] text-[var(--admin-text-secondary)] hover:text-admin-teal"
-                        title={update.isStatic ? 'Clone to Firestore for editing' : 'Edit'}
-                      >
-                        <Pencil className="w-4 h-4" />
-                      </button>
-                      {!update.isStatic && (
-                        <>
-                          <button
-                            onClick={() => toggleVisible(update)}
-                            className="p-2 rounded-lg hover:bg-[var(--admin-bg-hover)] text-[var(--admin-text-secondary)] hover:text-admin-amber"
-                            title={update.visible ? 'Hide' : 'Show'}
-                          >
-                            {update.visible ? <XCircle className="w-4 h-4" /> : <CheckCircle2 className="w-4 h-4" />}
-                          </button>
-                          <button
-                            onClick={() => deleteUpdate(update.id)}
-                            className="p-2 rounded-lg hover:bg-[var(--admin-bg-hover)] text-[var(--admin-text-secondary)] hover:text-admin-rose"
-                            title="Delete"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
 
       {/* Info Box */}
