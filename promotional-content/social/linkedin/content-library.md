@@ -2,7 +2,7 @@
 
 **Campaign Period:** January - June 2026
 **Event Date:** June 8-9, 2026
-**Location:** UNC Friday Center, Chapel Hill, NC
+**Location:** [VENUE TBD], Pittsburgh, PA
 
 ---
 
@@ -13,7 +13,7 @@ Ten years ago, a small group of journalists gathered in Montclair, NJ with a bol
 
 That experiment became the Collaborative Journalism Summit. And in 2026, we're celebrating a decade of turning that experiment into an ecosystem.
 
-Join us June 8-9, 2026 in Chapel Hill, NC for CJS2026—our 10th anniversary summit. We've moved from asking "can we collaborate?" to "how do we scale what works?"
+Join us June 8-9, 2026 in Pittsburgh, PA for CJS2026—our 10th anniversary summit. We've moved from asking "can we collaborate?" to "how do we scale what works?"
 
 If you're building partnerships, sharing resources, or reimagining what local news can be, this is your community.
 
@@ -46,22 +46,22 @@ This is how we learn from each other. This is how the field moves forward.
 
 ---
 
-## POST 3: Why Chapel Hill / Southeast Journalism
+## POST 3: Why Pittsburgh / Southeast Journalism
 
 **Post Text:**
-There's a reason we're bringing CJS2026 to Chapel Hill.
+There's a reason we're bringing CJS2026 to Pittsburgh.
 
 The Southeast is where some of the most innovative collaborative journalism is happening right now. From the Mississippi Today network to Resolve Philly's expansion south, from rural news collaboratives to university-newsroom partnerships—this region is writing the playbook.
 
-Chapel Hill sits at the heart of it: home to UNC's Reese News Lab, Cardinal & Pine, NC Local News Lab Collaborative, and a journalism school that's training the next generation to think collaboration-first.
+Pittsburgh sits at the heart of it: home to UNC's Reese News Lab, Cardinal & Pine, NC Local News Lab Collaborative, and a journalism school that's training the next generation to think collaboration-first.
 
 The location isn't just convenient. It's strategic. It's where the work is happening.
 
-**CTA:** See why Chapel Hill: [LINK]
+**CTA:** See why Pittsburgh: [LINK]
 
-**Hashtags:** #CJS2026 #SoutheastJournalism #CollaborativeJournalism #ChapelHill
+**Hashtags:** #CJS2026 #PittsburghJournalism #CollaborativeJournalism #Pittsburgh
 
-**Image Suggestion:** Map of Southeast highlighting collaborative journalism initiatives + UNC Friday Center photo
+**Image Suggestion:** Map of Southeast highlighting collaborative journalism initiatives + [VENUE TBD] photo
 
 ---
 
@@ -70,7 +70,7 @@ The location isn't just convenient. It's strategic. It's where the work is happe
 **Post Text:**
 The question isn't whether to attend CJS2026. It's whether you'll secure your spot before we fill up.
 
-Registration just opened for our 10th anniversary summit in Chapel Hill, NC (June 8-9). Space is limited to 150 attendees.
+Registration just opened for our 10th anniversary summit in Pittsburgh, PA (June 8-9). Space is limited to 150 attendees.
 
 Here's what you're getting:
 • Two days of sessions led by practitioners, not consultants
@@ -134,7 +134,7 @@ This is the kind of practical, field-tested wisdom that makes CJS valuable. Not 
 ## POST 7: INN Days Co-Location Benefits
 
 **Post Text:**
-Smart scheduling ahead: CJS2026 (June 8-9) is immediately followed by INN Days (June 9-11) at the same venue in Chapel Hill.
+Smart scheduling ahead: CJS2026 (June 8-9) is immediately followed by INN Days (June 9-11) at the same venue in Pittsburgh.
 
 If you work in nonprofit news, this is your annual double-header.
 
@@ -193,7 +193,7 @@ At CJS2026, we're focusing on:
 
 This is about moving from "let's try this" to "this is how we operate."
 
-**CTA:** Join us in Chapel Hill: [LINK]
+**CTA:** Join us in Pittsburgh: [LINK]
 
 **Hashtags:** #CJS2026 #CollaborativeJournalism #JournalismEcosystem #NewsInnovation
 
@@ -324,7 +324,7 @@ Last year's summit sold out. We expect the same this year.
 
 If you're still thinking about it, stop thinking. Just register.
 
-June 8-9 in Chapel Hill, NC. Our 10th anniversary. Don't miss it.
+June 8-9 in Pittsburgh, PA. Our 10th anniversary. Don't miss it.
 
 **CTA:** Secure your spot: [LINK]
 
@@ -393,13 +393,13 @@ Here's what we know so far:
 • [X] sessions confirmed
 • Topics ranging from [example] to [example]
 
-The momentum is building. The community is gathering. Chapel Hill in June is happening.
+The momentum is building. The community is gathering. Pittsburgh in June is happening.
 
 Are you in?
 
 **CTA:** Register now: [LINK]
 
-**Hashtags:** #CJS2026 #CollaborativeJournalism #60DaysOut #ChapelHill
+**Hashtags:** #CJS2026 #CollaborativeJournalism #60DaysOut #Pittsburgh
 
 **Image Suggestion:** Dynamic countdown graphic with event highlights
 
@@ -482,7 +482,7 @@ We're not running a conference. We're hosting a community gathering.
 **Post Text:**
 Logistics update for CJS2026:
 
-📍 **Venue:** UNC Friday Center, Chapel Hill, NC
+📍 **Venue:** [VENUE TBD], Pittsburgh, PA
 🏨 **Hotel block:** [HOTEL NAME] – book by [DATE] for group rate
 ✈️ **Airport:** Raleigh-Durham International (RDU) – 20 min drive
 🚗 **Ground transport:** [OPTIONS]
@@ -494,7 +494,7 @@ We've kept this as simple as possible. One venue for everything. Hotel block wal
 
 **CTA:** Book your hotel: [LINK]
 
-**Hashtags:** #CJS2026 #ChapelHill #EventLogistics #TravelPlanning
+**Hashtags:** #CJS2026 #Pittsburgh #EventLogistics #TravelPlanning
 
 **Image Suggestion:** Map showing venue, hotel, airport with distances
 
@@ -569,11 +569,11 @@ Final details for CJS2026 attendees:
 
 Most important thing to bring: Openness to connect. The best part of CJS is the people you meet.
 
-See you in Chapel Hill on Sunday.
+See you in Pittsburgh on Sunday.
 
 **CTA:** Last-minute questions: [EMAIL]
 
-**Hashtags:** #CJS2026 #EventDay #ChapelHill #CollaborativeJournalism
+**Hashtags:** #CJS2026 #EventDay #Pittsburgh #CollaborativeJournalism
 
 **Image Suggestion:** Welcome graphic with key event info + "See you soon!" message
 
@@ -590,7 +590,7 @@ Thank you to:
 • Our sponsors [LOGOS/NAMES] who make this gathering possible
 • The organizing team who somehow made it all work
 
-Special shoutout to Chapel Hill for hosting our 10th anniversary.
+Special shoutout to Pittsburgh for hosting our 10th anniversary.
 
 For those who couldn't make it: session recordings and resources will be shared at [LINK]. Next year's location TBA.
 

@@ -16,7 +16,7 @@
 
 ## Preview text
 
-Keynote speakers announced. Full schedule now live. Build your personal agenda for Chapel Hill.
+Keynote speakers announced. Full schedule now live. Build your personal agenda for Pittsburgh.
 
 ---
 
@@ -76,7 +76,7 @@ We asked past CJS attendees what keeps them coming back. Here's what they told u
 
 > "It's the only conference where everyone actually wants to collaborate. You leave with ideas, partners, and energy."
 
-### Get ready for Chapel Hill
+### Get ready for Pittsburgh
 
 **What to bring:**
 - Business cards or a way to share contact information
@@ -92,7 +92,7 @@ We asked past CJS attendees what keeps them coming back. Here's what they told u
 
 ---
 
-We're 50 days out from the summit. See you in Chapel Hill.
+We're 50 days out from the summit. See you in Pittsburgh.
 
 **Stefanie Murray**
 Director, Center for Cooperative Media
@@ -116,7 +116,7 @@ Link: [REGISTRATION_LINK]
 ## Footer
 
 **2026 Collaborative Journalism Summit**
-June 8–9, 2026 | Chapel Hill, North Carolina
+June 8–9, 2026 | Pittsburgh, Pennsylvania
 Presenting sponsor: Knight Foundation
 
 Questions? Email summit@collaborativejournalism.org

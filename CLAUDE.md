@@ -10,7 +10,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project overview
 
-This is the website for the 2026 Collaborative Journalism Summit (CJS2026), the 10th anniversary edition of the annual event hosted by the Center for Cooperative Media and INN (Institute for Nonprofit News). The summit will be held in North Carolina in June 2026.
+This is the website for the 2026 Collaborative Journalism Summit (CJS2026), the 10th anniversary edition of the annual event hosted by the Center for Cooperative Media and INN (Institute for Nonprofit News). The summit will be held in Pittsburgh, Pennsylvania in June 2026.
 
 ## Architecture
 
@@ -73,6 +73,17 @@ Before completing any task that touches user-visible text or content:
 | `registration_note` | details | "Registration opens soon!" | "Tickets now available" | ✅ DONE 2025-12-15 |
 | `signup_headline` | footer | "Stay connected" | "Join us in Chapel Hill" | ✅ DONE 2025-12-15 |
 | `signup_description` | footer | "Get updates on programming, registration, and more." | "Secure your spot at the 10th anniversary summit." | ✅ DONE 2025-12-15 |
+
+**🚨 LOCATION CHANGE - Pittsburgh pivot (January 2026):**
+
+| Field | Section | Current value | Required value | Status |
+|-------|---------|---------------|----------------|--------|
+| `location` | hero | "Chapel Hill, North Carolina" | "Pittsburgh, Pennsylvania" | ⏳ PENDING |
+| `venue_location` | details | "Chapel Hill, North Carolina" | "Pittsburgh, Pennsylvania" | ⏳ PENDING |
+| `venue_name` | details | "UNC Friday Center" | *TBD - new venue name* | ⏳ PENDING |
+| `2026_location` | timeline | "Chapel Hill, NC" | "Pittsburgh, PA" | ⏳ PENDING |
+| `signup_headline` | footer | "Join us in Chapel Hill" | "Join us in Pittsburgh" | ⏳ PENDING |
+| `inn_days_description` | schedule | "INN Days runs June 9-11 at the same venue..." | *TBD - confirm if still co-located* | ⏳ PENDING |
 
 *When you complete an Airtable update, change status to ✅ DONE and add the date.*
 
@@ -210,8 +221,8 @@ The visual identity has shifted from the legacy "Red/Montserrat" tech conference
 
 ## Event details
 
-**Current status (December 2025)**:
-- Venue: UNC Friday Center (Chapel Hill, NC).
+**Current status (January 2026)**:
+- Venue: TBD (Pittsburgh, PA) - *venue change from Chapel Hill due to budget constraints*
 - Dates: June 8-9, 2026.
 - Theme: "From experiment to ecosystem" (10th Anniversary).
 

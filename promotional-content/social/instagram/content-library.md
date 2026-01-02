@@ -6,7 +6,7 @@
 - Hashtag strategy included
 - Casual but polished aesthetic
 
-**Primary Hashtags:** #CollaborativeJournalism #CJS2026 #Journalism #MediaCollaboration #NorthCarolina #ChapelHill #JournalismCommunity
+**Primary Hashtags:** #CollaborativeJournalism #CJS2026 #Journalism #MediaCollaboration #Pennsylvania #Pittsburgh #JournalismCommunity
 
 ---
 
@@ -14,7 +14,7 @@
 
 ### Post 1: Save the Date Announcement
 **Caption:**
-Mark your calendars: CJS2026 is coming to Chapel Hill, NC on June 8-9, 2026.
+Mark your calendars: CJS2026 is coming to Pittsburgh, PA on June 8-9, 2026.
 
 Our 10th anniversary summit. A decade of bringing journalists together to build partnerships, share strategies, and create the future of collaborative journalism.
 
@@ -23,11 +23,11 @@ Tagline: "Prepare to partner"
 
 Registration opens mid-January. Link in bio for updates.
 
-#CJS2026 #CollaborativeJournalism #Journalism #Chapel Hill #MediaCollaboration #JournalismSummit #10thAnniversary
+#CJS2026 #CollaborativeJournalism #Journalism #Pittsburgh #MediaCollaboration #JournalismSummit #10thAnniversary
 
 **Visual Suggestion:** Hero graphic with:
 - Event dates prominent
-- UNC Friday Center or Chapel Hill imagery
+- [VENUE TBD] or Pittsburgh imagery
 - 10th anniversary badge
 - Clean, paper-texture aesthetic (matching brand)
 
@@ -76,7 +76,7 @@ Swipe through our journey from 2017 to now:
 🏛️ 2023: Washington, D.C.
 🚗 2024: Detroit, MI
 🏔️ 2025: Denver, CO
-🌟 2026: Chapel Hill, NC (10th anniversary)
+🌟 2026: Pittsburgh, PA (10th anniversary)
 
 From experiment to ecosystem. See you in June.
 
@@ -146,20 +146,20 @@ Registration is open now. Are you ready?
 
 ### Post 6: Venue Preview
 **Caption:**
-First look at our 10th anniversary venue: The UNC Friday Center in Chapel Hill, NC.
+First look at our 10th anniversary venue: The [VENUE TBD] in Pittsburgh, PA.
 
-Walking distance to downtown Chapel Hill restaurants and shops. Beautiful campus setting. Spaces designed for collaboration and conversation.
+Walking distance to downtown Pittsburgh restaurants and shops. Beautiful campus setting. Spaces designed for collaboration and conversation.
 
 The perfect spot to bring our community together for two days of partnership building.
 
 June 8-9, 2026. Mark your calendars.
 
-#CJS2026 #ChapelHill #NorthCarolina #UNC #EventVenue #CollaborativeJournalism
+#CJS2026 #Pittsburgh #Pennsylvania #PGH #EventVenue #CollaborativeJournalism
 
 **Visual Suggestion:** Carousel (3-5 slides):
-1. Exterior of UNC Friday Center
+1. Exterior of [VENUE TBD]
 2. Interior meeting/workshop space
-3. Chapel Hill downtown or campus
+3. Pittsburgh downtown or campus
 4. Map/location visual
 5. "See you here in June" closing slide
 
@@ -194,7 +194,7 @@ Registration is open now. Space is limited to 150.
 **Caption:**
 Registration opens in ONE WEEK.
 
-CJS2026 | June 8-9 | Chapel Hill, NC
+CJS2026 | June 8-9 | Pittsburgh, PA
 
 We keep attendance small so conversations can go deep. Spots fill quickly.
 
@@ -202,7 +202,7 @@ Set a reminder. Get ready to register.
 
 Link in bio.
 
-#CJS2026 #CollaborativeJournalism #RegistrationOpening #SaveTheDate #ChapelHill
+#CJS2026 #CollaborativeJournalism #RegistrationOpening #SaveTheDate #Pittsburgh
 
 **Visual Suggestion:**
 - Bold countdown graphic
@@ -220,7 +220,7 @@ Link in bio.
 **Caption:**
 REGISTRATION IS OPEN for CJS2026.
 
-📍 Chapel Hill, North Carolina
+📍 Pittsburgh, Pennsylvania
 📅 June 8-9, 2026
 🎉 10th Anniversary Summit
 
@@ -230,7 +230,7 @@ Space is limited to 150 attendees.
 
 Register now → Link in bio
 
-#CJS2026 #RegistrationOpen #CollaborativeJournalism #JournalismSummit #ChapelHill #10thAnniversary
+#CJS2026 #RegistrationOpen #CollaborativeJournalism #JournalismSummit #Pittsburgh #10thAnniversary
 
 **Visual Suggestion:**
 - Bold "REGISTRATION OPEN" graphic
@@ -255,7 +255,7 @@ Every past attendee we've talked to says they wish they'd come sooner. This is w
 Register at collaborativejournalism.org/cjs2026
 Link in bio.
 
-#CJS2026 #RegisterNow #CollaborativeJournalism #LimitedSpots #ChapelHill
+#CJS2026 #RegisterNow #CollaborativeJournalism #LimitedSpots #Pittsburgh
 
 **Visual Suggestion:**
 - Capacity update graphic
@@ -299,7 +299,7 @@ Register: link in bio
 
 ### Post 12: Local Recommendations
 **Caption:**
-Planning your trip to Chapel Hill for CJS2026?
+Planning your trip to Pittsburgh for CJS2026?
 
 Save this post for local recommendations:
 
@@ -312,10 +312,10 @@ The summit ends around 5pm each day, so you'll have time to explore this vibrant
 
 June 8-9. See you there.
 
-#CJS2026 #ChapelHill #NorthCarolina #TravelTips #LocalGuide #UNC #CollaborativeJournalism
+#CJS2026 #Pittsburgh #Pennsylvania #TravelTips #LocalGuide #PGH #CollaborativeJournalism
 
 **Visual Suggestion:**
-- Carousel of Chapel Hill photos (restaurants, campus, downtown)
+- Carousel of Pittsburgh photos (restaurants, campus, downtown)
 - Map highlighting recommendations
 - Aesthetic, lifestyle-focused imagery
 - Save-worthy content
@@ -362,7 +362,7 @@ Speaker Spotlight: [Speaker Name]
 
 "[Quote from speaker about collaboration or the session]"
 
-Join us June 8-9 in Chapel Hill.
+Join us June 8-9 in Pittsburgh.
 Register: link in bio
 
 #CJS2026 #SpeakerSpotlight #CollaborativeJournalism #[SpeakerName] #JournalismLeaders
@@ -419,13 +419,13 @@ A few spots left.
 
 If you've been waiting to register, this is your sign.
 
-June 8-9 | Chapel Hill, NC | 10th Anniversary
+June 8-9 | Pittsburgh, PA | 10th Anniversary
 
 Don't miss it.
 
 Register now → Link in bio
 
-#CJS2026 #LastCall #CollaborativeJournalism #RegisterNow #ChapelHill #10thAnniversary
+#CJS2026 #LastCall #CollaborativeJournalism #RegisterNow #Pittsburgh #10thAnniversary
 
 **Visual Suggestion:**
 - Dynamic video or reel with countdown timer
@@ -461,7 +461,7 @@ This is a working summit. Come ready to collaborate.
 
 Swipe for full packing list →
 
-#CJS2026 #PackingList #TravelTips #CollaborativeJournalism #ChapelHill
+#CJS2026 #PackingList #TravelTips #CollaborativeJournalism #Pittsburgh
 
 **Visual Suggestion:** Carousel (3-4 slides):
 1. Cover: "What to pack for CJS2026"
@@ -491,7 +491,7 @@ Check your email for the full schedule, or visit the link in bio.
 
 See you in THREE WEEKS.
 
-#CJS2026 #Schedule #CollaborativeJournalism #JournalismSummit #ChapelHill
+#CJS2026 #Schedule #CollaborativeJournalism #JournalismSummit #Pittsburgh
 
 **Visual Suggestion:**
 - Schedule graphic showing day-by-day overview
@@ -509,10 +509,10 @@ See you in THREE WEEKS.
 [For Instagram Stories - series of countdown posts]
 
 Story 1: "2 WEEKS until CJS2026"
-Story 2: "What are you most excited about?" [Poll: Networking / Sessions / Chapel Hill]
+Story 2: "What are you most excited about?" [Poll: Networking / Sessions / Pittsburgh]
 Story 3: "Tag someone who should be there"
 Story 4: "Last chance to register" [Link sticker]
-Story 5: "See you soon, Chapel Hill" [Location tag]
+Story 5: "See you soon, Pittsburgh" [Location tag]
 
 **Visual Suggestion:**
 - Mix of countdown stickers, polls, questions
@@ -529,7 +529,7 @@ Story 5: "See you soon, Chapel Hill" [Location tag]
 
 ### Post 20: Day 1 - Morning
 **Caption:**
-Good morning, Chapel Hill.
+Good morning, Pittsburgh.
 
 CJS2026 starts TODAY.
 
@@ -540,7 +540,7 @@ If you're following along, we'll be sharing all day.
 
 Let's do this.
 
-#CJS2026 #Day1 #CollaborativeJournalism #ChapelHill #10thAnniversary #JournalismCommunity
+#CJS2026 #Day1 #CollaborativeJournalism #Pittsburgh #10thAnniversary #JournalismCommunity
 
 **Visual Suggestion:**
 - Morning photo from venue
@@ -580,7 +580,7 @@ Today we go deeper. More workshops. More connections. More partnerships.
 
 See you in the sessions.
 
-#CJS2026 #Day2 #CollaborativeJournalism #ChapelHill #JournalismCommunity
+#CJS2026 #Day2 #CollaborativeJournalism #Pittsburgh #JournalismCommunity
 
 **Visual Suggestion:**
 - Recap graphic from Day 1
@@ -607,9 +607,9 @@ The ecosystem continues to grow.
 
 See you next year.
 
-📸 Swipe for highlights from two incredible days in Chapel Hill →
+📸 Swipe for highlights from two incredible days in Pittsburgh →
 
-#CJS2026 #ThatsAWrap #CollaborativeJournalism #10thAnniversary #ChapelHill #JournalismCommunity #ThankYou
+#CJS2026 #ThatsAWrap #CollaborativeJournalism #10thAnniversary #Pittsburgh #JournalismCommunity #ThankYou
 
 **Visual Suggestion:** Carousel (8-10 slides):
 - Opening/closing moments
@@ -637,7 +637,7 @@ See you next year.
 
 From experiment to ecosystem. That's the CJS journey.
 
-Join us for the 10th anniversary: June 8-9 in Chapel Hill.
+Join us for the 10th anniversary: June 8-9 in Pittsburgh.
 Link in bio.
 
 #ThrowbackThursday #CJS2026 #CollaborativeJournalism #JournalismHistory
@@ -712,7 +712,7 @@ Register: link in bio
 ### Reels Strategy
 - Create 3-5 Reels throughout campaign:
   1. "What is CJS2026?" explainer (January)
-  2. Venue tour of Chapel Hill (March)
+  2. Venue tour of Pittsburgh (March)
   3. Speaker highlight montage (April)
   4. "Pack with me for CJS2026" (May)
   5. Event recap (June)
@@ -726,8 +726,8 @@ Register: link in bio
 **Secondary (rotate based on content):**
 - #MediaCollaboration
 - #JournalismCommunity
-- #ChapelHill
-- #NorthCarolina
+- #Pittsburgh
+- #Pennsylvania
 - #JournalismSummit
 - #MediaInnovation
 - #10thAnniversary
@@ -755,7 +755,7 @@ Register: link in bio
 - Respond to all comments within 24 hours
 - Like and comment on tagged posts
 - Repost user-generated content to Stories
-- Use location tags for Chapel Hill content
+- Use location tags for Pittsburgh content
 - Tag speakers and partners when relevant
 - Save registration/important posts to Highlights
 
@@ -773,5 +773,5 @@ Create these permanent Story Highlights:
 2. **2026 Info** - Event details, venue, dates
 3. **Speakers** - Speaker announcements and spotlights
 4. **Register** - Registration info and deadlines
-5. **Travel** - Chapel Hill guide, venue info
+5. **Travel** - Pittsburgh guide, venue info
 6. **Past Events** - Throwback content from previous summits

@@ -7,7 +7,7 @@
 
 The best sessions at the Collaborative Journalism Summit don't come from a program committee sitting in a conference room. They come from practitioners in newsrooms who have figured something out, tried something new, failed at something instructive, or asked a question that needs collective problem-solving.
 
-For CJS2026 in Chapel Hill this June, we're opening our session pitch process. We want to hear from you.
+For CJS2026 in Pittsburgh this June, we're opening our session pitch process. We want to hear from you.
 
 ## What We're Looking For
 
@@ -112,10 +112,10 @@ Your collaboration — even if it's small, even if it had challenges, even if it
 
 We've spent ten years building a community of collaborative journalists. Now we're inviting you to help shape what the next decade looks like.
 
-Pitch a session. Share what you know. Help us make CJS2026 in Chapel Hill a summit that moves this work forward.
+Pitch a session. Share what you know. Help us make CJS2026 in Pittsburgh a summit that moves this work forward.
 
-**CJS2026: June 8-9, 2026 | UNC Friday Center, Chapel Hill, NC | Prepare to partner**
+**CJS2026: June 8-9, 2026 | Pittsburgh, PA | Prepare to partner**
 
 ---
 
-**Tags:** CJS2026, call for proposals, collaborative journalism, journalism conference, session pitches, Chapel Hill, journalism innovation, Center for Cooperative Media
+**Tags:** CJS2026, call for proposals, collaborative journalism, journalism conference, session pitches, Pittsburgh, journalism innovation, Center for Cooperative Media

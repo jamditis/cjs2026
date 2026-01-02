@@ -54,7 +54,7 @@ This is our 10th anniversary summit. We want the program to reflect where collab
 **Notification:** Late February
 **Summit dates:** June 8–9, 2026
 
-Remote presenters are welcome. If you can't travel to Chapel Hill but have something valuable to share, pitch it anyway — we'll figure out the format together.
+Remote presenters are welcome. If you can't travel to Pittsburgh but have something valuable to share, pitch it anyway — we'll figure out the format together.
 
 **Submit your pitch:** [PITCH_FORM_LINK]
 
@@ -84,7 +84,7 @@ Link: [PAST_SESSIONS_LINK or summit.collaborativejournalism.org]
 ## Footer
 
 **2026 Collaborative Journalism Summit**
-June 8–9, 2026 | Chapel Hill, North Carolina
+June 8–9, 2026 | Pittsburgh, Pennsylvania
 Session pitches due January 31
 
 Questions? Email summit@collaborativejournalism.org

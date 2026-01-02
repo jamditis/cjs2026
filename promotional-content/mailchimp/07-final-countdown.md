@@ -9,20 +9,20 @@
 ## Subject line options
 
 1. One week until CJS2026
-2. Final details before we meet in Chapel Hill
+2. Final details before we meet in Pittsburgh
 3. See you in one week at CJS2026
 
 ---
 
 ## Preview text
 
-Last-minute logistics, networking tips, and what to expect at the 10th anniversary summit. Seven days until Chapel Hill.
+Last-minute logistics, networking tips, and what to expect at the 10th anniversary summit. Seven days until Pittsburgh.
 
 ---
 
 ## Email body
 
-One week from today, we'll gather in Chapel Hill for the 10th annual Collaborative Journalism Summit.
+One week from today, we'll gather in Pittsburgh for the 10th annual Collaborative Journalism Summit.
 
 Nearly 1,500 people have attended CJS over the past decade. This year, [NUMBER] of you are joining us to celebrate how far collaborative journalism has come — and where it's headed next.
 
@@ -36,7 +36,7 @@ Pick up your badge, program guide, and summit materials at the registration desk
 **Opening session:** 9:00 AM sharp
 We'll start with welcome remarks and our opening keynote. Please plan to be in your seats by 8:55 AM.
 
-**Parking:** Free parking is available at the UNC Friday Center. Follow signs for "CJS Summit Parking" when you arrive.
+**Parking:** Free parking is available at the venue. Follow signs for "CJS Summit Parking" when you arrive.
 
 **Monday evening celebration:** 6:00 PM
 Join us for dinner, drinks, and a toast to ten years of collaborative journalism. This is included in your registration — just show your badge.
@@ -95,7 +95,7 @@ If you haven't built your personal schedule yet, here are a few sessions worth c
 
 ### Last-minute travel tips
 
-**Weather:** June in Chapel Hill is typically warm and humid (highs around 85°F/29°C). Dress comfortably and bring layers for air-conditioned session rooms.
+**Weather:** June in Pittsburgh is typically warm (highs around 80°F/27°C). Dress comfortably and bring layers for air-conditioned session rooms.
 
 **Arriving Sunday?** We're organizing an informal Sunday evening gathering for early arrivals. Details will be shared on Slack and at check-in.
 
@@ -129,8 +129,8 @@ Link: [SLACK_LINK]
 ## Footer
 
 **2026 Collaborative Journalism Summit**
-June 8–9, 2026 | Chapel Hill, North Carolina
-UNC Friday Center | 100 Friday Center Drive
+June 8–9, 2026 | Pittsburgh, Pennsylvania
+[VENUE_NAME] | [VENUE_ADDRESS]
 
 Last-minute questions? Email summit@collaborativejournalism.org
 

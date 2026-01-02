@@ -9,7 +9,7 @@
 ## Subject line options
 
 1. First look at the CJS2026 program
-2. Here's what we're building together in Chapel Hill
+2. Here's what we're building together in Pittsburgh
 3. CJS2026 programming: From experiment to ecosystem
 
 ---
@@ -65,7 +65,7 @@ This year we're expecting 130–150 attendees including:
 
 **Registration opens in March.** Space is limited to 150 attendees.
 
-The full schedule will be published in April. In the meantime, you can start planning your trip to Chapel Hill.
+The full schedule will be published in April. In the meantime, you can start planning your trip to Pittsburgh.
 
 **Get updates:** [MAILING_LIST_LINK or summit.collaborativejournalism.org]
 
@@ -73,7 +73,7 @@ The full schedule will be published in April. In the meantime, you can start pla
 
 Ten years ago, collaborative journalism was still proving itself. Today, it's becoming standard practice. This summit celebrates that transformation — and the community that made it happen.
 
-See you in Chapel Hill.
+See you in Pittsburgh.
 
 **Stefanie Murray**
 Director, Center for Cooperative Media
@@ -97,7 +97,7 @@ Link: [ARCHIVE_LINK]
 ## Footer
 
 **2026 Collaborative Journalism Summit**
-June 8–9, 2026 | Chapel Hill, North Carolina
+June 8–9, 2026 | Pittsburgh, Pennsylvania
 Co-located with INN Days (June 9–11)
 Presenting sponsor: Knight Foundation
 
