@@ -1394,34 +1394,53 @@ function BroadcastTab({ currentUser, isInk }) {
       <AnimatePresence>
         {editingAnnouncement && (
           <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={cancelEdit}
           >
+            {/* Backdrop */}
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+
+            {/* Modal */}
             <motion.div
-              className="w-full max-w-lg admin-surface p-6 rounded-2xl shadow-2xl"
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
+              className="relative w-full max-w-lg admin-surface rounded-2xl shadow-2xl flex flex-col max-h-[90vh]"
+              initial={{ scale: 0.95, opacity: 0, y: 8 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 8 }}
+              transition={{ type: "spring", duration: 0.3, bounce: 0.1 }}
               onClick={e => e.stopPropagation()}
             >
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-xl admin-glass-teal flex items-center justify-center">
-                  <Pencil className="w-5 h-5 text-admin-teal" />
+              {/* Header */}
+              <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--admin-border)]">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl admin-glass-teal flex items-center justify-center">
+                    <Pencil className="w-5 h-5 text-admin-teal" />
+                  </div>
+                  <div>
+                    <h3 className="font-admin-heading text-lg font-semibold text-[var(--admin-text)]">
+                      Edit announcement
+                    </h3>
+                    <p className="font-admin-body text-sm text-[var(--admin-text-muted)]">
+                      Update the message, type, or link
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-admin-heading text-lg font-semibold text-[var(--admin-text)]">Edit announcement</h3>
-                  <p className="font-admin-body text-sm text-[var(--admin-text-secondary)]">
-                    Update the message, type, or link
-                  </p>
-                </div>
+                <button
+                  onClick={cancelEdit}
+                  className="p-2 rounded-lg text-[var(--admin-text-muted)] hover:text-[var(--admin-text)] hover:bg-[var(--admin-elevated)] transition-colors"
+                  aria-label="Close modal"
+                >
+                  <X className="w-5 h-5" />
+                </button>
               </div>
 
-              <div className="space-y-4">
+              {/* Body - Scrollable */}
+              <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
+                {/* Message */}
                 <div>
-                  <label className="block font-admin-body text-sm font-medium text-[var(--admin-text)] mb-2">
+                  <label className="block font-admin-body text-sm font-medium text-[var(--admin-text-secondary)] mb-1.5">
                     Message
                   </label>
                   <textarea
@@ -1429,47 +1448,74 @@ function BroadcastTab({ currentUser, isInk }) {
                     onChange={(e) => setEditMessage(e.target.value)}
                     rows={2}
                     className="admin-input w-full resize-none"
+                    placeholder="Enter your announcement message..."
                   />
                 </div>
 
                 {/* Link fields */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block font-admin-body text-sm font-medium text-[var(--admin-text)] mb-2">
-                      Link text <span className="text-[var(--admin-text-muted)]">(optional)</span>
+                    <label className="block font-admin-body text-sm font-medium text-[var(--admin-text-secondary)] mb-1.5">
+                      Link text <span className="text-[var(--admin-text-muted)] font-normal">(optional)</span>
                     </label>
                     <input
                       type="text"
                       value={editLinkText}
                       onChange={(e) => setEditLinkText(e.target.value)}
                       placeholder="bit.ly/cjs2026"
-                      className="admin-input w-full"
+                      className="admin-input w-full h-11"
                     />
                   </div>
                   <div>
-                    <label className="block font-admin-body text-sm font-medium text-[var(--admin-text)] mb-2">
-                      Link URL <span className="text-[var(--admin-text-muted)]">(optional)</span>
+                    <label className="block font-admin-body text-sm font-medium text-[var(--admin-text-secondary)] mb-1.5">
+                      Link URL <span className="text-[var(--admin-text-muted)] font-normal">(optional)</span>
                     </label>
                     <input
                       type="url"
                       value={editLinkUrl}
                       onChange={(e) => setEditLinkUrl(e.target.value)}
                       placeholder="https://bit.ly/cjs2026"
-                      className="admin-input w-full"
+                      className="admin-input w-full h-11"
                     />
+                  </div>
+                </div>
+
+                {/* Type selector */}
+                <div>
+                  <label className="block font-admin-body text-sm font-medium text-[var(--admin-text-secondary)] mb-2">
+                    Type
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {typeOptions.map(opt => {
+                      const Icon = opt.icon
+                      return (
+                        <button
+                          key={opt.value}
+                          onClick={() => setEditType(opt.value)}
+                          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border transition-all ${
+                            editType === opt.value
+                              ? 'border-admin-teal bg-admin-teal/10 text-admin-teal shadow-sm'
+                              : 'border-[var(--admin-border)] text-[var(--admin-text-secondary)] hover:border-[var(--admin-text-muted)] hover:bg-[var(--admin-elevated)]'
+                          }`}
+                        >
+                          <Icon className="w-4 h-4" />
+                          <span className="font-admin-body text-sm font-medium">{opt.label}</span>
+                        </button>
+                      )
+                    })}
                   </div>
                 </div>
 
                 {/* Preview */}
                 {editMessage.trim() && (
                   <div>
-                    <label className="block font-admin-body text-sm font-medium text-[var(--admin-text)] mb-2">
+                    <label className="block font-admin-body text-sm font-medium text-[var(--admin-text-secondary)] mb-2">
                       Preview
                     </label>
                     <div className={`p-4 rounded-xl ${
-                      editType === 'warning' ? 'bg-amber-500/10 border-2 border-amber-500/30' :
-                      editType === 'urgent' ? 'bg-brand-cardinal/10 border-2 border-brand-cardinal/30' :
-                      'bg-brand-teal/10 border-2 border-brand-teal/30'
+                      editType === 'warning' ? 'bg-amber-500/10 border border-amber-500/30' :
+                      editType === 'urgent' ? 'bg-brand-cardinal/10 border border-brand-cardinal/30' :
+                      'bg-brand-teal/10 border border-brand-teal/30'
                     }`}>
                       <div
                         className={`font-body font-medium text-sm announcement-content ${
@@ -1482,48 +1528,24 @@ function BroadcastTab({ currentUser, isInk }) {
                     </div>
                   </div>
                 )}
+              </div>
 
-                <div>
-                  <label className="block font-admin-body text-sm font-medium text-[var(--admin-text)] mb-2">
-                    Type
-                  </label>
-                  <div className="flex gap-3">
-                    {typeOptions.map(opt => {
-                      const Icon = opt.icon
-                      return (
-                        <button
-                          key={opt.value}
-                          onClick={() => setEditType(opt.value)}
-                          className={`flex items-center gap-2 px-4 py-2 rounded-xl border transition-colors ${
-                            editType === opt.value
-                              ? 'border-admin-teal bg-admin-teal/10 text-admin-teal'
-                              : 'border-[var(--admin-border)] text-[var(--admin-text-secondary)] hover:border-[var(--admin-text-secondary)]'
-                          }`}
-                        >
-                          <Icon className="w-4 h-4" />
-                          <span className="font-admin-body text-sm">{opt.label}</span>
-                        </button>
-                      )
-                    })}
-                  </div>
-                </div>
-
-                <div className="flex gap-3 pt-2">
-                  <button
-                    onClick={cancelEdit}
-                    className="flex-1 px-4 py-2.5 rounded-xl border border-[var(--admin-border)] text-[var(--admin-text-secondary)] hover:bg-[var(--admin-elevated)] transition-colors font-admin-body"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={saveEdit}
-                    disabled={saving || !editMessage.trim()}
-                    className="flex-1 admin-btn-primary flex items-center justify-center gap-2"
-                  >
-                    {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                    Save changes
-                  </button>
-                </div>
+              {/* Footer */}
+              <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[var(--admin-border)] bg-[var(--admin-elevated)]/30">
+                <button
+                  onClick={cancelEdit}
+                  className="px-4 py-2.5 rounded-xl font-admin-body text-sm font-medium text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)] hover:bg-[var(--admin-elevated)] border border-transparent hover:border-[var(--admin-border)] transition-all"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={saveEdit}
+                  disabled={saving || !editMessage.trim()}
+                  className="admin-btn-primary flex items-center gap-2 min-w-[120px] justify-center disabled:opacity-50"
+                >
+                  {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                  Save changes
+                </button>
               </div>
             </motion.div>
           </motion.div>
@@ -2377,186 +2399,206 @@ function AttendeesTab({ currentUser, isInk }) {
       <AnimatePresence>
         {editingUser && (
           <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
+            {/* Backdrop */}
             <div
               className="absolute inset-0 bg-black/60 backdrop-blur-sm"
               onClick={closeEditModal}
             />
+
+            {/* Modal */}
             <motion.div
-              className="relative w-full max-w-sm sm:max-w-lg admin-surface p-4 sm:p-6 rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto mx-4"
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
+              className="relative w-full max-w-lg admin-surface rounded-2xl shadow-2xl flex flex-col max-h-[90vh]"
+              initial={{ scale: 0.95, opacity: 0, y: 8 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 8 }}
+              transition={{ type: "spring", duration: 0.3, bounce: 0.1 }}
             >
-              <div className="flex items-center justify-between mb-4 sm:mb-6 sticky top-0 bg-[var(--admin-surface)] py-2 -mt-2 z-10">
-                <h3 className="font-admin-heading text-lg sm:text-xl font-semibold text-[var(--admin-text)]">
-                  Edit user
-                </h3>
+              {/* Header */}
+              <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--admin-border)]">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl admin-glass-teal flex items-center justify-center">
+                    <Pencil className="w-5 h-5 text-admin-teal" />
+                  </div>
+                  <div>
+                    <h3 className="font-admin-heading text-lg font-semibold text-[var(--admin-text)]">
+                      Edit user
+                    </h3>
+                    <p className="font-admin-body text-sm text-[var(--admin-text-muted)]">
+                      Update profile information
+                    </p>
+                  </div>
+                </div>
                 <button
                   onClick={closeEditModal}
-                  className="p-2.5 -mr-2 rounded-lg admin-glass text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)] touch-manipulation"
+                  className="p-2 rounded-lg text-[var(--admin-text-muted)] hover:text-[var(--admin-text)] hover:bg-[var(--admin-elevated)] transition-colors"
+                  aria-label="Close modal"
                 >
-                  <X className="w-6 h-6" />
+                  <X className="w-5 h-5" />
                 </button>
               </div>
 
-              <div className="space-y-4">
-                {/* Name */}
-                <div>
-                  <label className="block font-admin-body text-sm font-medium text-[var(--admin-text-secondary)] mb-1">
-                    Name
-                  </label>
-                  <input
-                    type="text"
-                    value={editFormData.displayName}
-                    onChange={(e) => setEditFormData(prev => ({ ...prev, displayName: e.target.value }))}
-                    className="admin-input w-full"
-                  />
-                </div>
-
-                {/* Email (read-only) */}
-                <div>
-                  <label className="block font-admin-body text-sm font-medium text-[var(--admin-text-secondary)] mb-1">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    value={editFormData.email}
-                    disabled
-                    className="admin-input w-full opacity-60 cursor-not-allowed"
-                  />
-                </div>
-
-                {/* Organization */}
-                <div>
-                  <label className="block font-admin-body text-sm font-medium text-[var(--admin-text-secondary)] mb-1">
-                    Organization
-                  </label>
-                  <input
-                    type="text"
-                    value={editFormData.organization}
-                    onChange={(e) => setEditFormData(prev => ({ ...prev, organization: e.target.value }))}
-                    className="admin-input w-full"
-                  />
-                </div>
-
-                {/* Job Title */}
-                <div>
-                  <label className="block font-admin-body text-sm font-medium text-[var(--admin-text-secondary)] mb-1">
-                    Job title
-                  </label>
-                  <input
-                    type="text"
-                    value={editFormData.jobTitle}
-                    onChange={(e) => setEditFormData(prev => ({ ...prev, jobTitle: e.target.value }))}
-                    className="admin-input w-full"
-                  />
-                </div>
-
-                {/* Registration Status */}
-                <div>
-                  <label className="block font-admin-body text-sm font-medium text-[var(--admin-text-secondary)] mb-1">
-                    Registration status
-                  </label>
-                  <select
-                    value={editFormData.registrationStatus}
-                    onChange={(e) => setEditFormData(prev => ({ ...prev, registrationStatus: e.target.value }))}
-                    className="admin-input w-full"
-                  >
-                    <option value="pending">Pending</option>
-                    <option value="registered">Registered</option>
-                    <option value="confirmed">Confirmed</option>
-                  </select>
-                </div>
-
-                {/* System Role */}
-                <div>
-                  <label className="block font-admin-body text-sm font-medium text-[var(--admin-text-secondary)] mb-1">
-                    System role
-                  </label>
-                  <select
-                    value={editFormData.role}
-                    onChange={(e) => setEditFormData(prev => ({ ...prev, role: e.target.value }))}
-                    className="admin-input w-full"
-                  >
-                    <option value="">None (regular user)</option>
-                    <option value="admin">Admin</option>
-                    <option value="super_admin">Super Admin</option>
-                  </select>
-                  <p className="font-admin-body text-xs text-[var(--admin-text-muted)] mt-1">
-                    Admins can access the admin panel and manage users
-                  </p>
-                </div>
-
-                {/* Social Links */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+              {/* Body - Scrollable */}
+              <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
+                {/* Name & Email row */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block font-admin-body text-sm font-medium text-[var(--admin-text-secondary)] mb-1">
-                      Website
+                    <label className="block font-admin-body text-sm font-medium text-[var(--admin-text-secondary)] mb-1.5">
+                      Name
                     </label>
                     <input
                       type="text"
-                      value={editFormData.website}
-                      onChange={(e) => setEditFormData(prev => ({ ...prev, website: e.target.value }))}
-                      className="admin-input w-full"
-                      placeholder="example.com"
+                      value={editFormData.displayName}
+                      onChange={(e) => setEditFormData(prev => ({ ...prev, displayName: e.target.value }))}
+                      className="admin-input w-full h-11"
                     />
                   </div>
                   <div>
-                    <label className="block font-admin-body text-sm font-medium text-[var(--admin-text-secondary)] mb-1">
-                      Instagram
+                    <label className="block font-admin-body text-sm font-medium text-[var(--admin-text-secondary)] mb-1.5">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      value={editFormData.email}
+                      disabled
+                      className="admin-input w-full h-11 opacity-50 cursor-not-allowed"
+                    />
+                  </div>
+                </div>
+
+                {/* Organization & Job Title row */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block font-admin-body text-sm font-medium text-[var(--admin-text-secondary)] mb-1.5">
+                      Organization
                     </label>
                     <input
                       type="text"
-                      value={editFormData.instagram}
-                      onChange={(e) => setEditFormData(prev => ({ ...prev, instagram: e.target.value }))}
-                      className="admin-input w-full"
-                      placeholder="username"
+                      value={editFormData.organization}
+                      onChange={(e) => setEditFormData(prev => ({ ...prev, organization: e.target.value }))}
+                      className="admin-input w-full h-11"
                     />
                   </div>
                   <div>
-                    <label className="block font-admin-body text-sm font-medium text-[var(--admin-text-secondary)] mb-1">
-                      LinkedIn
+                    <label className="block font-admin-body text-sm font-medium text-[var(--admin-text-secondary)] mb-1.5">
+                      Job title
                     </label>
                     <input
                       type="text"
-                      value={editFormData.linkedin}
-                      onChange={(e) => setEditFormData(prev => ({ ...prev, linkedin: e.target.value }))}
-                      className="admin-input w-full"
-                      placeholder="username"
+                      value={editFormData.jobTitle}
+                      onChange={(e) => setEditFormData(prev => ({ ...prev, jobTitle: e.target.value }))}
+                      className="admin-input w-full h-11"
                     />
                   </div>
+                </div>
+
+                {/* Status & Role row */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block font-admin-body text-sm font-medium text-[var(--admin-text-secondary)] mb-1">
-                      Bluesky
+                    <label className="block font-admin-body text-sm font-medium text-[var(--admin-text-secondary)] mb-1.5">
+                      Registration status
                     </label>
-                    <input
-                      type="text"
-                      value={editFormData.bluesky}
-                      onChange={(e) => setEditFormData(prev => ({ ...prev, bluesky: e.target.value }))}
-                      className="admin-input w-full"
-                      placeholder="handle.bsky.social"
-                    />
+                    <select
+                      value={editFormData.registrationStatus}
+                      onChange={(e) => setEditFormData(prev => ({ ...prev, registrationStatus: e.target.value }))}
+                      className="admin-input w-full h-11"
+                    >
+                      <option value="pending">Pending</option>
+                      <option value="registered">Registered</option>
+                      <option value="confirmed">Confirmed</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block font-admin-body text-sm font-medium text-[var(--admin-text-secondary)] mb-1.5">
+                      System role
+                    </label>
+                    <select
+                      value={editFormData.role}
+                      onChange={(e) => setEditFormData(prev => ({ ...prev, role: e.target.value }))}
+                      className="admin-input w-full h-11"
+                    >
+                      <option value="">None (regular user)</option>
+                      <option value="admin">Admin</option>
+                      <option value="super_admin">Super Admin</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Social Links section */}
+                <div className="pt-2">
+                  <h4 className="font-admin-body text-sm font-medium text-[var(--admin-text)] mb-3 flex items-center gap-2">
+                    <Globe className="w-4 h-4 text-[var(--admin-text-muted)]" />
+                    Social links
+                  </h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block font-admin-body text-xs font-medium text-[var(--admin-text-muted)] mb-1.5">
+                        Website
+                      </label>
+                      <input
+                        type="text"
+                        value={editFormData.website}
+                        onChange={(e) => setEditFormData(prev => ({ ...prev, website: e.target.value }))}
+                        className="admin-input w-full h-10 text-sm"
+                        placeholder="example.com"
+                      />
+                    </div>
+                    <div>
+                      <label className="block font-admin-body text-xs font-medium text-[var(--admin-text-muted)] mb-1.5">
+                        Instagram
+                      </label>
+                      <input
+                        type="text"
+                        value={editFormData.instagram}
+                        onChange={(e) => setEditFormData(prev => ({ ...prev, instagram: e.target.value }))}
+                        className="admin-input w-full h-10 text-sm"
+                        placeholder="username"
+                      />
+                    </div>
+                    <div>
+                      <label className="block font-admin-body text-xs font-medium text-[var(--admin-text-muted)] mb-1.5">
+                        LinkedIn
+                      </label>
+                      <input
+                        type="text"
+                        value={editFormData.linkedin}
+                        onChange={(e) => setEditFormData(prev => ({ ...prev, linkedin: e.target.value }))}
+                        className="admin-input w-full h-10 text-sm"
+                        placeholder="username"
+                      />
+                    </div>
+                    <div>
+                      <label className="block font-admin-body text-xs font-medium text-[var(--admin-text-muted)] mb-1.5">
+                        Bluesky
+                      </label>
+                      <input
+                        type="text"
+                        value={editFormData.bluesky}
+                        onChange={(e) => setEditFormData(prev => ({ ...prev, bluesky: e.target.value }))}
+                        className="admin-input w-full h-10 text-sm"
+                        placeholder="handle.bsky.social"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Actions */}
-              <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-[var(--admin-border)]">
+              {/* Footer */}
+              <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[var(--admin-border)] bg-[var(--admin-elevated)]/30">
                 <button
                   onClick={closeEditModal}
-                  className="admin-btn-secondary"
+                  className="px-4 py-2.5 rounded-xl font-admin-body text-sm font-medium text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)] hover:bg-[var(--admin-elevated)] border border-transparent hover:border-[var(--admin-border)] transition-all"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleEditSave}
                   disabled={saving}
-                  className="admin-btn-primary flex items-center gap-2"
+                  className="admin-btn-primary flex items-center gap-2 min-w-[120px] justify-center"
                 >
                   {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                   Save changes
@@ -2571,50 +2613,70 @@ function AttendeesTab({ currentUser, isInk }) {
       <AnimatePresence>
         {deletingUser && (
           <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
+            {/* Backdrop */}
             <div
               className="absolute inset-0 bg-black/60 backdrop-blur-sm"
               onClick={closeDeleteModal}
             />
+
+            {/* Modal */}
             <motion.div
-              className="relative w-full max-w-md admin-surface p-6 rounded-2xl shadow-2xl"
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
+              className="relative w-full max-w-sm admin-surface rounded-2xl shadow-2xl overflow-hidden"
+              initial={{ scale: 0.95, opacity: 0, y: 8 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 8 }}
+              transition={{ type: "spring", duration: 0.3, bounce: 0.1 }}
             >
-              <div className="text-center">
-                <div className="w-16 h-16 rounded-full bg-admin-rose/10 flex items-center justify-center mx-auto mb-4">
-                  <AlertTriangle className="w-8 h-8 text-admin-rose" />
+              {/* Header with close button */}
+              <div className="flex items-center justify-end px-4 pt-4">
+                <button
+                  onClick={closeDeleteModal}
+                  className="p-2 rounded-lg text-[var(--admin-text-muted)] hover:text-[var(--admin-text)] hover:bg-[var(--admin-elevated)] transition-colors"
+                  aria-label="Close modal"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Body */}
+              <div className="px-6 pb-6 text-center">
+                <div className="w-14 h-14 rounded-full bg-admin-rose/10 flex items-center justify-center mx-auto mb-4">
+                  <AlertTriangle className="w-7 h-7 text-admin-rose" />
                 </div>
                 <h3 className="font-admin-heading text-xl font-semibold text-[var(--admin-text)] mb-2">
                   Delete user?
                 </h3>
-                <p className="font-admin-body text-[var(--admin-text-secondary)] mb-2">
-                  Are you sure you want to delete <strong>{deletingUser.displayName || deletingUser.email}</strong>?
+                <p className="font-admin-body text-[var(--admin-text-secondary)] mb-1">
+                  Are you sure you want to delete
                 </p>
-                <p className="font-admin-body text-sm text-admin-rose mb-6">
-                  This action cannot be undone. All user data will be permanently removed.
+                <p className="font-admin-body font-semibold text-[var(--admin-text)] mb-3">
+                  {deletingUser.displayName || deletingUser.email}
+                </p>
+                <p className="font-admin-body text-sm text-admin-rose/80 bg-admin-rose/5 rounded-lg px-4 py-2">
+                  This action cannot be undone.
                 </p>
               </div>
 
-              <div className="flex gap-3">
+              {/* Footer */}
+              <div className="flex items-center gap-3 px-6 py-4 border-t border-[var(--admin-border)] bg-[var(--admin-elevated)]/30">
                 <button
                   onClick={closeDeleteModal}
-                  className="admin-btn-secondary flex-1"
+                  className="flex-1 px-4 py-2.5 rounded-xl font-admin-body text-sm font-medium text-[var(--admin-text)] bg-[var(--admin-surface)] border border-[var(--admin-border)] hover:bg-[var(--admin-elevated)] hover:border-[var(--admin-text-muted)] transition-all"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleDelete}
                   disabled={deleting}
-                  className="flex-1 px-4 py-2.5 rounded-xl font-admin-body font-medium bg-admin-rose text-white hover:bg-admin-rose/90 transition-colors flex items-center justify-center gap-2"
+                  className="flex-1 px-4 py-2.5 rounded-xl font-admin-body text-sm font-medium bg-admin-rose text-white hover:bg-admin-rose/90 disabled:opacity-50 transition-all flex items-center justify-center gap-2"
                 >
                   {deleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
-                  Delete user
+                  Delete
                 </button>
               </div>
             </motion.div>

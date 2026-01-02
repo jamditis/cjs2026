@@ -584,11 +584,16 @@ html {
 .admin-input {
   background-color: var(--admin-surface);
   border: 1px solid var(--admin-border);
-  border-radius: 8px;
+  border-radius: 0.75rem;
   color: var(--admin-text);
   font-family: 'Outfit', sans-serif;
-  padding: 0.75rem 1rem;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  font-size: 0.875rem;
+  padding: 0.625rem 0.875rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.admin-input:hover:not(:disabled):not(:focus) {
+  border-color: var(--admin-text-muted);
 }
 
 .admin-input:focus {
@@ -597,8 +602,20 @@ html {
   box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
 }
 
+.admin-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: var(--admin-elevated);
+}
+
 .admin-input::placeholder {
   color: var(--admin-text-muted);
+}
+
+/* Admin select styling */
+.admin-input option {
+  background-color: var(--admin-surface);
+  color: var(--admin-text);
 }
 
 /* Admin button styles */
@@ -606,37 +623,60 @@ html {
   background-color: var(--admin-teal);
   color: white;
   font-family: 'Outfit', sans-serif;
+  font-size: 0.875rem;
   font-weight: 500;
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.75rem;
   border: none;
   cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.1s ease;
+  transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
 }
 
-.admin-btn-primary:hover {
+.admin-btn-primary:hover:not(:disabled) {
   background-color: var(--admin-teal-light);
+  box-shadow: 0 2px 8px rgba(13, 148, 136, 0.25);
 }
 
-.admin-btn-primary:active {
+.admin-btn-primary:active:not(:disabled) {
   transform: scale(0.98);
+}
+
+.admin-btn-primary:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.4);
+}
+
+.admin-btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .admin-btn-secondary {
   background-color: transparent;
   color: var(--admin-text);
   font-family: 'Outfit', sans-serif;
+  font-size: 0.875rem;
   font-weight: 500;
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.75rem;
   border: 1px solid var(--admin-border);
   cursor: pointer;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.admin-btn-secondary:hover {
+.admin-btn-secondary:hover:not(:disabled) {
   background-color: var(--admin-elevated);
   border-color: var(--admin-teal);
+}
+
+.admin-btn-secondary:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.2);
+}
+
+.admin-btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* Admin status badges */
