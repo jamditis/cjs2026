@@ -72,14 +72,12 @@ const NAV_ITEMS = [
 
 // Default settings
 const DEFAULT_SETTINGS = {
-  attendeeGoal: 500,
-  earlyBirdDate: '2026-03-15',
+  attendeeGoal: 150,
   speakerDeadline: '2026-04-01',
   schedulePublishDate: '2026-04-15',
   summitStartDate: '2026-06-08',
   summitEndDate: '2026-06-09',
-  ticketPrice: 299,
-  earlyBirdDiscount: 50
+  ticketPrice: 299
 }
 
 // Badge definitions
@@ -603,7 +601,6 @@ function DashboardTab({ currentUser, isInk, settings }) {
 
   // Build milestones from settings
   const milestones = [
-    { id: 'early-bird', label: 'Early bird closes', date: settings.earlyBirdDate, icon: Clock },
     { id: 'speaker-deadline', label: 'Speaker confirmations', date: settings.speakerDeadline, icon: Users },
     { id: 'schedule-publish', label: 'Schedule published', date: settings.schedulePublishDate, icon: Calendar },
     { id: 'summit-start', label: 'Summit begins', date: settings.summitStartDate, icon: Target }
@@ -934,17 +931,6 @@ function SettingsTab({ settings, updateSettings, loading, isInk, toggleTheme }) 
               className="admin-input w-full"
             />
           </div>
-          <div>
-            <label className="block font-admin-body text-sm font-medium text-[var(--admin-text)] mb-2">
-              Early bird discount ($)
-            </label>
-            <input
-              type="number"
-              value={localSettings.earlyBirdDiscount}
-              onChange={(e) => handleChange('earlyBirdDiscount', parseInt(e.target.value) || 0)}
-              className="admin-input w-full"
-            />
-          </div>
         </div>
       </div>
 
@@ -961,17 +947,6 @@ function SettingsTab({ settings, updateSettings, loading, isInk, toggleTheme }) 
         </div>
 
         <div className="grid sm:grid-cols-2 gap-6">
-          <div>
-            <label className="block font-admin-body text-sm font-medium text-[var(--admin-text)] mb-2">
-              Early bird deadline
-            </label>
-            <input
-              type="date"
-              value={localSettings.earlyBirdDate}
-              onChange={(e) => handleChange('earlyBirdDate', e.target.value)}
-              className="admin-input w-full"
-            />
-          </div>
           <div>
             <label className="block font-admin-body text-sm font-medium text-[var(--admin-text)] mb-2">
               Speaker confirmation deadline
