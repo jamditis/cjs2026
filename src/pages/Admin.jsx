@@ -3415,224 +3415,278 @@ function UpdatesTab({ currentUser, isInk }) {
         </button>
       </div>
 
-      {/* Form (Create/Edit) - Mobile optimized */}
-      {showForm && (
-        <div className="admin-surface p-4 sm:p-6 max-h-[80vh] overflow-y-auto">
-          <div className="flex items-center justify-between mb-4 sm:mb-6 sticky top-0 bg-[var(--admin-surface)] py-2 -mt-2 z-10">
-            <h4 className="font-admin-heading text-base sm:text-lg font-semibold text-[var(--admin-text)]">
-              {editingUpdate ? 'Edit Update' : 'Create New Update'}
-            </h4>
-            <button
+      {/* Form Modal (Create/Edit) */}
+      <AnimatePresence>
+        {showForm && (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            {/* Backdrop */}
+            <div
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
               onClick={resetForm}
-              className="p-2 -mr-2 text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)] touch-manipulation"
+            />
+
+            {/* Modal */}
+            <motion.div
+              className="relative w-full max-w-2xl admin-surface rounded-2xl shadow-2xl flex flex-col max-h-[90vh]"
+              initial={{ scale: 0.95, opacity: 0, y: 8 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 8 }}
+              transition={{ type: "spring", duration: 0.3, bounce: 0.1 }}
+              onClick={e => e.stopPropagation()}
             >
-              <X className="w-6 h-6" />
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 mb-4">
-            {/* Title */}
-            <div className="md:col-span-2">
-              <label className="block text-sm font-admin-body text-[var(--admin-text-secondary)] mb-1">Title *</label>
-              <input
-                type="text"
-                value={formData.title}
-                onChange={(e) => {
-                  setFormData(prev => ({
-                    ...prev,
-                    title: e.target.value,
-                    slug: editingUpdate ? prev.slug : generateSlug(e.target.value)
-                  }))
-                }}
-                className="admin-input"
-                placeholder="Update title"
-              />
-            </div>
-
-            {/* Slug */}
-            <div>
-              <label className="block text-sm font-admin-body text-[var(--admin-text-secondary)] mb-1">
-                Slug * <span className="text-xs">(URL: /updates/{formData.slug || '...'})</span>
-              </label>
-              <input
-                type="text"
-                value={formData.slug}
-                onChange={(e) => setFormData(prev => ({ ...prev, slug: e.target.value }))}
-                className="admin-input font-mono text-sm"
-                placeholder="url-friendly-slug"
-              />
-            </div>
-
-            {/* Date */}
-            <div>
-              <label className="block text-sm font-admin-body text-[var(--admin-text-secondary)] mb-1">Date</label>
-              <input
-                type="date"
-                value={formData.date}
-                onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))}
-                className="admin-input"
-              />
-            </div>
-
-            {/* Type */}
-            <div>
-              <label className="block text-sm font-admin-body text-[var(--admin-text-secondary)] mb-1">Type</label>
-              <select
-                value={formData.type}
-                onChange={(e) => setFormData(prev => ({ ...prev, type: e.target.value }))}
-                className="admin-input"
-              >
-                {typeOptions.map(opt => (
-                  <option key={opt.value} value={opt.value}>{opt.label}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Category */}
-            <div>
-              <label className="block text-sm font-admin-body text-[var(--admin-text-secondary)] mb-1">Category</label>
-              <select
-                value={formData.category}
-                onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
-                className="admin-input"
-              >
-                {categoryOptions.map(cat => (
-                  <option key={cat} value={cat}>{cat}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Color */}
-            <div>
-              <label className="block text-sm font-admin-body text-[var(--admin-text-secondary)] mb-1">Color</label>
-              <select
-                value={formData.color}
-                onChange={(e) => setFormData(prev => ({ ...prev, color: e.target.value }))}
-                className="admin-input"
-              >
-                {colorOptions.map(opt => (
-                  <option key={opt.value} value={opt.value}>{opt.label}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Summary */}
-            <div className="md:col-span-2">
-              <label className="block text-sm font-admin-body text-[var(--admin-text-secondary)] mb-1">Summary</label>
-              <textarea
-                value={formData.summary}
-                onChange={(e) => setFormData(prev => ({ ...prev, summary: e.target.value }))}
-                className="admin-input"
-                rows={2}
-                placeholder="Brief summary for list views"
-              />
-            </div>
-
-            {/* Content */}
-            <div className="md:col-span-2">
-              <label className="block text-sm font-admin-body text-[var(--admin-text-secondary)] mb-1">
-                Content <span className="text-xs">(Markdown supported)</span>
-              </label>
-              <textarea
-                value={formData.content}
-                onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
-                className="admin-input font-mono text-sm"
-                rows={8}
-                placeholder="Full content with **markdown** support..."
-              />
-            </div>
-
-            {/* CTA Section */}
-            <div className="md:col-span-2 p-4 rounded-lg admin-glass">
-              <label className="block text-sm font-admin-body text-[var(--admin-text-secondary)] mb-3">Call to Action (optional)</label>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <input
-                  type="text"
-                  value={formData.ctaText}
-                  onChange={(e) => setFormData(prev => ({ ...prev, ctaText: e.target.value }))}
-                  className="admin-input"
-                  placeholder="Button text"
-                />
-                <input
-                  type="text"
-                  value={formData.ctaUrl}
-                  onChange={(e) => setFormData(prev => ({ ...prev, ctaUrl: e.target.value }))}
-                  className="admin-input"
-                  placeholder="/path or https://..."
-                />
-                <label className="flex items-center gap-2 text-sm font-admin-body text-[var(--admin-text-secondary)]">
-                  <input
-                    type="checkbox"
-                    checked={formData.ctaExternal}
-                    onChange={(e) => setFormData(prev => ({ ...prev, ctaExternal: e.target.checked }))}
-                    className="rounded"
-                  />
-                  External link
-                </label>
+              {/* Header */}
+              <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--admin-border)]">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl admin-glass-teal flex items-center justify-center">
+                    <FileText className="w-5 h-5 text-admin-teal" />
+                  </div>
+                  <div>
+                    <h3 className="font-admin-heading text-lg font-semibold text-[var(--admin-text)]">
+                      {editingUpdate ? 'Edit Update' : 'Create New Update'}
+                    </h3>
+                    <p className="font-admin-body text-sm text-[var(--admin-text-muted)]">
+                      {editingUpdate ? 'Modify the update details' : 'Add a news item or announcement'}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={resetForm}
+                  className="p-2 rounded-lg text-[var(--admin-text-muted)] hover:text-[var(--admin-text)] hover:bg-[var(--admin-elevated)] transition-colors"
+                  aria-label="Close modal"
+                >
+                  <X className="w-5 h-5" />
+                </button>
               </div>
-            </div>
 
-            {/* Checkboxes */}
-            <div className="md:col-span-2 flex flex-wrap gap-6">
-              <label className="flex items-center gap-2 text-sm font-admin-body text-[var(--admin-text)]">
-                <input
-                  type="checkbox"
-                  checked={formData.visible}
-                  onChange={(e) => setFormData(prev => ({ ...prev, visible: e.target.checked }))}
-                  className="rounded"
-                />
-                Visible
-              </label>
-              <label className="flex items-center gap-2 text-sm font-admin-body text-[var(--admin-text)]">
-                <input
-                  type="checkbox"
-                  checked={formData.featured}
-                  onChange={(e) => setFormData(prev => ({ ...prev, featured: e.target.checked }))}
-                  className="rounded"
-                />
-                Featured
-              </label>
-              <label className="flex items-center gap-2 text-sm font-admin-body text-[var(--admin-text)]">
-                <input
-                  type="checkbox"
-                  checked={formData.countdown}
-                  onChange={(e) => setFormData(prev => ({ ...prev, countdown: e.target.checked }))}
-                  className="rounded"
-                />
-                Show countdown (for deadlines)
-              </label>
-            </div>
-          </div>
+              {/* Body - Scrollable */}
+              <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
+                {/* Title - Full width */}
+                <div>
+                  <label className="block text-sm font-admin-body font-medium text-[var(--admin-text-secondary)] mb-1.5">
+                    Title *
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.title}
+                    onChange={(e) => {
+                      setFormData(prev => ({
+                        ...prev,
+                        title: e.target.value,
+                        slug: editingUpdate ? prev.slug : generateSlug(e.target.value)
+                      }))
+                    }}
+                    className="admin-input w-full h-11"
+                    placeholder="Update title"
+                  />
+                </div>
 
-          {/* Form Actions */}
-          <div className="flex justify-end gap-3 pt-4 border-t border-[var(--admin-border)]">
-            <button
-              onClick={resetForm}
-              className="admin-button-secondary"
-              disabled={saving}
-            >
-              Cancel
-            </button>
-            <button
-              onClick={saveUpdate}
-              className="admin-button-primary"
-              disabled={saving}
-            >
-              {saving ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Saving...
-                </>
-              ) : (
-                <>
-                  <Save className="w-4 h-4 mr-2" />
-                  {editingUpdate ? 'Save Changes' : 'Create Update'}
-                </>
-              )}
-            </button>
-          </div>
-        </div>
-      )}
+                {/* Slug & Date row */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-admin-body font-medium text-[var(--admin-text-secondary)] mb-1.5">
+                      Slug * <span className="text-xs font-normal text-[var(--admin-text-muted)]">(URL: /updates/{formData.slug || '...'})</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.slug}
+                      onChange={(e) => setFormData(prev => ({ ...prev, slug: e.target.value }))}
+                      className="admin-input w-full h-11 font-mono text-sm"
+                      placeholder="url-friendly-slug"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-admin-body font-medium text-[var(--admin-text-secondary)] mb-1.5">
+                      Date
+                    </label>
+                    <input
+                      type="date"
+                      value={formData.date}
+                      onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))}
+                      className="admin-input w-full h-11"
+                    />
+                  </div>
+                </div>
+
+                {/* Type, Category, Color row */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm font-admin-body font-medium text-[var(--admin-text-secondary)] mb-1.5">
+                      Type
+                    </label>
+                    <select
+                      value={formData.type}
+                      onChange={(e) => setFormData(prev => ({ ...prev, type: e.target.value }))}
+                      className="admin-input w-full h-11"
+                    >
+                      {typeOptions.map(opt => (
+                        <option key={opt.value} value={opt.value}>{opt.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-admin-body font-medium text-[var(--admin-text-secondary)] mb-1.5">
+                      Category
+                    </label>
+                    <select
+                      value={formData.category}
+                      onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
+                      className="admin-input w-full h-11"
+                    >
+                      {categoryOptions.map(cat => (
+                        <option key={cat} value={cat}>{cat}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-admin-body font-medium text-[var(--admin-text-secondary)] mb-1.5">
+                      Color
+                    </label>
+                    <select
+                      value={formData.color}
+                      onChange={(e) => setFormData(prev => ({ ...prev, color: e.target.value }))}
+                      className="admin-input w-full h-11"
+                    >
+                      {colorOptions.map(opt => (
+                        <option key={opt.value} value={opt.value}>{opt.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Summary */}
+                <div>
+                  <label className="block text-sm font-admin-body font-medium text-[var(--admin-text-secondary)] mb-1.5">
+                    Summary
+                  </label>
+                  <textarea
+                    value={formData.summary}
+                    onChange={(e) => setFormData(prev => ({ ...prev, summary: e.target.value }))}
+                    className="admin-input w-full resize-none"
+                    rows={2}
+                    placeholder="Brief summary for list views"
+                  />
+                </div>
+
+                {/* Content */}
+                <div>
+                  <label className="block text-sm font-admin-body font-medium text-[var(--admin-text-secondary)] mb-1.5">
+                    Content <span className="text-xs font-normal text-[var(--admin-text-muted)]">(Markdown supported)</span>
+                  </label>
+                  <textarea
+                    value={formData.content}
+                    onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
+                    className="admin-input w-full font-mono text-sm resize-none"
+                    rows={6}
+                    placeholder="Full content with **markdown** support..."
+                  />
+                </div>
+
+                {/* CTA Section */}
+                <div className="p-4 rounded-xl bg-[var(--admin-elevated)]/50 border border-[var(--admin-border)]">
+                  <label className="block text-sm font-admin-body font-medium text-[var(--admin-text)] mb-3">
+                    Call to Action <span className="text-xs font-normal text-[var(--admin-text-muted)]">(optional)</span>
+                  </label>
+                  <div className="grid grid-cols-1 sm:grid-cols-5 gap-3 items-end">
+                    <div className="sm:col-span-2">
+                      <label className="block text-xs font-admin-body text-[var(--admin-text-muted)] mb-1">Button text</label>
+                      <input
+                        type="text"
+                        value={formData.ctaText}
+                        onChange={(e) => setFormData(prev => ({ ...prev, ctaText: e.target.value }))}
+                        className="admin-input w-full h-10 text-sm"
+                        placeholder="Learn more"
+                      />
+                    </div>
+                    <div className="sm:col-span-2">
+                      <label className="block text-xs font-admin-body text-[var(--admin-text-muted)] mb-1">Link URL</label>
+                      <input
+                        type="text"
+                        value={formData.ctaUrl}
+                        onChange={(e) => setFormData(prev => ({ ...prev, ctaUrl: e.target.value }))}
+                        className="admin-input w-full h-10 text-sm"
+                        placeholder="/path or https://..."
+                      />
+                    </div>
+                    <label className="flex items-center gap-2 text-sm font-admin-body text-[var(--admin-text-secondary)] h-10">
+                      <input
+                        type="checkbox"
+                        checked={formData.ctaExternal}
+                        onChange={(e) => setFormData(prev => ({ ...prev, ctaExternal: e.target.checked }))}
+                        className="rounded w-4 h-4"
+                      />
+                      External
+                    </label>
+                  </div>
+                </div>
+
+                {/* Checkboxes */}
+                <div className="flex flex-wrap gap-x-6 gap-y-3">
+                  <label className="flex items-center gap-2.5 text-sm font-admin-body text-[var(--admin-text)] cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={formData.visible}
+                      onChange={(e) => setFormData(prev => ({ ...prev, visible: e.target.checked }))}
+                      className="rounded w-4 h-4 text-admin-teal"
+                    />
+                    Visible
+                  </label>
+                  <label className="flex items-center gap-2.5 text-sm font-admin-body text-[var(--admin-text)] cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={formData.featured}
+                      onChange={(e) => setFormData(prev => ({ ...prev, featured: e.target.checked }))}
+                      className="rounded w-4 h-4 text-admin-teal"
+                    />
+                    Featured
+                  </label>
+                  <label className="flex items-center gap-2.5 text-sm font-admin-body text-[var(--admin-text)] cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={formData.countdown}
+                      onChange={(e) => setFormData(prev => ({ ...prev, countdown: e.target.checked }))}
+                      className="rounded w-4 h-4 text-admin-teal"
+                    />
+                    Show countdown (for deadlines)
+                  </label>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[var(--admin-border)] bg-[var(--admin-elevated)]/30">
+                <button
+                  onClick={resetForm}
+                  disabled={saving}
+                  className="px-4 py-2.5 rounded-xl font-admin-body text-sm font-medium text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)] hover:bg-[var(--admin-elevated)] border border-transparent hover:border-[var(--admin-border)] transition-all disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={saveUpdate}
+                  disabled={saving}
+                  className="admin-btn-primary flex items-center gap-2 min-w-[140px] justify-center"
+                >
+                  {saving ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="w-4 h-4" />
+                      {editingUpdate ? 'Save Changes' : 'Create Update'}
+                    </>
+                  )}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Updates List */}
       {updates.length === 0 ? (
