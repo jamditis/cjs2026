@@ -1230,7 +1230,7 @@ function BroadcastTab({ currentUser, isInk }) {
               onChange={(e) => setNewMessage(e.target.value)}
               placeholder="Tickets are now on sale via Eventbrite! Get yours at bit.ly/cjs2026!"
               rows={2}
-              className="admin-input w-full resize-none"
+              className="admin-input w-full resize-y min-h-[60px]"
             />
           </div>
 
@@ -1447,7 +1447,7 @@ function BroadcastTab({ currentUser, isInk }) {
                     value={editMessage}
                     onChange={(e) => setEditMessage(e.target.value)}
                     rows={2}
-                    className="admin-input w-full resize-none"
+                    className="admin-input w-full resize-y min-h-[60px]"
                     placeholder="Enter your announcement message..."
                   />
                 </div>
@@ -3566,7 +3566,7 @@ function UpdatesTab({ currentUser, isInk }) {
                   <textarea
                     value={formData.summary}
                     onChange={(e) => setFormData(prev => ({ ...prev, summary: e.target.value }))}
-                    className="admin-input w-full resize-none"
+                    className="admin-input w-full resize-y min-h-[60px]"
                     rows={2}
                     placeholder="Brief summary for list views"
                   />
@@ -3580,7 +3580,7 @@ function UpdatesTab({ currentUser, isInk }) {
                   <textarea
                     value={formData.content}
                     onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
-                    className="admin-input w-full font-mono text-sm resize-none"
+                    className="admin-input w-full font-mono text-sm resize-y min-h-[150px]"
                     rows={6}
                     placeholder="Full content with **markdown** support..."
                   />
