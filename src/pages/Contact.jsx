@@ -1,6 +1,6 @@
 import React from 'react'
 import { motion } from 'framer-motion'
-import { Mail, MapPin, Globe, Twitter, ExternalLink } from 'lucide-react'
+import { Mail, MapPin, Globe, Twitter, ExternalLink, Lightbulb } from 'lucide-react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 
@@ -144,9 +144,38 @@ function Contact() {
           </div>
         </motion.div>
 
+        {/* Session pitch CTA */}
+        <motion.div
+          className="mt-16"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+        >
+          <a
+            href="https://airtable.com/appL8Sn87xUotm4jF/pag23Y1hW5Y58hSy0/form"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block card-sketch p-8 bg-brand-cardinal/5 border-brand-cardinal/20 hover:border-brand-cardinal/40 transition-colors text-center group"
+          >
+            <div className="w-14 h-14 rounded-full bg-brand-cardinal/10 flex items-center justify-center mx-auto mb-4 group-hover:bg-brand-cardinal/20 transition-colors">
+              <Lightbulb className="w-7 h-7 text-brand-cardinal" />
+            </div>
+            <h2 className="font-heading font-semibold text-xl text-brand-ink mb-2 group-hover:text-brand-cardinal transition-colors">
+              Pitch a session
+            </h2>
+            <p className="font-body text-brand-ink/70 mb-4">
+              Have an idea for a panel, workshop, or lightning talk? We want to hear from you.
+            </p>
+            <span className="inline-flex items-center gap-2 font-body text-brand-cardinal font-medium">
+              Submit your pitch
+              <ExternalLink className="w-4 h-4" />
+            </span>
+          </a>
+        </motion.div>
+
         {/* FAQ teaser */}
         <motion.div
-          className="mt-16 text-center"
+          className="mt-8 text-center"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}

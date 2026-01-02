@@ -37,7 +37,7 @@ The 10th anniversary Collaborative Journalism Summit is taking shape, and we nee
 We welcome proposals from journalists, editors, project managers, funders, technologists, and academics. First-time presenters are encouraged to apply.
 
 **How to pitch:**
-Contact us at summit@collaborativejournalism.org with:
+Submit your proposal through our session pitch form:
 - Session title
 - Format (panel, workshop, or lightning talk)
 - 150-word description
@@ -49,9 +49,9 @@ Contact us at summit@collaborativejournalism.org with:
     date: '2026-01-02',
     category: 'Call for proposals',
     cta: {
-      text: 'Contact us to pitch',
-      url: '/contact',
-      external: false
+      text: 'Submit your pitch',
+      url: 'https://airtable.com/appL8Sn87xUotm4jF/pag23Y1hW5Y58hSy0/form',
+      external: true
     },
     color: 'teal'
   },
@@ -99,7 +99,7 @@ We're looking for proposals that showcase real-world collaborative journalism �
 - Represents diverse perspectives and voices
 
 **Submit your pitch:**
-Email summit@collaborativejournalism.org with your proposal by January 31.
+Use our session pitch form to submit your proposal by January 31.
 
 Don't wait until the last minute — we'll be reviewing pitches on a rolling basis and may reach out to discuss your ideas before the deadline.
     `.trim(),
@@ -107,9 +107,9 @@ Don't wait until the last minute — we'll be reviewing pitches on a rolling bas
     category: 'Deadlines',
     countdown: true,
     cta: {
-      text: 'Contact us to pitch',
-      url: '/contact',
-      external: false
+      text: 'Submit your pitch',
+      url: 'https://airtable.com/appL8Sn87xUotm4jF/pag23Y1hW5Y58hSy0/form',
+      external: true
     },
     color: 'cardinal'
   },
