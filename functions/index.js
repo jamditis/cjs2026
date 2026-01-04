@@ -58,6 +58,30 @@ let cacheTimestamp = null;
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
 // ============================================
+// Validation Helpers
+// ============================================
+
+/**
+ * Validate email address format
+ * Uses a practical regex that catches most invalid emails without being overly strict
+ * @param {string} email - Email to validate
+ * @returns {boolean} True if email appears valid
+ */
+function isValidEmail(email) {
+  if (!email || typeof email !== 'string') return false;
+
+  // Trim whitespace and check length
+  const trimmed = email.trim().toLowerCase();
+  if (trimmed.length < 5 || trimmed.length > 254) return false;
+
+  // RFC 5322 practical email regex
+  // Matches: local-part@domain where domain has at least one dot
+  const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
+
+  return emailRegex.test(trimmed);
+}
+
+// ============================================
 // Security & Auth Helpers
 // ============================================
 
@@ -252,8 +276,8 @@ exports.saveEmailSignup = onRequest({ cors: true, secrets: [airtableApiKey] }, a
 
     const { email, source = "CJS 2026 Website" } = req.body;
 
-    if (!email || !email.includes("@")) {
-      res.status(400).json({ error: "Valid email required" });
+    if (!isValidEmail(email)) {
+      res.status(400).json({ error: "Please enter a valid email address" });
       return;
     }
 

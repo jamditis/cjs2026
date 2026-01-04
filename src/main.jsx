@@ -1,10 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { Home, Schedule, Sponsors, CodeOfConduct, Contact, Login, AuthCallback, Dashboard, EditRequest, PrivacyPolicy, Admin, MySchedulePage, SharedSchedule, AttendeeProfile } from './pages'
+import { Home, Schedule, Sponsors, CodeOfConduct, Contact, FAQ, Login, AuthCallback, Dashboard, EditRequest, PrivacyPolicy, Admin, MySchedulePage, SharedSchedule, AttendeeProfile } from './pages'
 import { SplashScreen, ProtectedRoute, ScrollToTop } from './components'
 import { AuthProvider } from './contexts/AuthContext'
 import { ContentProvider } from './contexts/ContentContext'
+import { ToastProvider } from './contexts/ToastContext'
 import './index.css'
 
 function App() {
@@ -14,8 +15,9 @@ function App() {
     <SplashScreen onComplete={() => setSplashComplete(true)}>
       <BrowserRouter>
         <ScrollToTop />
-        <ContentProvider>
-          <AuthProvider>
+        <ToastProvider>
+          <ContentProvider>
+            <AuthProvider>
             <Routes>
             {/* Public pages */}
             <Route path="/" element={<Home />} />
@@ -23,6 +25,7 @@ function App() {
             <Route path="/sponsors" element={<Sponsors />} />
             <Route path="/code-of-conduct" element={<CodeOfConduct />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/faq" element={<FAQ />} />
             <Route path="/login" element={<Login />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
             <Route path="/privacy" element={<PrivacyPolicy />} />
@@ -45,8 +48,9 @@ function App() {
             <Route path="/schedule/user/:uid" element={<SharedSchedule />} />
             <Route path="/attendee/:uid" element={<AttendeeProfile />} />
             </Routes>
-          </AuthProvider>
-        </ContentProvider>
+            </AuthProvider>
+          </ContentProvider>
+        </ToastProvider>
       </BrowserRouter>
     </SplashScreen>
   )
