@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   User,
@@ -239,6 +239,7 @@ const PHOTO_CONFIG = {
 
 function Dashboard() {
   const { currentUser, userProfile, logout, updateUserProfile, needsProfileSetup } = useAuth()
+  const navigate = useNavigate()
   const [editing, setEditing] = useState(false)
   const [editData, setEditData] = useState({
     displayName: '',
@@ -595,6 +596,8 @@ function Dashboard() {
   async function handleLogout() {
     try {
       await logout()
+      // Redirect to home page after successful logout
+      navigate('/', { replace: true })
     } catch (err) {
       console.error('Logout error:', err)
     }

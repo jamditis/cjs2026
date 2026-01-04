@@ -4,12 +4,13 @@ import { Calendar, MapPin, Filter, X, Clock, Mail, Users, Search } from 'lucide-
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import SessionCard from '../components/SessionCard'
+import { SessionDetailModal } from '../components'
 import { sessionsByDay, sessionTypes, sessionTracks, metadata } from '../content/scheduleData'
 import { useAuth } from '../contexts/AuthContext'
 import { useBookmarkCounts } from '../hooks/useBookmarkCounts'
 
 function Schedule() {
-  const { currentUser } = useAuth()
+  const { currentUser, isSessionSaved, saveSession, unsaveSession } = useAuth()
   const { bookmarkCounts } = useBookmarkCounts()
   const [activeFilters, setActiveFilters] = useState({
     types: [],
@@ -17,6 +18,16 @@ function Schedule() {
   })
   const [showFilters, setShowFilters] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
+  const [selectedSession, setSelectedSession] = useState(null)
+
+  // Handle bookmark toggle from modal
+  const handleToggleBookmark = async (sessionId) => {
+    if (isSessionSaved(sessionId)) {
+      await unsaveSession(sessionId)
+    } else {
+      await saveSession(sessionId)
+    }
+  }
 
   // Filter sessions based on search query and active filters
   const filterSessions = (sessions) => {
@@ -128,14 +139,14 @@ function Schedule() {
               </div>
               <div>
                 <a
-                  href="https://maps.google.com/?q=UNC+Friday+Center,+Chapel+Hill,+NC"
+                  href="https://maps.google.com/?q=Pittsburgh,+PA"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="font-heading font-semibold text-brand-ink hover:text-brand-teal transition-colors underline decoration-brand-ink/30 hover:decoration-brand-teal"
                 >
-                  UNC Friday Center
+                  Pittsburgh venue TBA
                 </a>
-                <p className="font-body text-sm text-brand-ink/60">Chapel Hill, North Carolina</p>
+                <p className="font-body text-sm text-brand-ink/60">Pittsburgh, Pennsylvania</p>
               </div>
             </motion.div>
           </div>
@@ -232,7 +243,7 @@ function Schedule() {
                               <button
                                 key={type}
                                 onClick={() => toggleFilter('types', type)}
-                                className={`px-3 py-1.5 rounded-full text-sm font-body transition-colors ${
+                                className={`px-4 py-2.5 rounded-full text-sm font-body transition-colors min-h-[40px] ${
                                   activeFilters.types.includes(type)
                                     ? 'bg-brand-teal text-white'
                                     : 'bg-brand-ink/5 text-brand-ink/60 hover:bg-brand-ink/10'
@@ -254,7 +265,7 @@ function Schedule() {
                               <button
                                 key={track}
                                 onClick={() => toggleFilter('tracks', track)}
-                                className={`px-3 py-1.5 rounded-full text-sm font-body transition-colors ${
+                                className={`px-4 py-2.5 rounded-full text-sm font-body transition-colors min-h-[40px] ${
                                   activeFilters.tracks.includes(track)
                                     ? 'bg-brand-teal text-white'
                                     : 'bg-brand-ink/5 text-brand-ink/60 hover:bg-brand-ink/10'
@@ -313,7 +324,7 @@ function Schedule() {
 
                   <div className="space-y-3">
                     {filteredMonday.map((session, index) => (
-                      <SessionCard key={session.id} session={session} index={index} bookmarkCount={bookmarkCounts[session.id] || 0} />
+                      <SessionCard key={session.id} session={session} index={index} bookmarkCount={bookmarkCounts[session.id] || 0} onOpenDetail={setSelectedSession} />
                     ))}
                   </div>
                 </motion.div>
@@ -338,7 +349,7 @@ function Schedule() {
 
                   <div className="space-y-3">
                     {filteredTuesday.map((session, index) => (
-                      <SessionCard key={session.id} session={session} index={index} bookmarkCount={bookmarkCounts[session.id] || 0} />
+                      <SessionCard key={session.id} session={session} index={index} bookmarkCount={bookmarkCounts[session.id] || 0} onOpenDetail={setSelectedSession} />
                     ))}
                   </div>
                 </motion.div>
@@ -395,6 +406,16 @@ function Schedule() {
         </div>
       </div>
       <Footer />
+
+      {/* Session detail modal */}
+      <SessionDetailModal
+        session={selectedSession}
+        isOpen={!!selectedSession}
+        onClose={() => setSelectedSession(null)}
+        isBookmarked={selectedSession ? isSessionSaved?.(selectedSession.id) : false}
+        onToggleBookmark={handleToggleBookmark}
+        bookmarkCount={selectedSession ? (bookmarkCounts[selectedSession.id] || 0) : 0}
+      />
     </>
   )
 }

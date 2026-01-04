@@ -15,8 +15,16 @@ const ALLOWED_ORIGINS = [
 
 const cors = require("cors")({
   origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps, Postman, or server-to-server)
-    if (!origin) return callback(null, true);
+    // In production, require origin header for security
+    // Server-to-server requests should use Cloud Function internal auth, not CORS
+    if (!origin) {
+      // Allow only in development (functions emulator sets no origin)
+      if (process.env.FUNCTIONS_EMULATOR === 'true') {
+        return callback(null, true);
+      }
+      console.warn('CORS blocked: missing origin header');
+      return callback(new Error("Origin header required"));
+    }
 
     // Check against allowed origins
     const isAllowed = ALLOWED_ORIGINS.some(allowed => {
