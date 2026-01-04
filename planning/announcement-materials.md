@@ -1,10 +1,15 @@
 # CJS 2026 announcement materials
 
+> ⚠️ **LOCATION UPDATE (January 2026):** Summit moved from Pittsburgh, PA to **Pittsburgh, PA**.
+> Venue TBD. Same dates (June 8-9, 2026). INN Days co-location status TBD.
+> Many materials below need updating before use.
+
 Save-the-date announcement for the 10th anniversary Collaborative Journalism Summit.
 
 **Links:**
 - Website: https://collaborativejournalism.org/cjs2026
 - Direct: https://cjs2026.web.app
+- Session pitch form: https://airtable.com/appL8Sn87xUotm4jF/pag23Y1hW5Y58hSy0/form
 
 ---
 
@@ -165,17 +170,19 @@ amditisj@montclair.edu
 
 ## Image assets
 
+> ⚠️ **NOTE:** Image assets below reference NC branding and need to be updated for Pittsburgh.
+
 For social posts, use:
-- `branding/og-image.png` — Main social sharing image (NC map with cardinal, "Prepare to partner")
-- `branding/cjs2026-nc-outline-shapes-green.png` — Clean green NC outline
-- `branding/cjs2026-nc-topographical.png` — Illustrated NC map (no text)
+- `branding/og-image.png` — Main social sharing image *(NEEDS UPDATE for Pittsburgh)*
+- `branding/cjs2026-nc-outline-shapes-green.png` — *(OUTDATED - was NC outline)*
+- `branding/cjs2026-nc-topographical.png` — *(OUTDATED - was NC map)*
 
 ---
 
 ## Hashtags
 
 Primary: #CJS2026 #CollaborativeJournalism
-Secondary: #Journalism #MediaCollaboration #NorthCarolina #ChapelHill
+Secondary: #Journalism #MediaCollaboration #Pennsylvania #Pittsburgh
 
 ---
 
@@ -185,7 +192,8 @@ Secondary: #Journalism #MediaCollaboration #NorthCarolina #ChapelHill
 2. **Pittsburgh, PA** — June 8–9, 2026 (venue TBA)
 3. **Co-located with INN Days** — Two events, one trip
 4. **Registration opens early 2026** — Sign up now for updates
-5. **"Prepare to partner"** — The tagline
+5. **Session pitches open** — Submit your session idea by January 31, 2026
+6. **"Prepare to partner"** — The tagline
 
 ## Tone
 

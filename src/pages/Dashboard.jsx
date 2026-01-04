@@ -26,6 +26,7 @@ import {
   Loader2,
   RefreshCw,
   Shield,
+  Lightbulb,
 } from 'lucide-react'
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import { useAuth } from '../contexts/AuthContext'
@@ -1405,11 +1406,25 @@ function Dashboard() {
 
               {/* Quick links */}
               <motion.div
-                className="grid sm:grid-cols-2 gap-4"
+                className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
               >
+                <a
+                  href="https://airtable.com/appL8Sn87xUotm4jF/pag23Y1hW5Y58hSy0/form"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="card-sketch p-5 hover:border-brand-cardinal/50 transition-colors flex items-center gap-4"
+                >
+                  <div className="w-10 h-10 rounded-full bg-brand-cardinal/10 flex items-center justify-center">
+                    <Lightbulb className="w-5 h-5 text-brand-cardinal" />
+                  </div>
+                  <div>
+                    <p className="font-heading font-semibold text-brand-ink">Pitch a session</p>
+                    <p className="font-body text-sm text-brand-ink/60">Submit your idea</p>
+                  </div>
+                </a>
                 <Link
                   to="/schedule"
                   className="card-sketch p-5 hover:border-brand-teal/50 transition-colors flex items-center gap-4"

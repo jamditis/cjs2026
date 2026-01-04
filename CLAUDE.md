@@ -70,6 +70,7 @@ getContentMeta('hero', 'headline')?.color   // Get metadata
 | `src/contexts/ContentContext.jsx` | CMS content provider |
 | `src/pages/Home.jsx` | Homepage (uses CMS content) |
 | `src/pages/FAQ.jsx` | Frequently asked questions |
+| `src/pages/Updates.jsx` | News/updates page |
 | `src/utils/generateSchedulePDF.js` | PDF schedule export |
 | `src/utils/validation.js` | Input validation |
 | `functions/index.js` | Cloud Functions |
@@ -102,6 +103,8 @@ firebase deploy --only firestore:rules  # Rules only
 | `/schedule/user/:uid` | Depends | Based on visibility setting |
 | `/attendee/:uid` | Public | Any |
 | `/faq` | Public | Any |
+| `/updates` | Public | Any |
+| `/updates/:slug` | Public | Any |
 
 **User statuses:** `pending` → `approved`/`registered` → `confirmed`
 
@@ -134,6 +137,7 @@ firebase deploy --only firestore:rules  # Rules only
 | `sessionBookmarks/{sessionId}` | Bookmark counts |
 | `cmsContent`, `cmsSchedule`, etc. | CMS data |
 | `cmsVersionHistory` | Audit trail |
+| `updates` | News/announcements |
 
 ---
 
