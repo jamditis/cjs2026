@@ -114,6 +114,9 @@ export default function CMSTour({ onComplete }) {
     }
   }, [])
 
+  // Track if the target element is missing
+  const [targetMissing, setTargetMissing] = useState(false)
+
   // Update target element position when step changes
   useEffect(() => {
     if (!isVisible) return
@@ -129,13 +132,17 @@ export default function CMSTour({ onComplete }) {
           width: rect.width + 16,
           height: rect.height + 16
         })
+        setTargetMissing(false)
         // Scroll element into view if needed
         element.scrollIntoView({ behavior: 'smooth', block: 'center' })
       } else {
+        // Target element doesn't exist (e.g., user hasn't navigated to that view yet)
         setTargetRect(null)
+        setTargetMissing(true)
       }
     } else {
       setTargetRect(null)
+      setTargetMissing(false)
     }
   }, [currentStep, isVisible])
 
@@ -189,7 +196,7 @@ export default function CMSTour({ onComplete }) {
   const isLastStep = currentStep === TOUR_STEPS.length - 1
   const progress = ((currentStep + 1) / TOUR_STEPS.length) * 100
 
-  // Calculate tooltip position
+  // Calculate tooltip position with viewport boundary checking
   const getTooltipStyle = () => {
     if (!targetRect || step.position === 'center') {
       return {
@@ -202,34 +209,34 @@ export default function CMSTour({ onComplete }) {
 
     const padding = 16
     const tooltipWidth = 360
+    const tooltipHeight = 280 // Approximate height of tooltip
+    const viewportHeight = window.innerHeight
+    const viewportWidth = window.innerWidth
+
+    // Helper to clamp a value within viewport bounds
+    const clampLeft = (left) => Math.max(padding, Math.min(left, viewportWidth - tooltipWidth - padding))
+    const clampTop = (top) => Math.max(padding, Math.min(top, viewportHeight - tooltipHeight - padding))
+
+    // Calculate preferred position based on step.position
+    let preferredTop, preferredLeft
 
     switch (step.position) {
       case 'bottom':
-        return {
-          position: 'fixed',
-          top: targetRect.top + targetRect.height + padding,
-          left: Math.max(padding, Math.min(targetRect.left + targetRect.width / 2 - tooltipWidth / 2, window.innerWidth - tooltipWidth - padding))
-        }
+        preferredTop = targetRect.top + targetRect.height + padding
+        preferredLeft = targetRect.left + targetRect.width / 2 - tooltipWidth / 2
+        break
       case 'top':
-        return {
-          position: 'fixed',
-          bottom: window.innerHeight - targetRect.top + padding,
-          left: Math.max(padding, Math.min(targetRect.left + targetRect.width / 2 - tooltipWidth / 2, window.innerWidth - tooltipWidth - padding))
-        }
+        preferredTop = targetRect.top - tooltipHeight - padding
+        preferredLeft = targetRect.left + targetRect.width / 2 - tooltipWidth / 2
+        break
       case 'left':
-        return {
-          position: 'fixed',
-          top: targetRect.top + targetRect.height / 2,
-          right: window.innerWidth - targetRect.left + padding,
-          transform: 'translateY(-50%)'
-        }
+        preferredTop = targetRect.top + targetRect.height / 2 - tooltipHeight / 2
+        preferredLeft = targetRect.left - tooltipWidth - padding
+        break
       case 'right':
-        return {
-          position: 'fixed',
-          top: targetRect.top + targetRect.height / 2,
-          left: targetRect.left + targetRect.width + padding,
-          transform: 'translateY(-50%)'
-        }
+        preferredTop = targetRect.top + targetRect.height / 2 - tooltipHeight / 2
+        preferredLeft = targetRect.left + targetRect.width + padding
+        break
       default:
         return {
           position: 'fixed',
@@ -237,6 +244,24 @@ export default function CMSTour({ onComplete }) {
           left: '50%',
           transform: 'translate(-50%, -50%)'
         }
+    }
+
+    // If preferred position is off-screen, fall back to center-right of viewport
+    // This ensures the tooltip is always visible
+    if (preferredTop < padding || preferredTop > viewportHeight - tooltipHeight - padding) {
+      // Tooltip would be off-screen vertically - position it in a visible area
+      return {
+        position: 'fixed',
+        top: clampTop(Math.max(targetRect.top, padding)),
+        right: padding,
+        maxHeight: viewportHeight - padding * 2
+      }
+    }
+
+    return {
+      position: 'fixed',
+      top: clampTop(preferredTop),
+      left: clampLeft(preferredLeft)
     }
   }
 
@@ -344,6 +369,15 @@ export default function CMSTour({ onComplete }) {
           <p className="font-admin-body text-sm text-[var(--admin-text-secondary)] mb-5 leading-relaxed">
             {step.description}
           </p>
+
+          {/* Warning if target element is not visible */}
+          {targetMissing && step.target && (
+            <div className="mb-4 p-3 rounded-lg bg-admin-amber/10 border border-admin-amber/30">
+              <p className="font-admin-body text-xs text-admin-amber">
+                This element isn't visible yet. You may need to select a page first, or this feature appears later in the editing flow.
+              </p>
+            </div>
+          )}
 
           {/* Navigation buttons */}
           <div className="flex items-center justify-between">
