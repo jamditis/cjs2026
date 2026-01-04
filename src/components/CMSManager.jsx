@@ -2482,7 +2482,7 @@ function TimelineEditModal({ entry, isNew, isSuperAdmin = false, onSave, onClose
               type="text"
               value={formData.location}
               onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
-              placeholder="Chapel Hill, NC"
+              placeholder="Pittsburgh, PA"
               className="w-full px-3 py-2 rounded-lg admin-glass font-admin-body text-sm text-[var(--admin-text)] placeholder-[var(--admin-text-muted)] focus:outline-none focus:ring-2 focus:ring-admin-teal/50"
               required
             />

@@ -139,9 +139,9 @@ Ten years later, that question has been answered. Collaborative journalism has g
 - **2023 Washington, D.C.** — Building frameworks
 - **2024 Detroit** — Local focus
 - **2025 Denver** — Partnerships with purpose
-- **2026 Chapel Hill** — From experiment to ecosystem
+- **2026 Pittsburgh** — From experiment to ecosystem
 
-For the 10th anniversary summit, we're returning to our roots while looking ahead. Join us in Chapel Hill to celebrate how far we've come and shape where we go next.
+For the 10th anniversary summit, we're celebrating how far we've come and shaping where we go next. Join us in Pittsburgh.
     `.trim(),
     date: '2025-12-15',
     category: '10th anniversary',
@@ -153,30 +153,30 @@ For the 10th anniversary summit, we're returning to our roots while looking ahea
     color: 'green-dark'
   },
   {
-    slug: 'cjs2026-chapel-hill',
+    slug: 'cjs2026-pittsburgh',
     type: 'story',
-    title: 'CJS2026 heads to Chapel Hill, North Carolina',
-    summary: 'The Southeast is home to innovative collaborative journalism projects. We\'re bringing the summit to UNC Friday Center on June 8-9, 2026.',
+    title: 'CJS2026 heads to Pittsburgh, Pennsylvania',
+    summary: 'The Steel City has a thriving local journalism scene and rich collaborative tradition. We\'re bringing the 10th anniversary summit to Pittsburgh on June 8-9, 2026.',
     content: `
-For the 10th anniversary Collaborative Journalism Summit, we're heading to Chapel Hill, North Carolina.
+For the 10th anniversary Collaborative Journalism Summit, we're heading to Pittsburgh, Pennsylvania.
 
-**Why the Southeast:**
-The region is home to some of the most innovative collaborative journalism work in the country:
-- The **NC Local News Workshop** is building sustainable models for community journalism
-- **Scalawag** and regional partners are reframing Southern storytelling
-- **North Carolina public media** newsrooms have pioneered collaborative coverage of elections and environmental issues
+**Why Pittsburgh:**
+The region is home to exciting collaborative journalism work:
+- **PublicSource** has pioneered data-driven accountability journalism
+- **The Pittsburgh Media Partnership** brings together diverse news organizations
+- Pittsburgh foundations have invested heavily in local journalism infrastructure
 
-Chapel Hill, home to one of the nation's oldest public universities and a vibrant media ecosystem, is the perfect setting for our 10th anniversary gathering.
+Pittsburgh, with its legacy of innovation and transformation, is the perfect setting for our 10th anniversary celebration of collaborative journalism's growth from experiment to ecosystem.
 
-**Venue: UNC Friday Center**
-The William and Ida Friday Center for Continuing Education offers modern conference facilities in a campus setting, with easy access from Raleigh-Durham International Airport (RDU).
+**Venue: TBA**
+Venue details will be announced soon. Pittsburgh offers excellent conference facilities with easy access from Pittsburgh International Airport (PIT).
 
 **Dates: June 8-9, 2026**
 - **Monday, June 8** — Full day of sessions plus evening dinner
 - **Tuesday, June 9** — Morning workshops
 
 **Co-located with INN Days**
-Stay for INN Days (June 9-11) and get even more value from your trip. Two events, one venue, one amazing week for journalism.
+Stay for INN Days (June 9-11) and get even more value from your trip. Two events, one city, one amazing week for journalism.
     `.trim(),
     date: '2025-12-10',
     category: 'Location',
@@ -191,9 +191,9 @@ Stay for INN Days (June 9-11) and get even more value from your trip. Two events
     slug: 'inn-days-colocation',
     type: 'announcement',
     title: 'Co-located with INN Days 2026',
-    summary: 'Attend both CJS2026 (June 8-9) and INN Days (June 9-11) at UNC Friday Center. Two events, one trip, maximum value.',
+    summary: 'Attend both CJS2026 (June 8-9) and INN Days (June 9-11) in Pittsburgh. Two events, one trip, maximum value.',
     content: `
-Good news for your calendar (and your travel budget): CJS2026 and INN Days 2026 will be co-located at UNC Friday Center in Chapel Hill.
+Good news for your calendar (and your travel budget): CJS2026 and INN Days 2026 will be co-located in Pittsburgh.
 
 **The lineup:**
 - **June 8-9** — Collaborative Journalism Summit (CJS2026)
