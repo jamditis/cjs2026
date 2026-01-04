@@ -1,24 +1,38 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Calendar, Share2, ArrowLeft, Download } from 'lucide-react'
+import { Calendar, Share2, ArrowLeft, Download, Loader2 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import MySchedule from '../components/MySchedule'
 import ShareScheduleModal from '../components/ShareScheduleModal'
 import { useAuth } from '../contexts/AuthContext'
+import { useToast } from '../contexts/ToastContext'
 import { getSessionsByIds } from '../content/scheduleData'
 import { downloadSchedulePDF } from '../utils/generateSchedulePDF'
 
 function MySchedulePage() {
   const { userProfile } = useAuth()
+  const toast = useToast()
   const [showShareModal, setShowShareModal] = useState(false)
+  const [generatingPDF, setGeneratingPDF] = useState(false)
   const savedCount = userProfile?.savedSessions?.length || 0
 
-  const handleDownloadPDF = () => {
-    const savedSessionIds = userProfile?.savedSessions || []
-    const sessions = getSessionsByIds(savedSessionIds)
-    downloadSchedulePDF({ sessions, userProfile })
+  const handleDownloadPDF = async () => {
+    setGeneratingPDF(true)
+    try {
+      const savedSessionIds = userProfile?.savedSessions || []
+      const sessions = getSessionsByIds(savedSessionIds)
+      // Small delay to show loading state (PDF generation is fast)
+      await new Promise(resolve => setTimeout(resolve, 300))
+      downloadSchedulePDF({ sessions, userProfile })
+      toast.success('Schedule downloaded!')
+    } catch (err) {
+      console.error('Error generating PDF:', err)
+      toast.error('Failed to generate PDF. Please try again.')
+    } finally {
+      setGeneratingPDF(false)
+    }
   }
 
   return (
@@ -57,11 +71,18 @@ function MySchedulePage() {
                   <>
                     <button
                       onClick={handleDownloadPDF}
-                      className="btn-secondary text-sm flex items-center gap-2"
+                      disabled={generatingPDF}
+                      className="btn-secondary text-sm flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                       title="Download as PDF"
                     >
-                      <Download className="w-4 h-4" />
-                      <span className="hidden sm:inline">PDF</span>
+                      {generatingPDF ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Download className="w-4 h-4" />
+                      )}
+                      <span className="hidden sm:inline">
+                        {generatingPDF ? 'Generating...' : 'PDF'}
+                      </span>
                     </button>
                     <button
                       onClick={() => setShowShareModal(true)}

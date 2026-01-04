@@ -29,6 +29,7 @@ import {
 } from 'lucide-react'
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import { useAuth } from '../contexts/AuthContext'
+import { useToast } from '../contexts/ToastContext'
 import { storage } from '../firebase'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
@@ -238,7 +239,8 @@ const PHOTO_CONFIG = {
 }
 
 function Dashboard() {
-  const { currentUser, userProfile, logout, updateUserProfile, needsProfileSetup } = useAuth()
+  const { currentUser, userProfile, logout, updateUserProfile, showProfileSetupModal, needsProfileSetup } = useAuth()
+  const toast = useToast()
   const navigate = useNavigate()
   const [editing, setEditing] = useState(false)
   const [editData, setEditData] = useState({
@@ -283,19 +285,32 @@ function Dashboard() {
     return saved ? JSON.parse(saved) : { dismissed: false, completed: false, skipUntilComplete: false }
   })
 
-  // Toast notification state
-  const [toast, setToast] = useState(null)
-
-  // Auto-hide toast after 5 seconds
-  useEffect(() => {
-    if (toast) {
-      const timer = setTimeout(() => setToast(null), 5000)
-      return () => clearTimeout(timer)
-    }
-  }, [toast])
 
   const isProfileIncomplete = !userProfile?.displayName
   const showTutorial = isProfileIncomplete && !tutorialState.dismissed && !tutorialState.skipUntilComplete
+
+  // Profile completion calculation
+  // Fields are weighted by importance for conference networking
+  const profileCompletionFields = [
+    { field: 'displayName', weight: 30, label: 'Name' },
+    { field: 'organization', weight: 20, label: 'Organization' },
+    { field: 'jobTitle', weight: 15, label: 'Job title' },
+    { field: 'photoURL', weight: 20, label: 'Photo' },
+    { field: 'badges', weight: 15, label: 'Badges', check: (v) => Array.isArray(v) && v.length > 0 },
+  ]
+
+  const profileCompletion = profileCompletionFields.reduce((acc, { field, weight, check }) => {
+    const value = userProfile?.[field]
+    const isComplete = check ? check(value) : Boolean(value)
+    return acc + (isComplete ? weight : 0)
+  }, 0)
+
+  const missingProfileFields = profileCompletionFields
+    .filter(({ field, check }) => {
+      const value = userProfile?.[field]
+      return check ? !check(value) : !value
+    })
+    .map(({ label }) => label)
 
   // Access control: check if user has full dashboard access
   // Full access granted to: admins, super_admins, registered users, confirmed users
@@ -416,6 +431,7 @@ function Dashboard() {
   }
 
   // Upload photo to Firebase Storage
+  // Returns URL on success, throws on failure
   async function uploadPhoto() {
     if (!photoFile || !currentUser) return null
 
@@ -430,7 +446,7 @@ function Dashboard() {
     } catch (err) {
       console.error('Error uploading photo:', err)
       setPhotoError('Failed to upload photo. Please try again.')
-      return null
+      throw err // Re-throw so callers can handle appropriately
     } finally {
       setPhotoUploading(false)
     }
@@ -503,11 +519,18 @@ function Dashboard() {
       }
 
       setSaving(true)
+      let photoUploadFailed = false
       try {
         // Upload photo if selected
         let photoURL = null
         if (photoFile) {
-          photoURL = await uploadPhoto()
+          try {
+            photoURL = await uploadPhoto()
+          } catch (photoErr) {
+            console.error('Photo upload failed, saving profile without photo:', photoErr)
+            photoUploadFailed = true
+            // Continue to save other profile data
+          }
         }
 
         await updateUserProfile(currentUser.uid, {
@@ -518,8 +541,15 @@ function Dashboard() {
         setEditData(prev => ({ ...prev, ...stepperData }))
         clearPhoto()
         completeTutorial()
+
+        if (photoUploadFailed) {
+          toast.warning('Profile saved, but photo upload failed. Try uploading again.')
+        } else {
+          toast.success('Profile saved!')
+        }
       } catch (err) {
         console.error('Error saving profile from stepper:', err)
+        toast.error('Failed to save profile. Please try again.')
       } finally {
         setSaving(false)
       }
@@ -570,24 +600,38 @@ function Dashboard() {
   async function handleSaveProfile(e) {
     e.preventDefault()
     setSaving(true)
+    let photoUploadFailed = false
     try {
       // Upload photo if selected
       let photoURL = editData.photoURL
       if (photoFile) {
-        photoURL = await uploadPhoto()
+        try {
+          photoURL = await uploadPhoto()
+        } catch (photoErr) {
+          console.error('Photo upload failed, saving profile without photo:', photoErr)
+          photoUploadFailed = true
+          // Keep existing photoURL, don't overwrite with failed upload
+        }
       }
 
       await updateUserProfile(currentUser.uid, {
         ...editData,
-        ...(photoURL !== undefined && { photoURL })
+        ...(!photoUploadFailed && photoURL !== undefined && { photoURL })
       })
       setEditing(false)
       clearPhoto() // Reset photo state
       if (editData.displayName) {
         completeTutorial()
       }
+
+      if (photoUploadFailed) {
+        toast.warning('Profile updated, but photo upload failed. Try uploading again.')
+      } else {
+        toast.success('Profile updated!')
+      }
     } catch (err) {
       console.error('Error updating profile:', err)
+      toast.error('Failed to save profile. Please try again.')
     } finally {
       setSaving(false)
     }
@@ -732,8 +776,8 @@ function Dashboard() {
     <>
       <Navbar />
 
-      {/* Profile setup modal - shown when user needs to complete basic profile */}
-      {needsProfileSetup && <ProfileSetupModal />}
+      {/* Profile setup modal - shown when user needs to complete basic profile (and hasn't skipped) */}
+      {showProfileSetupModal && <ProfileSetupModal />}
 
       <div className="min-h-screen bg-paper pt-20 lg:pt-24 pb-12 lg:pb-16">
         <div className="max-w-5xl mx-auto px-4 lg:px-6 overflow-hidden">
@@ -790,6 +834,32 @@ function Dashboard() {
                     </span>
                   </div>
                 </div>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Gentle reminder for users who skipped profile setup */}
+          {needsProfileSetup && !showProfileSetupModal && (
+            <motion.div
+              className="card-sketch p-4 mb-6 border-brand-teal/30 bg-brand-teal/5"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <div className="flex items-center justify-between gap-4 flex-wrap">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-brand-teal/20 flex items-center justify-center flex-shrink-0">
+                    <User className="w-4 h-4 text-brand-teal" />
+                  </div>
+                  <p className="font-body text-sm text-brand-ink/70">
+                    <span className="font-medium text-brand-ink">Complete your profile</span> so other attendees can connect with you.
+                  </p>
+                </div>
+                <button
+                  onClick={() => setEditing(true)}
+                  className="btn-secondary py-2 px-4 text-sm whitespace-nowrap"
+                >
+                  Add your name
+                </button>
               </div>
             </motion.div>
           )}
@@ -1429,6 +1499,33 @@ function Dashboard() {
                   )}
                 </div>
 
+                {/* Profile completion indicator */}
+                {!editing && profileCompletion < 100 && (
+                  <div className="mb-4 p-3 bg-brand-amber/5 border border-brand-amber/20 rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-body text-sm text-brand-ink/70">
+                        Profile strength
+                      </span>
+                      <span className="font-body text-sm font-medium text-brand-amber">
+                        {profileCompletion}%
+                      </span>
+                    </div>
+                    <div className="h-2 bg-brand-ink/10 rounded-full overflow-hidden">
+                      <motion.div
+                        className="h-full bg-gradient-to-r from-brand-amber to-brand-teal rounded-full"
+                        initial={{ width: 0 }}
+                        animate={{ width: `${profileCompletion}%` }}
+                        transition={{ duration: 0.5, ease: 'easeOut' }}
+                      />
+                    </div>
+                    {missingProfileFields.length > 0 && (
+                      <p className="font-body text-xs text-brand-ink/50 mt-2">
+                        Add {missingProfileFields.slice(0, 2).join(', ')}{missingProfileFields.length > 2 ? `, +${missingProfileFields.length - 2} more` : ''} to improve your profile
+                      </p>
+                    )}
+                  </div>
+                )}
+
                 {editing ? (
                   <form onSubmit={handleSaveProfile} className="space-y-4">
                     {/* Profile photo */}
@@ -2035,34 +2132,6 @@ function Dashboard() {
       </div>
       <Footer />
 
-      {/* Toast notification */}
-      <AnimatePresence>
-        {toast && (
-          <motion.div
-            initial={{ opacity: 0, y: 50, x: '-50%' }}
-            animate={{ opacity: 1, y: 0, x: '-50%' }}
-            exit={{ opacity: 0, y: 50, x: '-50%' }}
-            className={`fixed bottom-6 left-1/2 z-50 px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 ${
-              toast.type === 'success'
-                ? 'bg-brand-teal text-white'
-                : 'bg-brand-cardinal text-white'
-            }`}
-          >
-            {toast.type === 'success' ? (
-              <CheckCircle className="w-5 h-5 flex-shrink-0" />
-            ) : (
-              <AlertCircle className="w-5 h-5 flex-shrink-0" />
-            )}
-            <span className="font-body text-sm">{toast.message}</span>
-            <button
-              onClick={() => setToast(null)}
-              className="ml-2 hover:opacity-70 transition-opacity"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </>
   )
 }
