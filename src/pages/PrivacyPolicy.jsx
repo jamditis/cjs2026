@@ -17,7 +17,7 @@ function PrivacyPolicy() {
               Privacy policy
             </h1>
             <p className="font-body text-brand-ink/50 mb-8">
-              Last updated: December 2025
+              Last updated: January 2026
             </p>
 
             <div className="prose prose-ink max-w-none font-body text-brand-ink/80 space-y-6">

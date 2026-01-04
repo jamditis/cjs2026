@@ -105,8 +105,8 @@ function SharedSchedule() {
           </Link>
 
           {loading ? (
-            <div className="text-center py-16">
-              <div className="w-12 h-12 border-3 border-brand-teal/20 border-t-brand-teal rounded-full animate-spin mx-auto mb-4" />
+            <div className="text-center py-16" role="status" aria-label="Loading schedule">
+              <div className="w-12 h-12 border-3 border-brand-teal/20 border-t-brand-teal rounded-full animate-spin mx-auto mb-4" aria-hidden="true" />
               <p className="font-body text-brand-ink/60">Loading schedule...</p>
             </div>
           ) : error ? (

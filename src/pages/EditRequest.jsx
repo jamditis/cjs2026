@@ -112,7 +112,7 @@ function EditRequest() {
                     Request submitted
                   </h2>
                   <p className="font-body text-brand-ink/60 mb-6">
-                    Your edit request has been saved. Joe will review it and implement the changes.
+                    Your edit request has been saved. An admin will review it and implement the changes.
                   </p>
                   <button
                     onClick={handleNewRequest}

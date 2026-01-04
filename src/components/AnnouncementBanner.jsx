@@ -20,7 +20,13 @@ export default function AnnouncementBanner() {
 
   // Load dismissed announcements from localStorage
   useEffect(() => {
-    const dismissedIds = JSON.parse(localStorage.getItem('dismissed-announcements') || '[]')
+    let dismissedIds = []
+    try {
+      dismissedIds = JSON.parse(localStorage.getItem('dismissed-announcements') || '[]')
+    } catch (e) {
+      // localStorage may be disabled or corrupted
+      dismissedIds = []
+    }
 
     // Listen to active announcements
     const q = query(
@@ -57,9 +63,13 @@ export default function AnnouncementBanner() {
     if (!announcement) return
 
     // Save to localStorage
-    const dismissedIds = JSON.parse(localStorage.getItem('dismissed-announcements') || '[]')
-    dismissedIds.push(announcement.id)
-    localStorage.setItem('dismissed-announcements', JSON.stringify(dismissedIds))
+    try {
+      const dismissedIds = JSON.parse(localStorage.getItem('dismissed-announcements') || '[]')
+      dismissedIds.push(announcement.id)
+      localStorage.setItem('dismissed-announcements', JSON.stringify(dismissedIds))
+    } catch (e) {
+      // localStorage may be disabled; continue anyway
+    }
 
     setDismissed(true)
     setTimeout(() => setAnnouncement(null), 300) // Wait for animation
