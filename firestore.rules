@@ -101,10 +101,11 @@ service cloud.firestore {
     // Updates (news/announcements) - public read for visible, admin write
     // Used for the /updates page and individual update pages
     match /updates/{updateId} {
-      // Public read for visible updates only
-      allow read: if resource.data.visible == true;
-      // Admins can read all updates (including hidden)
+      // Admins can read ALL updates (including hidden) - check admin first
+      // This must come before the visibility check for queries to work
       allow read: if isAdmin() || isSuperAdmin();
+      // Public read for visible updates only (individual document reads)
+      allow read: if resource.data.visible == true;
       // Only admins can create, update, delete
       allow create, update, delete: if isAdmin() || isSuperAdmin();
     }

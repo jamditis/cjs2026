@@ -79,7 +79,7 @@ function ToastContainer({ toasts, removeToast }) {
   )
 }
 
-function Toast({ toast, onDismiss }) {
+const Toast = React.forwardRef(function Toast({ toast, onDismiss }, ref) {
   const style = TOAST_STYLES[toast.type] || TOAST_STYLES.info
   const Icon = style.icon
 
@@ -90,6 +90,7 @@ function Toast({ toast, onDismiss }) {
 
   return (
     <motion.div
+      ref={ref}
       layout
       initial={{ opacity: 0, y: 50, scale: 0.9 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -108,7 +109,7 @@ function Toast({ toast, onDismiss }) {
       </button>
     </motion.div>
   )
-}
+})
 
 /**
  * Hook to use toast notifications

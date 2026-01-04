@@ -3321,34 +3321,50 @@ function UpdatesTab({ currentUser, isInk }) {
 
   // Listen to updates in real-time and merge with static updates
   useEffect(() => {
+    // Wait for user authentication before querying Firestore
+    if (!currentUser) {
+      setLoading(false)
+      return
+    }
+
     const q = query(
       collection(db, 'updates'),
       orderBy('date', 'desc'),
       limit(50)
     )
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const firestoreItems = []
-      snapshot.forEach(doc => {
-        firestoreItems.push({ id: doc.id, ...doc.data(), isStatic: false })
-      })
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const firestoreItems = []
+        snapshot.forEach(doc => {
+          firestoreItems.push({ id: doc.id, ...doc.data(), isStatic: false })
+        })
 
-      // Merge: Firestore updates take precedence over static updates by slug
-      const firestoreSlugs = new Set(firestoreItems.map(u => u.slug))
-      const staticItems = staticUpdates
-        .filter(u => !firestoreSlugs.has(u.slug))
-        .map(u => ({ ...u, id: `static-${u.slug}`, isStatic: true }))
+        // Merge: Firestore updates take precedence over static updates by slug
+        const firestoreSlugs = new Set(firestoreItems.map(u => u.slug))
+        const staticItems = staticUpdates
+          .filter(u => !firestoreSlugs.has(u.slug))
+          .map(u => ({ ...u, id: `static-${u.slug}`, isStatic: true }))
 
-      // Combine and sort by date
-      const allItems = [...firestoreItems, ...staticItems]
-        .sort((a, b) => new Date(b.date) - new Date(a.date))
+        // Combine and sort by date
+        const allItems = [...firestoreItems, ...staticItems]
+          .sort((a, b) => new Date(b.date) - new Date(a.date))
 
-      setUpdates(allItems)
-      setLoading(false)
-    })
+        setUpdates(allItems)
+        setLoading(false)
+      },
+      (error) => {
+        console.error('[UpdatesTab] Firestore listener error:', error)
+        // Fall back to static updates only
+        const staticItems = staticUpdates.map(u => ({ ...u, id: `static-${u.slug}`, isStatic: true }))
+        setUpdates(staticItems)
+        setLoading(false)
+      }
+    )
 
     return () => unsubscribe()
-  }, [])
+  }, [currentUser])
 
   function resetForm() {
     setFormData({
