@@ -2,10 +2,12 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
+import { PrivacySEO } from '../components'
 
 function PrivacyPolicy() {
   return (
     <>
+      <PrivacySEO />
       <Navbar />
       <div className="min-h-screen bg-paper pt-24 pb-16">
         <div className="max-w-3xl mx-auto px-6">

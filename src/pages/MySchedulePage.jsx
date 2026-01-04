@@ -1,17 +1,25 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Calendar, Share2, ArrowLeft } from 'lucide-react'
+import { Calendar, Share2, ArrowLeft, Download } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import MySchedule from '../components/MySchedule'
 import ShareScheduleModal from '../components/ShareScheduleModal'
 import { useAuth } from '../contexts/AuthContext'
+import { getSessionsByIds } from '../content/scheduleData'
+import { downloadSchedulePDF } from '../utils/generateSchedulePDF'
 
 function MySchedulePage() {
   const { userProfile } = useAuth()
   const [showShareModal, setShowShareModal] = useState(false)
   const savedCount = userProfile?.savedSessions?.length || 0
+
+  const handleDownloadPDF = () => {
+    const savedSessionIds = userProfile?.savedSessions || []
+    const sessions = getSessionsByIds(savedSessionIds)
+    downloadSchedulePDF({ sessions, userProfile })
+  }
 
   return (
     <>
@@ -44,15 +52,23 @@ function MySchedulePage() {
                 </p>
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap">
                 {savedCount > 0 && (
                   <>
+                    <button
+                      onClick={handleDownloadPDF}
+                      className="btn-secondary text-sm flex items-center gap-2"
+                      title="Download as PDF"
+                    >
+                      <Download className="w-4 h-4" />
+                      <span className="hidden sm:inline">PDF</span>
+                    </button>
                     <button
                       onClick={() => setShowShareModal(true)}
                       className="btn-secondary text-sm flex items-center gap-2"
                     >
                       <Share2 className="w-4 h-4" />
-                      Share
+                      <span className="hidden sm:inline">Share</span>
                     </button>
                     <Link
                       to="/schedule"
@@ -90,7 +106,7 @@ function MySchedulePage() {
                 <li>Click the bookmark icon on any session to remove it from your schedule.</li>
                 <li>Check back as sessions are finalized - more details will be added in spring 2026.</li>
                 <li>Some sessions may run concurrently - plan accordingly!</li>
-                <li>Use the share button to let others see your schedule.</li>
+                <li>Use the share button to let others see your schedule, or download a PDF for offline access.</li>
               </ul>
             </motion.div>
           )}

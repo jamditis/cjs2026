@@ -4,6 +4,7 @@ import { ChevronDown, Mail, Calendar, MapPin, Ticket, Users, HelpCircle } from '
 import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
+import { FAQSEO } from '../components'
 
 // FAQ data organized by category
 const FAQ_DATA = [
@@ -182,6 +183,7 @@ function FAQCategory({ category, icon: Icon, questions }) {
 function FAQ() {
   return (
     <>
+      <FAQSEO />
       <Navbar />
       <div className="min-h-screen bg-paper pt-24 pb-16">
         <div className="max-w-4xl mx-auto px-6">

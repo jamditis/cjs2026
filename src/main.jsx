@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { HelmetProvider } from 'react-helmet-async'
 import { Home, Schedule, Sponsors, CodeOfConduct, Contact, FAQ, Login, AuthCallback, Dashboard, EditRequest, PrivacyPolicy, Admin, MySchedulePage, SharedSchedule, AttendeeProfile } from './pages'
 import { SplashScreen, ProtectedRoute, ScrollToTop } from './components'
 import { AuthProvider } from './contexts/AuthContext'
@@ -12,12 +13,13 @@ function App() {
   const [splashComplete, setSplashComplete] = React.useState(false)
 
   return (
-    <SplashScreen onComplete={() => setSplashComplete(true)}>
-      <BrowserRouter>
-        <ScrollToTop />
-        <ToastProvider>
-          <ContentProvider>
-            <AuthProvider>
+    <HelmetProvider>
+      <SplashScreen onComplete={() => setSplashComplete(true)}>
+        <BrowserRouter>
+          <ScrollToTop />
+          <ToastProvider>
+            <ContentProvider>
+              <AuthProvider>
             <Routes>
             {/* Public pages */}
             <Route path="/" element={<Home />} />
@@ -47,12 +49,13 @@ function App() {
             } />
             <Route path="/schedule/user/:uid" element={<SharedSchedule />} />
             <Route path="/attendee/:uid" element={<AttendeeProfile />} />
-            </Routes>
-            </AuthProvider>
-          </ContentProvider>
-        </ToastProvider>
-      </BrowserRouter>
-    </SplashScreen>
+              </Routes>
+              </AuthProvider>
+            </ContentProvider>
+          </ToastProvider>
+        </BrowserRouter>
+      </SplashScreen>
+    </HelmetProvider>
   )
 }
 

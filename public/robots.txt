@@ -1,0 +1,18 @@
+# Robots.txt for CJS2026
+# https://summit.collaborativejournalism.org
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://summit.collaborativejournalism.org/sitemap.xml
+
+# Disallow admin and auth pages
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /login
+Disallow: /register
+Disallow: /auth-callback
+Disallow: /forgot-password
+Disallow: /my-schedule
+Disallow: /edit-request

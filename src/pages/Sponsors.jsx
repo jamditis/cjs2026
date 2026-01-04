@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { Sparkles, Plane, Calendar, Mic, UtensilsCrossed, Gift, ShieldCheck, Cookie, Tag, Mail } from 'lucide-react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
+import { SponsorsSEO } from '../components'
 import { sponsors, hasSponsors, sponsorsByTier, tierDisplayNames } from '../content/organizationsData'
 
 // Main sponsorship packages with explicit Tailwind classes
@@ -174,6 +175,7 @@ function SponsorPackageCard({ pkg, index }) {
 function Sponsors() {
   return (
     <>
+      <SponsorsSEO />
       <Navbar />
       <div className="min-h-screen bg-paper pt-24 pb-16">
       <div className="max-w-6xl mx-auto px-6">

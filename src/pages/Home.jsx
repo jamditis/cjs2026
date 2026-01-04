@@ -14,7 +14,7 @@ import {
   ArrowRight,
   History
 } from 'lucide-react'
-import { BlurText, ParticlesBackground, HeroAnnouncement } from '../components'
+import { BlurText, ParticlesBackground, HeroAnnouncement, HomeSEO } from '../components'
 import Navbar from '../components/Navbar'
 import EmailSignup from '../components/EmailSignup'
 
@@ -260,6 +260,7 @@ function Home() {
 
   return (
     <div className="min-h-screen bg-paper">
+      <HomeSEO />
       <Navbar />
 
       {/* ============================================

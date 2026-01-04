@@ -3,10 +3,12 @@ import { motion } from 'framer-motion'
 import { Shield, Heart, Users, AlertTriangle, Mail, Phone } from 'lucide-react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
+import { CodeOfConductSEO } from '../components'
 
 function CodeOfConduct() {
   return (
     <>
+      <CodeOfConductSEO />
       <Navbar />
       <div className="min-h-screen bg-paper pt-24 pb-16">
       <div className="max-w-3xl mx-auto px-6">

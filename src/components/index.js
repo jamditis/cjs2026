@@ -19,3 +19,4 @@ export { default as ProfileSetupModal } from './ProfileSetupModal';
 export { default as Lanyard } from './Lanyard';
 export { default as Skeleton, SkeletonText, SkeletonCard, SkeletonSession, SkeletonSchedule, SkeletonProfile, SkeletonTable, SkeletonSponsors } from './Skeleton';
 export { default as SessionDetailModal } from './SessionDetailModal';
+export { default as SEO, HomeSEO, ScheduleSEO, SponsorsSEO, FAQSEO, ContactSEO, CodeOfConductSEO, PrivacySEO } from './SEO';

@@ -4,7 +4,7 @@ import { Calendar, MapPin, Filter, X, Clock, Mail, Users, Search } from 'lucide-
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import SessionCard from '../components/SessionCard'
-import { SessionDetailModal } from '../components'
+import { SessionDetailModal, ScheduleSEO } from '../components'
 import { sessionsByDay, sessionTypes, sessionTracks, metadata } from '../content/scheduleData'
 import { useAuth } from '../contexts/AuthContext'
 import { useBookmarkCounts } from '../hooks/useBookmarkCounts'
@@ -80,6 +80,7 @@ function Schedule() {
 
   return (
     <>
+      <ScheduleSEO />
       <Navbar />
       <div className="min-h-screen bg-paper pt-24 pb-16">
         <div className="max-w-4xl mx-auto px-6">
