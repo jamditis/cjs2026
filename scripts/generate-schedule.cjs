@@ -79,25 +79,39 @@ function processRecords(records) {
   const sessions = records.map((record, index) => {
     const fields = record.fields;
 
-    // Map Airtable fields to our schema (handle various field name formats)
+    // Get session type (normalize to lowercase)
+    const type = (fields.type || fields.Type || 'session').toLowerCase();
+
+    // Map Airtable fields to our schema (handle various field name formats from Omni's setup)
     return {
       id: generateSessionId(record, index),
       airtableId: record.id,
-      title: fields['Session title'] || fields.title || fields.Title || 'Untitled Session',
-      description: fields.description || fields.Description || '',
-      day: fields.day || fields.Day || 'Monday',
-      startTime: fields.start_time || fields['Start time'] || fields.startTime || '',
+      // Title field - Omni uses "Title" but we also accept other variants
+      title: fields.Title || fields['Session title'] || fields.title || 'Untitled Session',
+      // Description
+      description: fields.Description || fields.description || '',
+      // Day - Omni uses "Day" with Monday/Tuesday
+      day: fields.Day || fields.day || 'Monday',
+      // Time - Omni uses "Time" as single field, we also support split start/end
+      startTime: fields.Time || fields.start_time || fields['Start time'] || fields.startTime || '',
       endTime: fields.end_time || fields['End time'] || fields.endTime || '',
-      type: (fields.type || fields.Type || 'session').toLowerCase(),
-      track: fields.track || fields.Track || null,
-      room: fields.room || fields.Room || '',
-      speakers: fields['Speaker names'] || fields.speaker_names || fields.speakers || fields.Speakers || '',
+      // Type - session, workshop, break, special, lightning
+      type: type,
+      // Track for parallel sessions
+      track: fields.Track || fields.track || null,
+      // Room/location
+      room: fields.Room || fields.room || '',
+      // Speakers - Omni uses "Speaker(s)"
+      speakers: fields['Speaker(s)'] || fields['Speaker names'] || fields.speaker_names || fields.speakers || fields.Speakers || '',
       speakerOrgs: fields.speaker_orgs || fields['Speaker orgs'] || fields.speakerOrgs || '',
-      isBookmarkable: fields.is_bookmarkable !== false && fields.Type !== 'break',
-      order: fields.order || fields.Order || index + 1,
-      // Check visible, Visible, public, Public, or "Public?" fields (checkbox = true means show)
-      visible: fields.visible === true || fields.Visible === true || fields.public === true || fields.Public === true || fields['Public?'] === true,
-      color: fields.color || fields.Color || 'teal',
+      // Bookmarkable - breaks are not bookmarkable by default
+      isBookmarkable: fields.is_bookmarkable !== false && type !== 'break',
+      // Order for sorting
+      order: fields.Order || fields.order || index + 1,
+      // Visible - Omni uses "Visible" checkbox
+      visible: fields.Visible !== false && fields.visible !== false,
+      // Color for styling
+      color: fields.Color || fields.color || 'teal',
     };
   });
 

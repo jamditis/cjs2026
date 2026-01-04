@@ -14,9 +14,9 @@ on:
   # Manual trigger from GitHub Actions UI
   workflow_dispatch:
 
-  # Webhook trigger (for Airtable automation)
+  # Webhook trigger (from CMS publish button in admin panel)
   repository_dispatch:
-    types: [deploy]
+    types: [deploy, cms_publish]
 
 jobs:
   build-and-deploy:
@@ -35,10 +35,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Generate content from Airtable
-        run: npm run generate-all
-        env:
-          AIRTABLE_API_KEY: ${{ secrets.AIRTABLE_API_KEY }}
+      # Generate content from Firestore CMS
+      - name: Generate content from Firestore
+        run: |
+          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > service-account.json
+          npm run generate-from-firestore
+          rm service-account.json
 
       - name: Build site
         run: npm run build
@@ -57,3 +59,18 @@ jobs:
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           channelId: live
           projectId: cjs2026
+
+      # Update CMS publish queue status (for cms_publish events from admin panel)
+      - name: Update publish status - Success
+        if: github.event_name == 'repository_dispatch' && github.event.action == 'cms_publish' && success()
+        run: |
+          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > service-account.json
+          node scripts/update-publish-status.cjs "${{ github.event.client_payload.queueId }}" "success" "${{ github.sha }}"
+          rm service-account.json
+
+      - name: Update publish status - Failure
+        if: github.event_name == 'repository_dispatch' && github.event.action == 'cms_publish' && failure()
+        run: |
+          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > service-account.json
+          node scripts/update-publish-status.cjs "${{ github.event.client_payload.queueId }}" "failed"
+          rm service-account.json

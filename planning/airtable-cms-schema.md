@@ -32,7 +32,7 @@ This table stores all the text content for the site, organized by section and fi
 | hero | headline | Collaborative Journalism Summit |
 | hero | tagline | Prepare to partner. |
 | hero | date_display | June 8–9, 2026 |
-| hero | location | Chapel Hill, North Carolina |
+| hero | location | Pittsburgh, Pennsylvania |
 | hero | badge_text | 10th anniversary edition |
 | hero | registration_note | Registration opens soon |
 | details | section_headline | Save the date |
@@ -41,8 +41,8 @@ This table stores all the text content for the site, organized by section and fi
 | details | when_day1_note | Full day of sessions + dinner |
 | details | when_day2 | Tuesday, June 9 |
 | details | when_day2_note | Morning workshops |
-| details | venue_name | UNC Friday Center |
-| details | venue_location | Chapel Hill, North Carolina |
+| details | venue_name | Pittsburgh venue TBA |
+| details | venue_location | Pittsburgh, Pennsylvania |
 | details | venue_note | Co-located with INN Days |
 | details | attendees | 130–150 attendees |
 | details | attendees_note | Journalists, media leaders, funders, and academics |
@@ -88,10 +88,10 @@ Core event information that appears in multiple places.
 | summit_start_date | 2026-06-08 | June 8, 2026 |
 | summit_end_date | 2026-06-09 | June 9, 2026 |
 | summit_date_range | 2026-06-08/2026-06-09 | June 8–9, 2026 |
-| venue_name | UNC Friday Center | UNC Friday Center |
-| venue_city | Chapel Hill | Chapel Hill |
-| venue_state | NC | North Carolina |
-| venue_full | UNC Friday Center, Chapel Hill, NC | UNC Friday Center, Chapel Hill, North Carolina |
+| venue_name | Pittsburgh venue TBA | Pittsburgh venue TBA |
+| venue_city | Pittsburgh | Pittsburgh |
+| venue_state | PA | Pennsylvania |
+| venue_full | Pittsburgh, PA | Pittsburgh, Pennsylvania |
 | expected_attendees | 150 | 130–150 attendees |
 | registration_status | coming_soon | Registration opens soon |
 

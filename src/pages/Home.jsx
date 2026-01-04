@@ -286,9 +286,9 @@ function Home() {
           <svg className="absolute bottom-0 w-full h-48 opacity-[0.05]" viewBox="0 0 1200 150" preserveAspectRatio="none">
             <path d="M0 150 L0 100 L200 50 L400 90 L600 30 L800 70 L1000 45 L1200 80 L1200 150 Z" fill="#2C3E50"/>
           </svg>
-          {/* NC Map accent - centered */}
+          {/* PA Map accent - centered */}
           <motion.img
-            src="/nc-map.png"
+            src="/pa-map.png"
             alt=""
             className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] md:w-[700px] lg:w-[900px] opacity-[0.08]"
             initial={{ opacity: 0, scale: 0.9 }}
@@ -334,7 +334,7 @@ function Home() {
               transition={{ delay: 0.6 }}
             >
                <p className="font-body text-lg md:text-xl text-brand-ink/70 mb-1">{getContent('details', 'date_display', 'June 8–9, 2026')}</p>
-               <p className="font-body text-brand-ink/50 mb-10">{getContent('details', 'location', 'Chapel Hill, North Carolina')}</p>
+               <p className="font-body text-brand-ink/50 mb-10">{getContent('details', 'location', 'Pittsburgh, Pennsylvania')}</p>
             </motion.div>
 
             {/* Announcement + Anniversary badge */}
@@ -410,15 +410,15 @@ function Home() {
             <InfoCard icon={MapPin} title="Where" delay={0.1} color={getContentMeta('details', 'venue_name')?.color || 'teal'}>
               <p>
                 <a
-                  href="https://maps.google.com/?q=UNC+Friday+Center,+Chapel+Hill,+NC"
+                  href="https://maps.google.com/?q=Pittsburgh,+PA"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="font-semibold hover:text-brand-teal transition-colors underline decoration-brand-ink/30 hover:decoration-brand-teal"
                 >
-                  {getContent('details', 'venue_name', 'UNC Friday Center')}
+                  {getContent('details', 'venue_name', 'Pittsburgh venue TBA')}
                 </a>
               </p>
-              <p className="text-sm">{getContent('details', 'venue_location', 'Chapel Hill, North Carolina')}</p>
+              <p className="text-sm">{getContent('details', 'venue_location', 'Pittsburgh, Pennsylvania')}</p>
               <p className="text-sm mt-2 text-brand-ink/50">{getContent('details', 'venue_note', 'Co-located with INN Days')}</p>
             </InfoCard>
 
@@ -613,7 +613,7 @@ function Home() {
       <footer id="updates" className="py-16 px-6 bg-parchment">
         <div className="max-w-4xl mx-auto text-center">
           <div className="mb-10">
-            <h3 className="font-heading font-semibold text-2xl text-brand-ink mb-2">{getContent('footer', 'signup_headline', 'Join us in Chapel Hill')}</h3>
+            <h3 className="font-heading font-semibold text-2xl text-brand-ink mb-2">{getContent('footer', 'signup_headline', 'Join us in Pittsburgh')}</h3>
             <p className="text-brand-ink/60 mb-6 font-body">{getContent('footer', 'signup_description', 'Secure your spot at the 10th anniversary summit.')}</p>
             <EmailSignup />
           </div>

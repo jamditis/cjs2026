@@ -13,15 +13,15 @@ Save-the-date announcement for the 10th anniversary Collaborative Journalism Sum
 **Subject line options:**
 - Save the date: 2026 Collaborative Journalism Summit
 - CJS turns 10 — save the date for June 2026
-- Prepare to partner: CJS 2026 is coming to North Carolina
+- Prepare to partner: CJS 2026 is coming to Pittsburgh
 
 **Body:**
 
-The 2026 Collaborative Journalism Summit is coming to Chapel Hill, North Carolina on June 8–9, 2026 — and this year marks our 10th anniversary.
+The 2026 Collaborative Journalism Summit is coming to Pittsburgh, Pennsylvania on June 8–9, 2026 — and this year marks our 10th anniversary.
 
 Since 2017, the Collaborative Journalism Summit has brought together journalists, funders, researchers, and media leaders to explore how we can work together in the public interest. Over the past decade, we've hosted nearly 1,500 attendees across 8 cities, building a community committed to the idea that journalism is stronger when we collaborate.
 
-For our 10th edition, we're returning to the Southeast and co-locating with INN Days (June 9–11) at UNC Chapel Hill's Friday Center.
+For our 10th edition, we're heading to Pittsburgh and co-locating with INN Days (June 9–11).
 
 **What to expect:**
 - Keynote sessions and lightning talks on Monday
@@ -33,7 +33,7 @@ Registration opens in early 2026. Sign up now to get updates on programming, spe
 
 **Save the date:** https://collaborativejournalism.org/cjs2026
 
-See you in Chapel Hill.
+See you in Pittsburgh.
 
 — The Center for Cooperative Media + Institute for Nonprofit News
 
@@ -43,7 +43,7 @@ See you in Chapel Hill.
 
 ### Twitter/X (short)
 
-Save the date: The 2026 Collaborative Journalism Summit is coming to Chapel Hill, NC on June 8–9.
+Save the date: The 2026 Collaborative Journalism Summit is coming to Pittsburgh, PA on June 8–9.
 
 This year marks our 10th anniversary — a decade of bringing journalists together to work in the public interest.
 
@@ -52,14 +52,14 @@ Sign up for updates: https://collaborativejournalism.org/cjs2026
 ### Twitter/X (thread)
 
 **Tweet 1:**
-Save the date: The 2026 Collaborative Journalism Summit is coming to Chapel Hill, North Carolina on June 8–9, 2026.
+Save the date: The 2026 Collaborative Journalism Summit is coming to Pittsburgh, Pennsylvania on June 8–9, 2026.
 
 This year marks our 10th anniversary.
 
 **Tweet 2:**
 Since 2017, we've hosted nearly 1,500 attendees across 8 cities — from Montclair to Philadelphia, Chicago to Denver.
 
-For our 10th edition, we're heading to the Southeast and co-locating with @INNnerds Days at UNC Chapel Hill.
+For our 10th edition, we're heading to Pittsburgh and co-locating with @INNnerds Days.
 
 **Tweet 3:**
 Prepare to partner.
@@ -70,11 +70,11 @@ https://collaborativejournalism.org/cjs2026
 
 ### LinkedIn
 
-I'm excited to share that the 2026 Collaborative Journalism Summit will take place June 8–9 in Chapel Hill, North Carolina — and this year marks our 10th anniversary.
+I'm excited to share that the 2026 Collaborative Journalism Summit will take place June 8–9 in Pittsburgh, Pennsylvania — and this year marks our 10th anniversary.
 
 Since the first summit in 2017, we've brought together nearly 1,500 journalists, funders, researchers, and media leaders across 8 cities to explore how collaborative journalism can serve the public interest.
 
-For our 10th edition, we're co-locating with INN Days at UNC Chapel Hill's Friday Center. The summit will feature keynote sessions, lightning talks, and hands-on workshops for both newcomers and experienced collaborators.
+For our 10th edition, we're co-locating with INN Days in Pittsburgh. The summit will feature keynote sessions, lightning talks, and hands-on workshops for both newcomers and experienced collaborators.
 
 Registration opens in early 2026. If you're interested in attending, speaking, or sponsoring, sign up for updates at the link below.
 
@@ -82,7 +82,7 @@ https://collaborativejournalism.org/cjs2026
 
 ### Bluesky
 
-The 2026 Collaborative Journalism Summit is coming to Chapel Hill, NC on June 8–9 — our 10th anniversary edition.
+The 2026 Collaborative Journalism Summit is coming to Pittsburgh, PA on June 8–9 — our 10th anniversary edition.
 
 A decade of bringing journalists together to work in the public interest.
 
@@ -92,15 +92,15 @@ Save the date and sign up for updates: collaborativejournalism.org/cjs2026
 
 **Caption:**
 
-Save the date: The 2026 Collaborative Journalism Summit is heading to Chapel Hill, North Carolina on June 8–9, 2026.
+Save the date: The 2026 Collaborative Journalism Summit is heading to Pittsburgh, Pennsylvania on June 8–9, 2026.
 
 This year marks our 10th anniversary — a decade of bringing journalists together to work in the public interest.
 
-Since 2017, we've hosted nearly 1,500 attendees across 8 cities. For our 10th edition, we're co-locating with INN Days at UNC Chapel Hill.
+Since 2017, we've hosted nearly 1,500 attendees across 8 cities. For our 10th edition, we're co-locating with INN Days in Pittsburgh.
 
 Registration opens in early 2026. Link in bio to sign up for updates.
 
-#CollaborativeJournalism #CJS2026 #Journalism #MediaCollaboration #NorthCarolina
+#CollaborativeJournalism #CJS2026 #Journalism #MediaCollaboration #Pittsburgh
 
 ---
 
@@ -108,7 +108,7 @@ Registration opens in early 2026. Link in bio to sign up for updates.
 
 **Headline:** Save the date: 2026 Collaborative Journalism Summit
 
-The 10th annual Collaborative Journalism Summit will take place June 8–9, 2026 in Chapel Hill, North Carolina, co-located with INN Days at UNC Chapel Hill's Friday Center.
+The 10th annual Collaborative Journalism Summit will take place June 8–9, 2026 in Pittsburgh, Pennsylvania, co-located with INN Days.
 
 Since 2017, the summit has brought together journalists, funders, and media leaders to explore collaborative approaches to journalism. Registration opens in early 2026.
 
@@ -121,7 +121,7 @@ Sign up for updates: https://collaborativejournalism.org/cjs2026
 Hey everyone — save the date for the 2026 Collaborative Journalism Summit!
 
 **When:** June 8–9, 2026
-**Where:** Chapel Hill, North Carolina (UNC Friday Center)
+**Where:** Pittsburgh, Pennsylvania (venue TBA)
 **What:** Our 10th anniversary edition, co-located with INN Days
 
 Registration opens in early 2026. Sign up for updates here: https://collaborativejournalism.org/cjs2026
@@ -132,15 +132,15 @@ Registration opens in early 2026. Sign up for updates here: https://collaborativ
 
 **FOR IMMEDIATE RELEASE**
 
-**10th annual Collaborative Journalism Summit set for June 2026 in North Carolina**
+**10th annual Collaborative Journalism Summit set for June 2026 in Pittsburgh**
 
-*Landmark event will co-locate with INN Days at UNC Chapel Hill*
+*Landmark event will co-locate with INN Days in Pittsburgh*
 
-CHAPEL HILL, NC — The Center for Cooperative Media and the Institute for Nonprofit News announced today that the 2026 Collaborative Journalism Summit will take place June 8–9, 2026 at UNC Chapel Hill's Friday Center in North Carolina.
+PITTSBURGH, PA — The Center for Cooperative Media and the Institute for Nonprofit News announced today that the 2026 Collaborative Journalism Summit will take place June 8–9, 2026 in Pittsburgh, Pennsylvania.
 
 The event marks the 10th anniversary of the summit, which launched in 2017 in Montclair, New Jersey. Over the past decade, the summit has hosted nearly 1,500 attendees across eight cities, establishing itself as the premier gathering for journalists exploring collaborative approaches to public interest journalism.
 
-"For ten years, the Collaborative Journalism Summit has been a place where journalists come to learn from each other and build partnerships," said Stefanie Murray, director of the Center for Cooperative Media. "We're excited to celebrate this milestone in North Carolina and continue growing this community."
+"For ten years, the Collaborative Journalism Summit has been a place where journalists come to learn from each other and build partnerships," said Stefanie Murray, director of the Center for Cooperative Media. "We're excited to celebrate this milestone in Pittsburgh and continue growing this community."
 
 The 2026 summit will co-locate with INN Days, the Institute for Nonprofit News's annual conference, which runs June 9–11. Attendees can participate in both events.
 
@@ -182,7 +182,7 @@ Secondary: #Journalism #MediaCollaboration #NorthCarolina #ChapelHill
 ## Key messages
 
 1. **10th anniversary** — A decade of bringing journalists together
-2. **Chapel Hill, NC** — June 8–9, 2026 at UNC Friday Center
+2. **Pittsburgh, PA** — June 8–9, 2026 (venue TBA)
 3. **Co-located with INN Days** — Two events, one trip
 4. **Registration opens early 2026** — Sign up now for updates
 5. **"Prepare to partner"** — The tagline

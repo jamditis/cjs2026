@@ -40,8 +40,8 @@ The Collaborative Journalism Summit (CJS) is the premier annual gathering for jo
 ### CJS2026 context
 
 - **10th anniversary milestone** — CJS2026 marks a decade of bringing the collaborative journalism community together
-- **Location**: Charlotte or Raleigh, North Carolina (pending final confirmation with INN)
-- **Timing**: June/July 2026
+- **Location**: Pittsburgh, Pennsylvania
+- **Timing**: June 8–9, 2026
 - **Partnership**: Co-located with the Institute for Nonprofit News (INN)
 - **Format evolution**: Moving to a one-day intensive format with optional post-event workshops
 

@@ -100,10 +100,10 @@ const additionalOpportunities = [
     description: 'Underwrite our Monday dinner with keynote speaker and recognition for top collaborations. Includes a speaking slot if desired.',
   },
   {
-    name: 'North Carolina welcome gift',
+    name: 'Pittsburgh welcome gift',
     price: '$5,000',
     icon: Gift,
-    description: 'Welcome participants with NC BBQ sauce and locally-handcrafted wooden utensils. Your name included on the gift bags!',
+    description: 'Welcome participants with Pittsburgh-themed goodies and locally-crafted items. Your name included on the gift bags!',
   },
   {
     name: 'Mini safety kits',
