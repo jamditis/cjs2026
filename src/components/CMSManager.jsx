@@ -216,13 +216,14 @@ export default function CMSManager({ currentUser, userRole, isInk }) {
       </div>
 
       {/* Sub-navigation */}
-      <div className="flex gap-2 flex-wrap">
+      <div className="flex gap-2 flex-wrap" data-tour="cms-tabs">
         {subTabs.map(tab => {
           const Icon = tab.icon
           return (
             <button
               key={tab.id}
               onClick={() => setActiveSubTab(tab.id)}
+              data-tour={tab.id === 'publish' ? 'publish-tab' : undefined}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all font-admin-body text-sm ${
                 activeSubTab === tab.id
                   ? 'bg-admin-teal text-white shadow-lg shadow-admin-teal/25'
