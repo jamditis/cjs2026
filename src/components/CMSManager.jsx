@@ -760,29 +760,31 @@ function CMSContentEditor({ currentUser, isSuperAdmin, onPendingChange, showToas
                             className="flex items-center gap-2 mr-3 flex-shrink-0"
                             {...(sectionIndex === 0 && index === 0 ? { 'data-tour': 'reorder-controls' } : {})}
                           >
-                            <div className="flex flex-col gap-0.5">
+                            <div className="flex flex-col gap-1">
                               <button
                                 onClick={() => handleReorder(items, index, index - 1, section.id)}
                                 disabled={index === 0 || reordering}
-                                className="p-1 rounded hover:bg-[var(--admin-glass-bg)] text-[var(--admin-text-muted)] hover:text-admin-teal disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                                aria-label="Move item up"
+                                className="p-2 rounded hover:bg-[var(--admin-glass-bg)] text-[var(--admin-text-muted)] hover:text-admin-teal disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                                 title="Move up"
                               >
                                 {reordering ? (
-                                  <Loader2 className="w-3 h-3 animate-spin" />
+                                  <Loader2 className="w-4 h-4 animate-spin" />
                                 ) : (
-                                  <ArrowUp className="w-3 h-3" />
+                                  <ArrowUp className="w-4 h-4" />
                                 )}
                               </button>
                               <button
                                 onClick={() => handleReorder(items, index, index + 1, section.id)}
                                 disabled={index === items.length - 1 || reordering}
-                                className="p-1 rounded hover:bg-[var(--admin-glass-bg)] text-[var(--admin-text-muted)] hover:text-admin-teal disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                                aria-label="Move item down"
+                                className="p-2 rounded hover:bg-[var(--admin-glass-bg)] text-[var(--admin-text-muted)] hover:text-admin-teal disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                                 title="Move down"
                               >
                                 {reordering ? (
-                                  <Loader2 className="w-3 h-3 animate-spin" />
+                                  <Loader2 className="w-4 h-4 animate-spin" />
                                 ) : (
-                                  <ArrowDown className="w-3 h-3" />
+                                  <ArrowDown className="w-4 h-4" />
                                 )}
                               </button>
                             </div>

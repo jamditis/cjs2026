@@ -1940,15 +1940,13 @@ function Dashboard() {
                       >
                         {saving ? 'Saving...' : 'Save profile'}
                       </button>
-                      {!isProfileIncomplete && (
-                        <button
-                          type="button"
-                          onClick={() => setEditing(false)}
-                          className="py-2 px-4 text-sm border-2 border-brand-ink/20 rounded-lg font-body text-brand-ink hover:border-brand-ink/40 transition-colors"
-                        >
-                          Cancel
-                        </button>
-                      )}
+                      <button
+                        type="button"
+                        onClick={() => setEditing(false)}
+                        className="py-2 px-4 text-sm border-2 border-brand-ink/20 rounded-lg font-body text-brand-ink hover:border-brand-ink/40 transition-colors"
+                      >
+                        {isProfileIncomplete ? 'Skip for now' : 'Cancel'}
+                      </button>
                     </div>
                   </form>
                 ) : (

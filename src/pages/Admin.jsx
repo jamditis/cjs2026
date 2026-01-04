@@ -1152,12 +1152,17 @@ function BroadcastTab({ currentUser, isInk }) {
   }
 
   async function toggleActive(announcement) {
+    const action = announcement.active ? 'deactivate' : 'activate'
+    if (!window.confirm(`${action.charAt(0).toUpperCase() + action.slice(1)} this announcement? ${announcement.active ? 'It will no longer appear on the site.' : 'It will appear on the site immediately.'}`)) {
+      return
+    }
     try {
       await updateDoc(doc(db, 'announcements', announcement.id), {
         active: !announcement.active
       })
     } catch (err) {
       console.error('Failed to toggle announcement:', err)
+      alert(`Failed to ${action} announcement: ${err.message}`)
     }
   }
 

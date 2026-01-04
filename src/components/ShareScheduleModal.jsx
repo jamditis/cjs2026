@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, Share2, Link2, Check, Globe, Users, Lock, Copy } from 'lucide-react'
+import { X, Share2, Link2, Check, Globe, Users, Lock, Copy, AlertTriangle, Loader2 } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
+import { useToast } from '../contexts/ToastContext'
 
 const VISIBILITY_OPTIONS = [
   {
@@ -26,18 +27,35 @@ const VISIBILITY_OPTIONS = [
 
 function ShareScheduleModal({ isOpen, onClose }) {
   const { currentUser, userProfile, updateScheduleVisibility } = useAuth()
+  const toast = useToast()
   const [copied, setCopied] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [confirmingVisibility, setConfirmingVisibility] = useState(null)
 
   const currentVisibility = userProfile?.scheduleVisibility || 'private'
   const shareUrl = `${window.location.origin}/schedule/user/${currentUser?.uid}`
 
+  // Check if new visibility is more public than current
+  const isMorePublic = (newVis, currentVis) => {
+    const order = { private: 0, attendees_only: 1, public: 2 }
+    return order[newVis] > order[currentVis]
+  }
+
   const handleVisibilityChange = async (visibility) => {
+    // If making more public, show confirmation first
+    if (isMorePublic(visibility, currentVisibility) && !confirmingVisibility) {
+      setConfirmingVisibility(visibility)
+      return
+    }
+
     setSaving(true)
+    setConfirmingVisibility(null)
     try {
       await updateScheduleVisibility(visibility)
+      toast.success('Visibility updated')
     } catch (err) {
       console.error('Error updating visibility:', err)
+      toast.error('Failed to update visibility')
     } finally {
       setSaving(false)
     }
@@ -50,6 +68,7 @@ function ShareScheduleModal({ isOpen, onClose }) {
       setTimeout(() => setCopied(false), 2000)
     } catch (err) {
       console.error('Failed to copy:', err)
+      toast.error('Failed to copy link to clipboard')
     }
   }
 
@@ -97,6 +116,7 @@ function ShareScheduleModal({ isOpen, onClose }) {
               </div>
               <button
                 onClick={onClose}
+                aria-label="Close dialog"
                 className="p-2 hover:bg-brand-ink/5 rounded-full transition-colors"
               >
                 <X className="w-5 h-5 text-brand-ink/50" />
@@ -105,6 +125,45 @@ function ShareScheduleModal({ isOpen, onClose }) {
 
             {/* Content */}
             <div className="p-6 space-y-6">
+              {/* Confirmation banner for making schedule more public */}
+              {confirmingVisibility && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="p-4 rounded-lg bg-amber-50 border-2 border-amber-200"
+                >
+                  <div className="flex items-start gap-3">
+                    <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                    <div className="flex-1">
+                      <p className="font-heading font-semibold text-amber-800">
+                        Make your schedule {confirmingVisibility === 'public' ? 'public' : 'visible to attendees'}?
+                      </p>
+                      <p className="font-body text-sm text-amber-700 mt-1">
+                        {confirmingVisibility === 'public'
+                          ? 'Anyone with the link will be able to see your saved sessions.'
+                          : 'Other CJS attendees will be able to see your saved sessions.'}
+                      </p>
+                      <div className="flex gap-2 mt-3">
+                        <button
+                          onClick={() => setConfirmingVisibility(null)}
+                          className="px-3 py-1.5 rounded-lg font-body text-sm bg-white border border-amber-300 text-amber-800 hover:bg-amber-50 transition-colors"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          onClick={() => handleVisibilityChange(confirmingVisibility)}
+                          disabled={saving}
+                          className="px-3 py-1.5 rounded-lg font-body text-sm bg-amber-600 text-white hover:bg-amber-700 transition-colors flex items-center gap-2"
+                        >
+                          {saving && <Loader2 className="w-3 h-3 animate-spin" />}
+                          Yes, make {confirmingVisibility === 'public' ? 'public' : 'visible'}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
               {/* Visibility options */}
               <div className="space-y-2">
                 <p className="font-body text-sm text-brand-ink/70 mb-3">
@@ -113,16 +172,19 @@ function ShareScheduleModal({ isOpen, onClose }) {
                 {VISIBILITY_OPTIONS.map((option) => {
                   const Icon = option.icon
                   const isSelected = currentVisibility === option.id
+                  const isConfirming = confirmingVisibility === option.id
                   return (
                     <button
                       key={option.id}
                       onClick={() => handleVisibilityChange(option.id)}
-                      disabled={saving}
+                      disabled={saving || confirmingVisibility}
                       className={`w-full p-4 rounded-lg border-2 transition-all text-left flex items-start gap-3 ${
                         isSelected
                           ? 'border-brand-teal bg-brand-teal/5'
-                          : 'border-brand-ink/10 hover:border-brand-ink/20'
-                      }`}
+                          : isConfirming
+                            ? 'border-amber-400 bg-amber-50'
+                            : 'border-brand-ink/10 hover:border-brand-ink/20'
+                      } ${(saving || confirmingVisibility) ? 'opacity-60 cursor-not-allowed' : ''}`}
                     >
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
                         isSelected ? 'bg-brand-teal text-white' : 'bg-brand-ink/5 text-brand-ink/50'

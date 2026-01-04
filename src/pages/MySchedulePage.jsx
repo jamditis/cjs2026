@@ -74,6 +74,7 @@ function MySchedulePage() {
                       disabled={generatingPDF}
                       className="btn-secondary text-sm flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                       title="Download as PDF"
+                      aria-label="Download schedule as PDF"
                     >
                       {generatingPDF ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
@@ -87,6 +88,7 @@ function MySchedulePage() {
                     <button
                       onClick={() => setShowShareModal(true)}
                       className="btn-secondary text-sm flex items-center gap-2"
+                      aria-label="Share your schedule"
                     >
                       <Share2 className="w-4 h-4" />
                       <span className="hidden sm:inline">Share</span>

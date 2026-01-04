@@ -150,7 +150,6 @@ function SessionCard({ session, index = 0, showSaveButton = true, compact = fals
     if (newSavedState) {
       const conflicts = findConflicts(session, userProfile?.savedSessions)
       if (conflicts.length > 0) {
-        const conflictTitles = conflicts.map(c => c.title).join(', ')
         toast.warning(`Schedule conflict: This session overlaps with "${conflicts[0].title}"${conflicts.length > 1 ? ` and ${conflicts.length - 1} other(s)` : ''}`)
         // Still allow saving - just warn the user
       }
@@ -163,13 +162,39 @@ function SessionCard({ session, index = 0, showSaveButton = true, compact = fals
     try {
       if (newSavedState) {
         await saveSession(session.id)
+        toast.success('Session added to your schedule')
       } else {
         await unsaveSession(session.id)
+        // Show toast with undo option for removal
+        toast.info(
+          <div className="flex items-center justify-between gap-3">
+            <span>Session removed</span>
+            <button
+              onClick={async () => {
+                setLocalSaved(true)
+                setSaving(true)
+                try {
+                  await saveSession(session.id)
+                } catch (err) {
+                  setLocalSaved(false)
+                  console.error('Undo failed:', err)
+                } finally {
+                  setSaving(false)
+                }
+              }}
+              className="px-2 py-1 text-xs font-medium bg-white/20 hover:bg-white/30 rounded transition-colors"
+            >
+              Undo
+            </button>
+          </div>,
+          { duration: 5000 }
+        )
       }
     } catch (error) {
       // Revert on error
       console.error('Error toggling save:', error)
       setLocalSaved(!newSavedState)
+      toast.error('Failed to update schedule')
     } finally {
       setSaving(false)
     }
