@@ -362,7 +362,13 @@ function AdminPanel() {
 
         {/* Navigation */}
         <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto admin-scrollbar">
-          {NAV_ITEMS.map((item) => {
+          {NAV_ITEMS
+            .filter(item => {
+              // Only super_admins can see the Admins tab
+              if (item.id === 'admins' && userProfile?.role !== 'super_admin') return false
+              return true
+            })
+            .map((item) => {
             const Icon = item.icon
             const isActive = activeTab === item.id
             return (
@@ -476,7 +482,13 @@ function AdminPanel() {
                 </button>
               </div>
               <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
-                {NAV_ITEMS.map((item) => {
+                {NAV_ITEMS
+                  .filter(item => {
+                    // Only super_admins can see the Admins tab
+                    if (item.id === 'admins' && userProfile?.role !== 'super_admin') return false
+                    return true
+                  })
+                  .map((item) => {
                   const Icon = item.icon
                   const isActive = activeTab === item.id
                   return (

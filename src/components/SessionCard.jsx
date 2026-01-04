@@ -222,21 +222,21 @@ function SessionCard({ session, index = 0, showSaveButton = true, compact = fals
               <button
                 onClick={handleToggleSave}
                 disabled={saving}
-                className={`p-1.5 rounded-full transition-colors ${
+                className={`min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full transition-colors ${
                   localSaved
                     ? 'bg-brand-teal/20 text-brand-teal'
                     : 'bg-brand-ink/5 text-brand-ink/40 hover:text-brand-teal hover:bg-brand-teal/10'
                 } ${saving ? 'opacity-50' : ''}`}
                 title={localSaved ? 'Remove from my schedule' : 'Add to my schedule'}
               >
-                {localSaved ? <BookmarkCheck className="w-4 h-4" /> : <Bookmark className="w-4 h-4" />}
+                {localSaved ? <BookmarkCheck className="w-5 h-5" /> : <Bookmark className="w-5 h-5" />}
               </button>
             ) : bookmarkBlockReason ? (
               <span
-                className="p-1.5 rounded-full bg-brand-ink/5 text-brand-ink/30 cursor-help"
+                className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full bg-brand-ink/5 text-brand-ink/30 cursor-help"
                 title={bookmarkBlockReason}
               >
-                <Bookmark className="w-4 h-4" />
+                <Bookmark className="w-5 h-5" />
               </span>
             ) : null}
           </div>
@@ -301,21 +301,21 @@ function SessionCard({ session, index = 0, showSaveButton = true, compact = fals
               <button
                 onClick={handleToggleSave}
                 disabled={saving}
-                className={`p-1.5 rounded-full transition-all ${
+                className={`min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full transition-all ${
                   localSaved
                     ? 'bg-brand-teal text-white shadow-md'
                     : 'bg-brand-ink/5 text-brand-ink/40 hover:text-brand-teal hover:bg-brand-teal/10'
                 } ${saving ? 'opacity-50' : ''}`}
                 title={localSaved ? 'Remove from my schedule' : 'Add to my schedule'}
               >
-                {localSaved ? <BookmarkCheck className="w-4 h-4" /> : <Bookmark className="w-4 h-4" />}
+                {localSaved ? <BookmarkCheck className="w-5 h-5" /> : <Bookmark className="w-5 h-5" />}
               </button>
             ) : bookmarkBlockReason ? (
               <span
-                className="p-1.5 rounded-full bg-brand-ink/5 text-brand-ink/30 cursor-help"
+                className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full bg-brand-ink/5 text-brand-ink/30 cursor-help"
                 title={bookmarkBlockReason}
               >
-                <Bookmark className="w-4 h-4" />
+                <Bookmark className="w-5 h-5" />
               </span>
             ) : null}
           </div>

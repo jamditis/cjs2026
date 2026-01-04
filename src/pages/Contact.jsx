@@ -1,6 +1,7 @@
 import React from 'react'
 import { motion } from 'framer-motion'
-import { Mail, MapPin, Globe, Twitter, ExternalLink } from 'lucide-react'
+import { Mail, MapPin, Globe, Twitter, ExternalLink, ArrowRight } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import { ContactSEO } from '../components'
@@ -158,11 +159,15 @@ function Contact() {
               Frequently asked questions
             </h2>
             <p className="font-body text-brand-ink/70 mb-4">
-              Have questions about registration, travel, or the event? Check out our FAQ section (coming soon) or reach out directly.
+              Have questions about registration, travel, or the event? Check out our FAQ section or reach out directly.
             </p>
-            <p className="font-accent text-brand-teal">
-              FAQ page coming in early 2026
-            </p>
+            <Link
+              to="/faq"
+              className="inline-flex items-center gap-2 font-accent text-brand-teal hover:text-brand-ink transition-colors"
+            >
+              View FAQ
+              <ArrowRight className="w-4 h-4" />
+            </Link>
           </div>
         </motion.div>
       </div>

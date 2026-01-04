@@ -1,5 +1,21 @@
 import jsPDF from 'jspdf'
 
+// Format ISO time string to readable format (e.g., "9:30 AM")
+function formatTime(timeStr) {
+  if (!timeStr) return null
+  try {
+    const date = new Date(timeStr)
+    if (isNaN(date.getTime())) return null
+    return date.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    })
+  } catch {
+    return null
+  }
+}
+
 // Brand colors from Tailwind config
 const COLORS = {
   teal: [42, 157, 143],       // #2A9D8F
@@ -123,15 +139,16 @@ export function generateSchedulePDF({ sessions, userProfile }) {
 
     let cardY = yPos + 5
 
-    // Time badge
-    if (session.time) {
+    // Time badge - format from startTime ISO string
+    const timeDisplay = formatTime(session.startTime)
+    if (timeDisplay) {
       doc.setFillColor(...COLORS.teal)
-      const timeWidth = doc.getTextWidth(session.time) + 6
+      const timeWidth = doc.getTextWidth(timeDisplay) + 6
       doc.roundedRect(margin + 4, cardY - 2, Math.max(timeWidth, 25), 7, 1, 1, 'F')
       doc.setTextColor(255, 255, 255)
       doc.setFontSize(8)
       doc.setFont('helvetica', 'bold')
-      doc.text(session.time, margin + 7, cardY + 3)
+      doc.text(timeDisplay, margin + 7, cardY + 3)
     }
 
     // Room (right side)
