@@ -74,6 +74,8 @@ Each content block has up/down arrow buttons on the left side:
 
 Order changes are saved immediately to the database.
 
+**Undo:** Press **Ctrl+Z** (or **Cmd+Z** on Mac) to undo reorder actions. You can also click the "Undo" button in the header. Up to 10 recent actions can be undone.
+
 ### Deleting content
 
 1. Click the trash icon on the content block

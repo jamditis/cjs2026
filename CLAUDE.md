@@ -64,9 +64,14 @@ getContentMeta('hero', 'headline')?.color   // Get metadata
 | File | Purpose |
 |------|---------|
 | `src/pages/Admin.jsx` | Admin command center |
-| `src/components/CMSManager.jsx` | CMS editing interface |
+| `src/components/CMSManager.jsx` | CMS editing interface (with undo support) |
 | `src/contexts/AuthContext.jsx` | Auth + user profiles |
+| `src/contexts/ToastContext.jsx` | Toast notifications |
+| `src/contexts/ContentContext.jsx` | CMS content provider |
 | `src/pages/Home.jsx` | Homepage (uses CMS content) |
+| `src/pages/FAQ.jsx` | Frequently asked questions |
+| `src/utils/generateSchedulePDF.js` | PDF schedule export |
+| `src/utils/validation.js` | Input validation |
 | `functions/index.js` | Cloud Functions |
 | `firestore.rules` | Security rules |
 
@@ -95,6 +100,8 @@ firebase deploy --only firestore:rules  # Rules only
 | `/admin` | Required | admin/super_admin |
 | `/my-schedule` | Required | Any |
 | `/schedule/user/:uid` | Depends | Based on visibility setting |
+| `/attendee/:uid` | Public | Any |
+| `/faq` | Public | Any |
 
 **User statuses:** `pending` → `approved`/`registered` → `confirmed`
 

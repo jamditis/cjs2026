@@ -97,10 +97,9 @@ This is the official website for CJS2026.
 | Framer Motion | Animations |
 | Firebase Hosting | Static hosting |
 | Firebase Auth | User authentication (magic links + Google OAuth) |
-| Firebase Firestore | User profiles and data |
+| Firebase Firestore | User profiles, CMS content, and data |
 | Firebase Cloud Functions | Secure API endpoints |
 | Firebase Storage | Profile photos |
-| Airtable | Headless CMS for content |
 | GitHub Actions | Automated deploys |
 
 ### Quick start
@@ -121,16 +120,24 @@ npm run deploy
 
 ### Content management
 
-The site uses Airtable as a headless CMS. Content editors can update the website directly from Airtable.
+The site uses a custom Firestore-based CMS managed through the admin panel at `/admin`. Content editors can update the website directly from the CMS interface.
+
+**CMS features:**
+- Real-time content editing with role-based access
+- Undo support for reordering (Ctrl+Z)
+- Version history and audit trail
+- One-click publish to trigger GitHub Actions deployment
 
 ```bash
-# Pull fresh content from Airtable
+# Generate static content from Firestore (for builds)
+npm run generate-from-firestore
+
+# Legacy Airtable scripts (deprecated)
 npm run generate-content       # Site content
 npm run generate-schedule      # Schedule sessions
 npm run generate-organizations # Sponsors
-npm run generate-all           # All three
 
-# Deploy with fresh content
+# Deploy
 npm run deploy
 ```
 
@@ -145,19 +152,22 @@ cjs2026/
 │   ├── pages/          # Page components
 │   └── utils/          # Utility functions
 ├── functions/          # Firebase Cloud Functions
-├── scripts/            # Airtable content generators
+├── scripts/            # Content generators and utilities
 ├── public/             # Static assets
 ├── branding/           # Design source files
 ├── planning/           # Meeting notes and context
+├── docs/               # Project documentation
 └── history/            # Archives of past summits
 ```
 
 ### Key features
 
 - **Attendee dashboard** - Profile wizard, badge system, personal schedule builder
-- **Admin panel** - User management, system monitoring, announcement banners
+- **Admin panel** - User management, system monitoring, announcement banners, CMS editor
 - **Cross-browser auth** - Works on all browsers with popup/redirect fallback
-- **CMS integration** - Airtable-powered content with one-click deploys
+- **Custom CMS** - Firestore-based content management with role-based access
+- **PDF export** - Download personal schedule as PDF
+- **Schedule sharing** - Share your schedule with visibility controls (private/attendees/public)
 
 ---
 
@@ -172,14 +182,19 @@ VITE_FIREBASE_PROJECT_ID=
 VITE_FIREBASE_STORAGE_BUCKET=
 VITE_FIREBASE_MESSAGING_SENDER_ID=
 VITE_FIREBASE_APP_ID=
-AIRTABLE_API_KEY=
+
+# Legacy (deprecated - CMS now uses Firestore)
+# AIRTABLE_API_KEY=
 ```
 
 ---
 
 ## Documentation
 
-- **[CLAUDE.md](./CLAUDE.md)** - Full development documentation
+- **[CLAUDE.md](./CLAUDE.md)** - Development reference for Claude Code
+- **[docs/CMS_EDITOR_GUIDE.md](./docs/CMS_EDITOR_GUIDE.md)** - CMS editor instructions
+- **[docs/USER_PROFILE_SCHEMA.md](./docs/USER_PROFILE_SCHEMA.md)** - User data schema
+- **[docs/CHANGELOG.md](./docs/CHANGELOG.md)** - Development history
 - **[CJS_WEB_STYLE_GUIDE.md](./CJS_WEB_STYLE_GUIDE.md)** - Design system reference
 - **[GEMINI.md](./GEMINI.md)** - Notes for Gemini (frontend polish)
 
