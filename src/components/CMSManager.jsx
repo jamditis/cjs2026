@@ -29,7 +29,8 @@ import {
   ArrowUp,
   ArrowDown,
   Sparkles,
-  HelpCircle
+  HelpCircle,
+  Undo2
 } from 'lucide-react'
 import CMSTour, { TourTrigger, CMSTooltip } from './CMSTour'
 import { db } from '../firebase'
@@ -350,6 +351,8 @@ function CMSContentEditor({ currentUser, isSuperAdmin, onPendingChange, showToas
   const [expandedSections, setExpandedSections] = useState({})
   const [addToSection, setAddToSection] = useState(null) // Track which section to add new content to
   const [reordering, setReordering] = useState(false) // Track if reorder operation is in progress
+  const [undoStack, setUndoStack] = useState([]) // Stack of undoable actions
+  const [undoing, setUndoing] = useState(false) // Track if undo operation is in progress
 
   // Fetch content from Firestore
   useEffect(() => {
@@ -466,6 +469,9 @@ function CMSContentEditor({ currentUser, isSuperAdmin, onPendingChange, showToas
 
     setReordering(true)
 
+    // Save previous state for undo
+    const previousOrder = items.map((item, idx) => ({ id: item.id, order: item.order ?? idx }))
+
     try {
       // Create a new array with swapped items
       const reorderedItems = [...items]
@@ -484,7 +490,16 @@ function CMSContentEditor({ currentUser, isSuperAdmin, onPendingChange, showToas
 
       await batch.commit()
 
-      showToast('Order updated', 'success')
+      // Add to undo stack (keep last 10 actions)
+      setUndoStack(prev => [...prev.slice(-9), {
+        type: 'reorder',
+        collection: 'cmsContent',
+        sectionId,
+        previousOrder,
+        description: `Moved "${items[fromIndex].field}" ${toIndex < fromIndex ? 'up' : 'down'}`
+      }])
+
+      showToast('Order updated (Ctrl+Z to undo)', 'success')
       onPendingChange({
         collection: 'cmsContent',
         action: 'reorder',
@@ -498,6 +513,49 @@ function CMSContentEditor({ currentUser, isSuperAdmin, onPendingChange, showToas
       setReordering(false)
     }
   }
+
+  // Undo the last action
+  const handleUndo = async () => {
+    if (undoStack.length === 0 || undoing) return
+
+    const lastAction = undoStack[undoStack.length - 1]
+    setUndoing(true)
+
+    try {
+      if (lastAction.type === 'reorder') {
+        // Restore previous order
+        const batch = writeBatch(db)
+        lastAction.previousOrder.forEach(({ id, order }) => {
+          const docRef = doc(db, lastAction.collection, id)
+          batch.update(docRef, { order })
+        })
+        await batch.commit()
+        showToast('Undo successful', 'success')
+      }
+
+      // Remove from undo stack
+      setUndoStack(prev => prev.slice(0, -1))
+    } catch (error) {
+      console.error('Undo error:', error)
+      showToast(`Undo failed: ${error.message}`, 'error')
+    } finally {
+      setUndoing(false)
+    }
+  }
+
+  // Keyboard shortcut for undo (Ctrl+Z)
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+        if (undoStack.length > 0) {
+          e.preventDefault()
+          handleUndo()
+        }
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [undoStack, undoing])
 
   if (loading) {
     return (
@@ -607,13 +665,32 @@ function CMSContentEditor({ currentUser, isSuperAdmin, onPendingChange, showToas
             </div>
           </div>
         </div>
-        <button
-          onClick={() => setShowAddModal(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-admin-teal text-white rounded-lg hover:bg-admin-teal/80 transition-all font-admin-body text-sm"
-        >
-          <Plus className="w-4 h-4" />
-          Add content
-        </button>
+        <div className="flex items-center gap-2">
+          {/* Undo button - only show when there are actions to undo */}
+          {undoStack.length > 0 && (
+            <button
+              onClick={handleUndo}
+              disabled={undoing}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg admin-glass text-[var(--admin-text-muted)] hover:text-admin-amber hover:bg-admin-amber/10 transition-all font-admin-body text-sm disabled:opacity-50"
+              title={`Undo: ${undoStack[undoStack.length - 1]?.description || 'last action'} (Ctrl+Z)`}
+            >
+              {undoing ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Undo2 className="w-4 h-4" />
+              )}
+              Undo
+              <span className="text-xs opacity-60">({undoStack.length})</span>
+            </button>
+          )}
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-admin-teal text-white rounded-lg hover:bg-admin-teal/80 transition-all font-admin-body text-sm"
+          >
+            <Plus className="w-4 h-4" />
+            Add content
+          </button>
+        </div>
       </div>
 
       {/* Sections within the page */}
