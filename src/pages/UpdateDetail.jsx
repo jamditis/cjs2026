@@ -17,6 +17,11 @@ import {
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import { getUpdateBySlug, getRecentUpdates, getDaysUntil, updates as staticUpdates } from '../content/updatesData'
+
+// Redirect map for renamed slugs (old -> new)
+const SLUG_REDIRECTS = {
+  'cjs2026-chapel-hill': 'cjs2026-pittsburgh'
+}
 import { db } from '../firebase'
 import { collection, query, where, getDocs, orderBy, limit } from 'firebase/firestore'
 
@@ -84,6 +89,11 @@ function UpdateDetail() {
   const [update, setUpdate] = useState(null)
   const [loading, setLoading] = useState(true)
   const [allUpdates, setAllUpdates] = useState(staticUpdates)
+
+  // Handle slug redirects for renamed pages
+  if (SLUG_REDIRECTS[slug]) {
+    return <Navigate to={`/updates/${SLUG_REDIRECTS[slug]}`} replace />
+  }
 
   // Fetch update from Firestore, fall back to static data
   useEffect(() => {
