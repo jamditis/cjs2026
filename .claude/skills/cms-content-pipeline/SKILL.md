@@ -1,6 +1,6 @@
 ---
 name: cms-content-pipeline
-description: Master the Airtable CMS integration - content generation scripts, field mapping, and safe content modification patterns
+description: Master the Firestore CMS integration - content generation scripts, field mapping, and safe content modification patterns
 ---
 
 # CMS Content Pipeline
@@ -11,28 +11,30 @@ Use this skill when the agent needs to:
 - Add new CMS-controlled content fields
 - Understand why content isn't appearing correctly
 - Debug generate script failures
-- Modify how Airtable data maps to components
-- Add new Airtable tables to the pipeline
+- Modify how Firestore data maps to components
+- Understand the Airtable → Firestore migration
 
 ## The Content Pipeline
 
 Content flows through a **static generation pipeline**:
 
 ```
-┌─────────────────┐     ┌──────────────────┐     ┌─────────────────┐
-│ Airtable Table  │ ──► │ generate-*.cjs   │ ──► │ src/content/*.js│
-│ (Source of      │     │ (Build-time      │     │ (Static JS      │
-│  truth)         │     │  transform)      │     │  module)        │
-└─────────────────┘     └──────────────────┘     └─────────────────┘
-                                                         │
-                                                         ▼
-                                                 ┌─────────────────┐
-                                                 │ React Component │
-                                                 │ (Direct import) │
-                                                 └─────────────────┘
+┌─────────────────┐     ┌──────────────────────────┐     ┌─────────────────┐
+│ Firestore CMS   │ ──► │ generate-from-firestore  │ ──► │ src/content/*.js│
+│ (Admin Panel)   │     │ (CI/CD build-time)       │     │ (Static JS)     │
+└─────────────────┘     └──────────────────────────┘     └─────────────────┘
+        │                                                         │
+        │   OR (legacy)                                           ▼
+        │                                                ┌─────────────────┐
+┌─────────────────┐     ┌──────────────────┐            │ React Component │
+│ Airtable Table  │ ──► │ generate-*.cjs   │ ───────────│ (Direct import) │
+│ (Deprecated)    │     │ (Local dev)      │            └─────────────────┘
+└─────────────────┘     └──────────────────┘
 ```
 
 **Critical insight**: Content is NOT fetched at runtime. It's generated at build time and imported as static JavaScript modules.
+
+**CI/CD flow**: GitHub Actions runs `generate-from-firestore.cjs` which pulls from Firestore collections and generates static JS files.
 
 ## Four Content Tables
 
@@ -141,10 +143,52 @@ Field must match exactly: section + field name.
 - **cjs-architecture** - For understanding where content flows
 - **firebase-patterns** - For CloudFunction-based content (getSiteContent)
 
+## CI/CD Export Naming Convention
+
+**Critical**: The `generate-from-firestore.cjs` script must export variables that match what components import.
+
+### The Export Mismatch Bug (2026-01-04)
+
+**Problem**: CI builds failed because components imported `sessions` but the script exported `scheduleData`.
+
+```javascript
+// Component imports:
+import { sessions as allSessions } from '../content/scheduleData'
+
+// Script exported (wrong):
+export const scheduleData = [...]
+
+// Script should export (correct):
+export const sessions = [...]
+export const scheduleData = sessions  // Alias for compatibility
+```
+
+**Rule**: When modifying `generate-from-firestore.cjs`, always check what names components are importing.
+
+### Local Logo Path Pattern
+
+Sponsor logos need `localLogoPath` for static file serving:
+
+```javascript
+// In generate-from-firestore.cjs
+const slug = data.slug || data.name?.toLowerCase().replace(/\s+/g, '-');
+const localLogoPath = data.logoUrl && slug ? `/sponsor-logos/${slug}.png` : null;
+
+return {
+  // ...other fields
+  logoUrl: data.logoUrl || null,
+  localLogoPath: localLogoPath,  // For static file fallback
+};
+```
+
+Components use: `src={sponsor.localLogoPath || sponsor.logoUrl}`
+
 ## Guidelines
 
 1. Never edit `src/content/*.js` files directly - they're auto-generated
 2. Always provide meaningful fallback values in `getContent()`
 3. Document new CMS fields in CLAUDE.md before implementation
 4. Use `npm run generate-all` before deployment to ensure fresh content
-5. The ContentContext exists but is NOT used - ignore it (dead code)
+5. **Match export names to component import names** in generation scripts
+6. **Include localLogoPath** for sponsor logos to enable static fallback
+7. Test CI builds after modifying generation scripts

@@ -220,6 +220,55 @@ async function isAdmin(uid, email = null) {
 - **cjs-architecture** - For understanding full system flow
 - **cms-content-pipeline** - For Airtable sync functions
 
+## Snapshot Listener Best Practices
+
+### Auth Timing for Protected Collections
+
+**Problem**: Queries to protected collections fail with `permission-denied` if the listener starts before auth loads.
+
+```jsx
+// BAD: Runs immediately on mount, before auth is ready
+useEffect(() => {
+  const unsubscribe = onSnapshot(query, (snapshot) => { ... })
+  return () => unsubscribe()
+}, [])
+
+// GOOD: Wait for auth state
+useEffect(() => {
+  if (!currentUser) {
+    setLoading(false)
+    return
+  }
+
+  const unsubscribe = onSnapshot(
+    query,
+    (snapshot) => { /* success */ },
+    (error) => {
+      console.error('Snapshot error:', error)
+      // Fallback behavior
+    }
+  )
+  return () => unsubscribe()
+}, [currentUser])
+```
+
+### Always Add Error Handlers
+
+```jsx
+const unsubscribe = onSnapshot(
+  query,
+  (snapshot) => {
+    // Success handler
+  },
+  (error) => {
+    // Error handler - ALWAYS include this!
+    console.error('[ComponentName] Firestore error:', error)
+    setLoading(false)
+    // Provide fallback data
+  }
+)
+```
+
 ## Guidelines
 
 1. Always use `verifyAuthToken()` for authenticated endpoints
@@ -227,4 +276,6 @@ async function isAdmin(uid, email = null) {
 3. Use `logActivity()` for user-facing actions
 4. Use `logAdminAction()` for admin operations (audit trail)
 5. Test security rules locally before deploying
-6. Remember: Storage rules are NOT YET DEPLOYED
+6. **Wait for auth state before querying protected collections**
+7. **Always add error handlers to onSnapshot listeners**
+8. Deploy rules with `firebase deploy --only firestore:rules`

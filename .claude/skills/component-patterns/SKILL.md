@@ -251,6 +251,62 @@ function Component() {
 - **cjs-architecture** - For understanding component hierarchy
 - **cms-content-pipeline** - For CMS-controlled content in components
 
+## AnimatePresence and forwardRef Pattern
+
+When using `AnimatePresence` with `mode="popLayout"` for exit animations, child components must forward refs.
+
+### The forwardRef Warning (2026-01-04)
+
+**Problem**: Console warning about function components not accepting refs.
+
+```
+Warning: Function components cannot be given refs.
+Did you mean to use React.forwardRef()?
+Check the render method of `PopChild`.
+```
+
+**Cause**: `AnimatePresence` with `mode="popLayout"` measures elements via refs for layout animations.
+
+**Solution**: Wrap components in `React.forwardRef()`:
+
+```jsx
+// BAD: Function component without ref forwarding
+function Toast({ toast, onDismiss }) {
+  return (
+    <motion.div>
+      {/* content */}
+    </motion.div>
+  )
+}
+
+// GOOD: Forward ref to the motion element
+const Toast = React.forwardRef(function Toast({ toast, onDismiss }, ref) {
+  return (
+    <motion.div ref={ref}>
+      {/* content */}
+    </motion.div>
+  )
+})
+```
+
+**When to use forwardRef**:
+- Components rendered inside `AnimatePresence`
+- Components that need ref access for measurements
+- Custom components used with Framer Motion layout animations
+
+## Accessibility: Touch Targets
+
+Mobile touch targets should be at least 44x44px for accessibility:
+
+```jsx
+<button
+  className="p-3 min-w-[44px] min-h-[44px] flex items-center justify-center"
+  aria-label="Descriptive label"
+>
+  <Icon className="w-6 h-6" />
+</button>
+```
+
 ## Guidelines
 
 1. Use `card-sketch` class for public-facing cards
@@ -259,3 +315,5 @@ function Component() {
 4. Increment delay values for staggered animations
 5. Use `font-heading` for titles, `font-body` for content
 6. Always include mobile breakpoints in responsive designs
+7. **Use forwardRef for components inside AnimatePresence**
+8. **Ensure 44x44px minimum touch targets for mobile**
