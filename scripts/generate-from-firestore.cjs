@@ -250,17 +250,25 @@ async function generateOrganizationsData() {
 
   const orgDocs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-  const organizations = orgDocs.map(data => ({
-    id: data.id,
-    name: data.name,
-    logoUrl: data.logoUrl || null,
-    website: data.website || null,
-    isSponsor: data.isSponsor || false,
-    sponsorTier: data.sponsorTier || null,
-    sponsorOrder: data.sponsorOrder || 99,
-    description: data.description || '',
-    type: data.type || null
-  }));
+  const organizations = orgDocs.map(data => {
+    // Generate localLogoPath from slug if we have a logo
+    const slug = data.slug || data.name?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    const localLogoPath = data.logoUrl && slug ? `/sponsor-logos/${slug}.png` : null;
+
+    return {
+      id: data.id,
+      name: data.name,
+      slug: slug,
+      logoUrl: data.logoUrl || null,
+      localLogoPath: localLogoPath,
+      website: data.website || null,
+      isSponsor: data.isSponsor || false,
+      sponsorTier: data.sponsorTier || null,
+      sponsorOrder: data.sponsorOrder || 99,
+      description: data.description || '',
+      type: data.type || null
+    };
+  });
 
   // Sort sponsors by tier order then sponsor order
   const tierOrder = ['presenting', 'presenting sponsor', 'lead', 'supporting', 'partner', 'media', 'community'];
