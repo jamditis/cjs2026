@@ -175,7 +175,10 @@ async function generateScheduleData() {
   const output = `// AUTO-GENERATED FROM FIRESTORE - DO NOT EDIT
 // Generated at: ${new Date().toISOString()}
 
-export const scheduleData = ${JSON.stringify(sessions, null, 2)};
+export const sessions = ${JSON.stringify(sessions, null, 2)};
+
+// Alias for backwards compatibility
+export const scheduleData = sessions;
 
 // Sessions grouped by day
 export const sessionsByDay = ${JSON.stringify(sessionsByDay, null, 2)};
@@ -204,11 +207,11 @@ export const metadata = {
 };
 
 export function getSessionById(id) {
-  return scheduleData.find(s => s.id === id);
+  return sessions.find(s => s.id === id);
 }
 
 export function getSessionsByIds(ids) {
-  return scheduleData.filter(s => ids.includes(s.id));
+  return sessions.filter(s => ids.includes(s.id));
 }
 
 export function getSessionsByDay(day) {
@@ -216,11 +219,12 @@ export function getSessionsByDay(day) {
 }
 
 export function getBookmarkableSessions() {
-  return scheduleData.filter(s => s.isBookmarkable);
+  return sessions.filter(s => s.isBookmarkable);
 }
 
 export default {
-  sessions: scheduleData,
+  sessions,
+  scheduleData: sessions,
   sessionsByDay,
   sessionTypes,
   sessionTracks,
