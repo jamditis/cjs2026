@@ -47,3 +47,15 @@ test-screenshots/
 *-firebase-adminsdk*.json
 *-serviceaccount*.json
 service-account*.json
+
+# Python virtual environments
+venv/
+.venv/
+env/
+
+# Playwright screenshots
+.playwright-mcp/
+
+# Eventbrite CSVs with PII (NEVER COMMIT)
+planning/previous_summits/*.csv
+planning/outreach-lists/*.csv
