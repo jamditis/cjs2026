@@ -500,35 +500,27 @@ function Home() {
 
           {/* Stats with CountUp animation - data from CMS */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
-            {(() => {
-              // Pair up value/label entries from stats array
-              // Stats come as separate entries: summits_value, summits_label, etc.
-              const valueEntries = stats.filter(s => s.field?.endsWith('_value'))
-              return valueEntries.map((valueStat, index) => {
-                const baseName = valueStat.field.replace('_value', '')
-                const labelStat = stats.find(s => s.field === `${baseName}_label`)
+            {stats.map((stat, index) => {
+              // Parse value for CountUp - handle "2,569" format
+              const numericValue = parseInt(stat.value?.replace(/[^0-9]/g, '') || '0', 10)
+              const suffix = stat.value?.includes('+') ? '+' : ''
+              const duration = numericValue > 100 ? 2 : numericValue > 5 ? 1.5 : 0.8
 
-                // Parse value for CountUp - handle "1500+" format
-                const numericValue = parseInt(valueStat.value?.replace(/[^0-9]/g, '') || '0', 10)
-                const suffix = valueStat.value?.includes('+') ? '+' : ''
-                const duration = numericValue > 100 ? 2 : numericValue > 5 ? 1.5 : 0.8
-
-                return (
-                  <motion.div
-                    key={baseName}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.1 }}
-                  >
-                    <p className="font-accent text-5xl md:text-6xl text-brand-green-dark">
-                      <CountUp end={numericValue} duration={duration} suffix={suffix} />
-                    </p>
-                    <p className="text-brand-green-dark/70 text-sm font-body mt-1">{labelStat?.value || baseName}</p>
-                  </motion.div>
-                )
-              })
-            })()}
+              return (
+                <motion.div
+                  key={stat.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <p className="font-accent text-5xl md:text-6xl text-brand-green-dark">
+                    <CountUp end={numericValue} duration={duration} suffix={suffix} />
+                  </p>
+                  <p className="text-brand-green-dark/70 text-sm font-body mt-1">{stat.label}</p>
+                </motion.div>
+              )
+            })}
           </div>
 
           <div className="divider-sketch opacity-50 mb-16"></div>
