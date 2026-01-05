@@ -4,23 +4,28 @@ This file provides guidance to Claude Code when working with the CJS2026 website
 
 ---
 
-## 📋 Session handoff (last updated: 2026-01-05)
+## 📋 Session handoff (last updated: 2026-01-05 evening)
 
 ### Current state
 - Site is live at summit.collaborativejournalism.org
 - All core features complete: auth, dashboard, profile wizard, personal schedule, admin panel
-- Sponsors display working with Airtable CMS integration
+- CMS in admin dashboard with bidirectional Airtable sync
 - Session bookmark counters with popularity badges (Hot/Popular/Normal)
-- Full codebase audit completed - this file now reflects actual implementation
+- Admin panel streamlined: 6 tabs (Overview, Edit Content, Broadcast, Updates, Attendees, Sessions, Settings)
 
-### Recent work
-- Created Updates table in Airtable with 6 initial news/announcements
-- Full codebase audit: verified auth, Firestore, Cloud Functions, Airtable (27 tables)
-- Cleaned up CLAUDE.md and archived historical notes to `planning/CLAUDE_HISTORY.md`
+### Recent work (this session)
+- **Firestore→Airtable sync:** Added `syncCMSToAirtable` Cloud Function for manual backup to Airtable
+- **Admin cleanup:** Removed 6 unused monitoring Cloud Functions (getAdminLogs, getActivityLogs, getSystemErrors, resolveError, getBackgroundJobs, invalidateCache)
+- **Admin cleanup:** Removed 4 UI tabs (Activity, Errors, Jobs, Audit) - use `firebase functions:log` instead
+- **Logo sync:** Added logo URL syncing to Airtable for organizations
+- **CMS UX:** Made "Edit Content" tab prominent (2nd position, pulsing indicator, teal accent)
+- **Sidebar UX:** Made user profile section sticky at bottom of admin sidebar
+- **Bug fix:** Fixed `doc.sponsor` → `doc.isSponsor` field name in Airtable sync
 
 ### Pending items
 - Pittsburgh venue pivot: Airtable content updates pending (see table below)
 - Firebase Storage rules for profile photos: config ready, needs deploy
+- Organization logos: Need to re-upload in admin CMS (Airtable URLs expired)
 
 ### Known issues
 - None currently blocking
@@ -95,10 +100,10 @@ firebase deploy --only firestore:rules
 | `src/contexts/AuthContext.jsx` | Auth state, user profiles, schedule saving |
 | `src/pages/Home.jsx` | Homepage with dynamic CMS content |
 | `src/pages/Dashboard.jsx` | User dashboard with profile wizard |
-| `src/pages/Admin.jsx` | Admin panel (2 tabs: Attendees, Sessions) |
+| `src/pages/Admin.jsx` | Admin panel (6 tabs: Overview, Edit Content, Broadcast, Updates, Attendees, Sessions) |
 | `src/pages/Schedule.jsx` | Schedule with personal bookmarking |
 | `src/components/SessionCard.jsx` | Session display with save button |
-| `functions/index.js` | Cloud Functions (30 functions total) |
+| `functions/index.js` | Cloud Functions (27 functions) |
 | `firestore.rules` | Firestore security rules (15 collections) |
 | `CJS_WEB_STYLE_GUIDE.md` | Design system reference |
 
@@ -190,25 +195,24 @@ Task tracker, Sponsorships, Budget, Locations, Session pitches, Schedule brainst
 
 ---
 
-## Cloud Functions (30 total)
+## Cloud Functions (27 total)
 
-**Core (documented):**
+**Core:**
 - `saveEmailSignup` - Save newsletter signups
 - `health` - Health check endpoint
-- `syncProfileToAirtable` - Sync user to Airtable
+- `syncProfileToAirtable` - Sync single user to Airtable
 - `exportAttendees` - Export attendees JSON
-- `getSystemErrors` - Get error logs
 - `cmsUploadImage` - Upload images to Storage
 
 **Admin:**
 - `grantAdminRole`, `revokeAdminRole`, `getAdminUsers`
-- `getActivityLogs`, `getAdminLogs`, `resolveError`
-- `getBackgroundJobs`, `getSystemStats`
+- `getSystemStats` - Dashboard metrics
 
 **CMS:**
 - `cmsCreateContent`, `cmsUpdateContent`, `cmsDeleteContent`
-- `cmsGetVersionHistory`, `cmsPublish`, `cmsGetPublishQueue`
-- `triggerCMSSync`, `invalidateCache`, `getSiteContent`
+- `cmsGetVersionHistory`, `cmsPublish`, `cmsGetPublishQueue`, `cmsUpdatePublishStatus`
+- `triggerCMSSync`, `getSiteContent`
+- `syncCMSToAirtable` - Push CMS changes back to Airtable (manual sync)
 
 **Eventbrite:**
 - `eventbriteWebhook`, `syncEventbriteAttendees`
@@ -217,6 +221,8 @@ Task tracker, Sponsorships, Budget, Locations, Session pitches, Schedule brainst
 **Other:**
 - `syncAllProfilesToAirtable`, `syncBookmarkCountToAirtable`
 - `saveEditRequest`, `getEditRequests`
+
+**For error tracking:** Use `firebase functions:log --project cjs2026` instead of admin UI
 
 ---
 
