@@ -66,7 +66,7 @@ All content follows these principles (per CLAUDE.md):
 - **Community-focused language** — "we've built," "together"
 - **Sentence case headlines** — not title case
 - **"CJS2026" is one word** — no space between CJS and 2026
-- **Let accomplishments speak for themselves** — 1,500 attendees, 7 cities, 10 years
+- **Let accomplishments speak for themselves** — 2,569 registrations, 1,981 unique attendees, 6 cities (Pittsburgh #7!), 10 years
 - **Minimal emoji** — professional restraint
 
 ---

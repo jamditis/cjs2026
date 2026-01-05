@@ -39,8 +39,9 @@ CJS2026 marks a milestone: **10 years** of collaborative journalism.
 | Stat | Value |
 |------|-------|
 | Summits held | 10 |
-| Cities visited | 8 |
-| Total attendees | 1,500+ |
+| Cities visited | 6 (Pittsburgh will be #7!) |
+| Total registrations | 2,569 |
+| Unique attendees | 1,981 |
 | Mission | Working together in the public interest |
 
 ### Past locations

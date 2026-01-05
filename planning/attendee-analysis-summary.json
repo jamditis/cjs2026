@@ -1,0 +1,173 @@
+{
+  "generatedAt": "2026-01-05T18:48:45.729Z",
+  "totalRegistrations": 2569,
+  "uniqueIndividuals": 1981,
+  "totalRevenue": 97619.36000000002,
+  "yearlyBreakdown": {
+    "2017": {
+      "total": 162,
+      "unique": 161,
+      "paid": 98,
+      "free": 64,
+      "revenue": 4801.01
+    },
+    "2018": {
+      "total": 130,
+      "unique": 129,
+      "paid": 93,
+      "free": 37,
+      "revenue": 4510.250000000006
+    },
+    "2019": {
+      "total": 182,
+      "unique": 178,
+      "paid": 123,
+      "free": 59,
+      "revenue": 6997.760000000007
+    },
+    "2020": {
+      "total": 747,
+      "unique": 731,
+      "paid": 72,
+      "free": 675,
+      "revenue": 4650
+    },
+    "2021": {
+      "total": 342,
+      "unique": 332,
+      "paid": 202,
+      "free": 140,
+      "revenue": 16300
+    },
+    "2022": {
+      "total": 291,
+      "unique": 275,
+      "paid": 161,
+      "free": 130,
+      "revenue": 14500
+    },
+    "2023": {
+      "total": 232,
+      "unique": 220,
+      "paid": 151,
+      "free": 81,
+      "revenue": 14120
+    },
+    "2024": {
+      "total": 263,
+      "unique": 233,
+      "paid": 97,
+      "free": 166,
+      "revenue": 14841
+    },
+    "2025": {
+      "total": 220,
+      "unique": 218,
+      "paid": 67,
+      "free": 153,
+      "revenue": 16899.339999999993
+    }
+  },
+  "repeatAttendees": {
+    "oneTime": 1652,
+    "twoTimes": 230,
+    "threeTimes": 59,
+    "fourTimes": 27,
+    "fiveTimes": 5,
+    "sixPlus": 8
+  },
+  "topOrganizations": [
+    {
+      "domain": "montclair.edu",
+      "count": 64,
+      "years": 9
+    },
+    {
+      "domain": "solutionsjournalism.org",
+      "count": 43,
+      "years": 9
+    },
+    {
+      "domain": "resolvephilly.org",
+      "count": 27,
+      "years": 6
+    },
+    {
+      "domain": "localmedia.org",
+      "count": 24,
+      "years": 6
+    },
+    {
+      "domain": "lenfestinstitute.org",
+      "count": 20,
+      "years": 8
+    },
+    {
+      "domain": "dptv.org",
+      "count": 18,
+      "years": 6
+    },
+    {
+      "domain": "democracyfund.org",
+      "count": 16,
+      "years": 9
+    },
+    {
+      "domain": "inn.org",
+      "count": 14,
+      "years": 8
+    },
+    {
+      "domain": "journalism.cuny.edu",
+      "count": 12,
+      "years": 6
+    },
+    {
+      "domain": "whyy.org",
+      "count": 12,
+      "years": 7
+    }
+  ],
+  "topStates": [
+    {
+      "state": "NJ",
+      "count": 78
+    },
+    {
+      "state": "NY",
+      "count": 53
+    },
+    {
+      "state": "PA",
+      "count": 30
+    },
+    {
+      "state": "CA",
+      "count": 18
+    },
+    {
+      "state": "MI",
+      "count": 14
+    },
+    {
+      "state": "MA",
+      "count": 11
+    },
+    {
+      "state": "DC",
+      "count": 11
+    },
+    {
+      "state": "IL",
+      "count": 9
+    },
+    {
+      "state": "MD",
+      "count": 8
+    },
+    {
+      "state": "CT",
+      "count": 7
+    }
+  ]
+}

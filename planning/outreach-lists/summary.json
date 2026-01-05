@@ -1,0 +1,30 @@
+{
+  "generatedAt": "2026-01-05T18:52:58.078Z",
+  "lists": {
+    "superFans": {
+      "count": 13,
+      "file": "super-fans.csv"
+    },
+    "loyalAttendees": {
+      "count": 86,
+      "file": "loyal-attendees.csv"
+    },
+    "classOf2020": {
+      "count": 552,
+      "file": "class-of-2020.csv"
+    },
+    "ogAttendees": {
+      "count": 161,
+      "file": "og-attendees-2017.csv"
+    },
+    "lapsedAttendees": {
+      "count": 247,
+      "file": "lapsed-attendees.csv"
+    },
+    "recentFirstTimers": {
+      "count": 346,
+      "file": "recent-first-timers.csv"
+    }
+  },
+  "totalUniqueAttendees": 1981
+}

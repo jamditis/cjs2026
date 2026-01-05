@@ -119,15 +119,16 @@ Email summit@collaborativejournalism.org with your proposal by January 31.`,
     slug: 'decade-of-collaborative-journalism',
     type: 'story',
     title: 'A decade of proving journalism is stronger together',
-    summary: 'Since 2017, CJS has grown from 20 attendees in Montclair to 1,500+ practitioners across 7 cities.',
-    content: `In 2017, about 20 people gathered at Montclair State University for an unconventional idea: What if competing newsrooms actually worked together?
+    summary: 'Since 2017, CJS has grown from 161 attendees in Montclair to 1,981 unique participants across 6 cities.',
+    content: `In 2017, 161 people gathered at Montclair State University for an unconventional idea: What if competing newsrooms actually worked together?
 
 Ten years later, collaborative journalism has grown from an experiment into standard practice.
 
 **By the numbers:**
 - **10** summits since 2017
-- **7** cities (plus 2 virtual years)
-- **1,500+** total attendees
+- **6** cities (Pittsburgh will be #7!)
+- **2,569** total registrations
+- **1,981** unique attendees
 - **1** mission: journalism is stronger together`,
     date: '2025-12-15',
     category: '10th anniversary',

@@ -454,9 +454,10 @@
   },
   "impactStats": {
     "totalSummits": 10,
-    "citiesVisited": 8,
+    "citiesVisited": 6,
     "virtualYears": 2,
-    "estimatedTotalAttendees": "1,500+",
+    "totalRegistrations": 2569,
+    "uniqueAttendees": 1981,
     "notableOutcomes": [
       "Four world leaders toppled (Panama Papers)",
       "$12 million medical debt erased (MLK50)",
