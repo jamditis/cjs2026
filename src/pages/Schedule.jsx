@@ -29,6 +29,13 @@ function Schedule() {
     }
   }
 
+  // Helper to safely get string value (handles arrays from Airtable linked records)
+  const safeString = (val) => {
+    if (!val) return ''
+    if (Array.isArray(val)) return val.join(' ')
+    return String(val)
+  }
+
   // Filter sessions based on search query and active filters
   const filterSessions = (sessions) => {
     return sessions.filter(session => {
@@ -36,11 +43,11 @@ function Schedule() {
       if (searchQuery.trim()) {
         const query = searchQuery.toLowerCase()
         const matchesSearch = (
-          session.title?.toLowerCase().includes(query) ||
-          session.description?.toLowerCase().includes(query) ||
-          session.speakers?.toLowerCase().includes(query) ||
-          session.room?.toLowerCase().includes(query) ||
-          session.track?.toLowerCase().includes(query)
+          safeString(session.title).toLowerCase().includes(query) ||
+          safeString(session.description).toLowerCase().includes(query) ||
+          safeString(session.speakers).toLowerCase().includes(query) ||
+          safeString(session.room).toLowerCase().includes(query) ||
+          safeString(session.track).toLowerCase().includes(query)
         )
         if (!matchesSearch) return false
       }
