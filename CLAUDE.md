@@ -27,6 +27,48 @@ This file provides guidance to Claude Code when working with the CJS2026 website
 - Firebase Storage rules for profile photos: config ready, needs deploy
 - Organization logos: Need to re-upload in admin CMS (Airtable URLs expired)
 
+### 🚀 NEXT MAJOR FEATURE: Attendee engagement & networking system
+
+**Goal:** Build interaction features for registered attendees (confirmed tickets) to connect before, during, and after the summit.
+
+**Timeline:** Pre-summit (weeks before) → During summit → Post-summit (1 month after)
+
+**Core interaction types to design/build:**
+1. **Finding collaborators** - Match attendees by interests, skills, project needs
+2. **Session engagement** - Share interest, feedback, thoughts on sessions
+3. **Jobs/hiring board** - Jobs, contracts, gigs, "looking for work" posts
+4. **Showcase/hype** - Highlight colleagues, projects, favorite orgs
+5. **Community engagement** - General networking, async discussions
+
+**Real-time vs async:**
+- Real-time: Live chat during sessions, "who's here now" presence
+- Async: Discussion threads, posts, reactions, bookmarks
+
+**Data/analytics requirements (for CCM):**
+- Track all interactions as data points
+- Identify trends in real-time (popular topics, pain points)
+- Spot and fix issues during summit
+- Generate comprehensive sponsor report post-summit
+- Inform improvements for CJS2027
+
+**Access control:**
+- Only registered attendees with confirmed tickets
+- Moderation tools for admins
+- Content persists for ~1 month post-summit
+
+**Technical considerations:**
+- Firestore real-time listeners for live features
+- Structured data for analytics/reporting
+- Export capabilities for sponsor reports
+- Privacy controls for attendees
+
+**Questions to answer:**
+- What's the MVP for pre-summit launch?
+- Which interactions are highest priority?
+- How does this integrate with existing profile/schedule features?
+- What moderation tools are needed?
+- What does the sponsor report look like?
+
 ### Known issues
 - None currently blocking
 
