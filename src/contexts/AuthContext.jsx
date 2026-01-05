@@ -169,6 +169,12 @@ export function AuthProvider({ children }) {
   /** @type {[boolean, Function]} True if user authenticated but has no/incomplete profile */
   const [needsProfileSetup, setNeedsProfileSetup] = useState(false)
 
+  /** @type {[boolean, Function]} True if user has skipped profile setup this session */
+  const [profileSetupSkipped, setProfileSetupSkipped] = useState(() => {
+    // Check if user previously skipped profile setup this session
+    return sessionStorage.getItem('cjs2026_profile_setup_skipped') === 'true'
+  })
+
   // ============================================
   // User Profile Schema
   // ============================================
@@ -387,8 +393,25 @@ export function AuthProvider({ children }) {
     await setDoc(userRef, newProfile, { merge: true })
 
     setNeedsProfileSetup(false)
+    setProfileSetupSkipped(false)
+    sessionStorage.removeItem('cjs2026_profile_setup_skipped')
     return getUserProfile(currentUser.uid)
   }
+
+  /**
+   * Skip profile setup for this session (user can still complete later).
+   * Sets a flag in sessionStorage so the modal won't show again until next session.
+   */
+  function skipProfileSetup() {
+    setProfileSetupSkipped(true)
+    sessionStorage.setItem('cjs2026_profile_setup_skipped', 'true')
+  }
+
+  /**
+   * Check if profile setup modal should be shown.
+   * Shows if: needs setup AND hasn't been skipped this session.
+   */
+  const showProfileSetupModal = needsProfileSetup && !profileSetupSkipped
 
   /**
    * Fetches a user profile from Firestore by UID.
@@ -1054,7 +1077,9 @@ export function AuthProvider({ children }) {
     userProfile,
     loading,
     needsProfileSetup, // True if user needs to complete profile (no displayName)
+    showProfileSetupModal, // True if modal should be shown (needs setup AND not skipped)
     completeProfileSetup, // Function to complete profile setup
+    skipProfileSetup, // Function to skip profile setup for this session
     sendMagicLink,
     completeSignInWithEmailLink,
     isEmailLink,

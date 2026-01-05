@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import { User, Loader2, AlertCircle } from 'lucide-react'
+import { User, Loader2, AlertCircle, X } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 
 export default function ProfileSetupModal() {
-  const { currentUser, completeProfileSetup } = useAuth()
+  const { currentUser, completeProfileSetup, skipProfileSetup } = useAuth()
   const [displayName, setDisplayName] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -37,11 +37,22 @@ export default function ProfileSetupModal() {
       animate={{ opacity: 1 }}
     >
       <motion.div
-        className="bg-paper rounded-lg shadow-xl max-w-md w-full p-6 md:p-8"
+        className="bg-paper rounded-lg shadow-xl max-w-md w-full p-6 md:p-8 relative"
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ delay: 0.1 }}
       >
+        {/* Skip button */}
+        <button
+          onClick={skipProfileSetup}
+          className="absolute top-4 right-4 p-2 text-brand-ink/40 hover:text-brand-ink/70
+                   hover:bg-brand-ink/5 rounded-full transition-colors"
+          title="Skip for now"
+          disabled={loading}
+        >
+          <X className="w-5 h-5" />
+        </button>
+
         <div className="text-center mb-6">
           <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-brand-teal/10 flex items-center justify-center">
             <User className="w-8 h-8 text-brand-teal" />
@@ -50,7 +61,7 @@ export default function ProfileSetupModal() {
             Complete your profile
           </h2>
           <p className="font-body text-brand-ink/70">
-            We need a few details before you can continue.
+            Add your name so other attendees can find you.
           </p>
         </div>
 
@@ -114,9 +125,20 @@ export default function ProfileSetupModal() {
           </button>
         </form>
 
-        <p className="font-body text-xs text-center text-brand-ink/50 mt-4">
-          You can add more details to your profile later.
-        </p>
+        <div className="text-center mt-4 space-y-2">
+          <p className="font-body text-xs text-brand-ink/50">
+            You can add more details to your profile later.
+          </p>
+          <button
+            type="button"
+            onClick={skipProfileSetup}
+            disabled={loading}
+            className="font-body text-sm text-brand-ink/60 hover:text-brand-teal underline
+                     disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Skip for now
+          </button>
+        </div>
       </motion.div>
     </motion.div>
   )

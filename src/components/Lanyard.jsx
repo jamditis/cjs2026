@@ -75,7 +75,7 @@ export default function Lanyard({
           className="lanyard-dismiss-btn"
           aria-label="Dismiss lanyard"
         >
-          ✕ Close
+          ✕ Dismiss lanyard
         </button>
       )}
 

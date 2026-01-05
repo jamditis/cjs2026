@@ -260,4 +260,4 @@ When creating custom badges, users can choose from these emojis:
 
 ---
 
-*Last updated: December 2024*
+*Last updated: January 2026*

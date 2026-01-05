@@ -285,3 +285,41 @@ users/{uid}: {
 3. Session card hover states and animations
 4. Schedule page filtering UI
 5. Mobile responsive testing
+
+---
+
+### Update (2026-01-04) - Custom CMS and UX improvements
+
+**CMS migration complete:**
+- Replaced Airtable with custom Firestore-based CMS
+- Admin panel now has full CMS editing at `/admin` → CMS tab
+- Role-based access: regular admins can edit content, super admins can edit metadata
+- Undo support for content reordering (Ctrl+Z / Cmd+Z)
+- Guided tour for first-time CMS users (5 steps)
+
+**New features:**
+- PDF schedule export (`src/utils/generateSchedulePDF.js`)
+- FAQ page (`/faq`)
+- Attendee profile pages (`/attendee/:uid`)
+- Toast notifications with undo actions
+- Bookmark undo (5-second window)
+- Schedule visibility confirmation dialogs
+
+**UX fixes:**
+- Increased touch targets on CMS reorder buttons (40px minimum, WCAG compliant)
+- Added aria-labels throughout for screen readers
+- Profile cancel/skip button always visible during editing
+- Announcement toggle requires confirmation
+
+**CMS Firestore collections:**
+- `cmsContent` — Site text, stats, info cards
+- `cmsSchedule` — Session data
+- `cmsOrganizations` — Sponsors & partners
+- `cmsTimeline` — Summit history
+- `cmsVersionHistory` — Audit trail
+
+**Documentation updated:**
+- `CLAUDE.md` — Development reference
+- `README.md` — No longer references Airtable
+- `docs/CMS_EDITOR_GUIDE.md` — Editor instructions with undo docs
+- `docs/CHANGELOG.md` — Full history of changes

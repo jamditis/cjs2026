@@ -15,68 +15,45 @@ import {
   CheckCircle
 } from 'lucide-react'
 
-// Tour step definitions
+// Tour step definitions - only steps that are always visible on the CMS landing page
+// More detailed feature discovery happens through tooltips and contextual help
 const TOUR_STEPS = [
   {
     id: 'welcome',
     title: 'Welcome to the CMS',
-    description: 'This guided tour will walk you through all the features of the content management system. You can edit, reorder, and publish content for the CJS2026 website.',
+    description: 'This guided tour will walk you through the content management system. You can edit and publish content for the CJS2026 website.',
     icon: Sparkles,
-    target: null, // No specific element to highlight
+    target: null,
     position: 'center'
   },
   {
     id: 'page-selector',
     title: 'Select a page to edit',
-    description: 'Start by choosing which page you want to manage. Each card shows the page name, description, and how many content items it contains.',
+    description: 'Choose which page you want to manage. Each card shows the page name and how many content items it contains. Click a card to start editing.',
     icon: MousePointer,
     target: '[data-tour="page-grid"]',
     position: 'bottom'
   },
   {
-    id: 'sections',
-    title: 'Content is organized in sections',
-    description: 'Each page is divided into sections like "Hero banner" or "Event details". Click a section header to expand or collapse it.',
+    id: 'tabs',
+    title: 'Content types',
+    description: 'Use these tabs to switch between different content types: site content, schedule sessions, organizations, timeline events, version history, and publishing.',
     icon: Layers,
-    target: '[data-tour="section-list"]',
-    position: 'top'
-  },
-  {
-    id: 'reorder',
-    title: 'Reorder content with arrows',
-    description: 'Use the up/down arrows on the left of each content block to change its position. The number shows the current order.',
-    icon: ArrowUpDown,
-    target: '[data-tour="reorder-controls"]',
-    position: 'right'
-  },
-  {
-    id: 'add-content',
-    title: 'Add new content blocks',
-    description: 'Click "Add content block" at the bottom of any section to create new content. You\'ll choose a block type and fill in the details.',
-    icon: Plus,
-    target: '[data-tour="add-button"]',
-    position: 'top'
-  },
-  {
-    id: 'edit-content',
-    title: 'Edit existing content',
-    description: 'Click the pencil icon on any content block to edit it. You can change the text, color, visibility, and more.',
-    icon: Eye,
-    target: '[data-tour="edit-button"]',
-    position: 'left'
+    target: '[data-tour="cms-tabs"]',
+    position: 'bottom'
   },
   {
     id: 'publish',
     title: 'Publish your changes',
-    description: 'When you\'re done editing, click "Publish now" to deploy your changes to the live website. Changes take about 60 seconds to appear.',
+    description: 'After editing, go to the "Publish" tab to deploy your changes to the live website. Changes take about 60 seconds to appear.',
     icon: Upload,
-    target: '[data-tour="publish-banner"]',
+    target: '[data-tour="publish-tab"]',
     position: 'bottom'
   },
   {
     id: 'complete',
-    title: 'You\'re all set!',
-    description: 'You now know the basics of the CMS. Need help later? Check the documentation or hover over any element for tooltips.',
+    title: 'You\'re ready to go!',
+    description: 'Click any page card to start editing. You\'ll find reorder arrows, edit buttons, and add buttons inside each page. Hover over elements for more tips.',
     icon: CheckCircle,
     target: null,
     position: 'center'
@@ -189,7 +166,7 @@ export default function CMSTour({ onComplete }) {
   const isLastStep = currentStep === TOUR_STEPS.length - 1
   const progress = ((currentStep + 1) / TOUR_STEPS.length) * 100
 
-  // Calculate tooltip position
+  // Calculate tooltip position with viewport boundary checking
   const getTooltipStyle = () => {
     if (!targetRect || step.position === 'center') {
       return {
@@ -202,34 +179,34 @@ export default function CMSTour({ onComplete }) {
 
     const padding = 16
     const tooltipWidth = 360
+    const tooltipHeight = 280 // Approximate height of tooltip
+    const viewportHeight = window.innerHeight
+    const viewportWidth = window.innerWidth
+
+    // Helper to clamp a value within viewport bounds
+    const clampLeft = (left) => Math.max(padding, Math.min(left, viewportWidth - tooltipWidth - padding))
+    const clampTop = (top) => Math.max(padding, Math.min(top, viewportHeight - tooltipHeight - padding))
+
+    // Calculate preferred position based on step.position
+    let preferredTop, preferredLeft
 
     switch (step.position) {
       case 'bottom':
-        return {
-          position: 'fixed',
-          top: targetRect.top + targetRect.height + padding,
-          left: Math.max(padding, Math.min(targetRect.left + targetRect.width / 2 - tooltipWidth / 2, window.innerWidth - tooltipWidth - padding))
-        }
+        preferredTop = targetRect.top + targetRect.height + padding
+        preferredLeft = targetRect.left + targetRect.width / 2 - tooltipWidth / 2
+        break
       case 'top':
-        return {
-          position: 'fixed',
-          bottom: window.innerHeight - targetRect.top + padding,
-          left: Math.max(padding, Math.min(targetRect.left + targetRect.width / 2 - tooltipWidth / 2, window.innerWidth - tooltipWidth - padding))
-        }
+        preferredTop = targetRect.top - tooltipHeight - padding
+        preferredLeft = targetRect.left + targetRect.width / 2 - tooltipWidth / 2
+        break
       case 'left':
-        return {
-          position: 'fixed',
-          top: targetRect.top + targetRect.height / 2,
-          right: window.innerWidth - targetRect.left + padding,
-          transform: 'translateY(-50%)'
-        }
+        preferredTop = targetRect.top + targetRect.height / 2 - tooltipHeight / 2
+        preferredLeft = targetRect.left - tooltipWidth - padding
+        break
       case 'right':
-        return {
-          position: 'fixed',
-          top: targetRect.top + targetRect.height / 2,
-          left: targetRect.left + targetRect.width + padding,
-          transform: 'translateY(-50%)'
-        }
+        preferredTop = targetRect.top + targetRect.height / 2 - tooltipHeight / 2
+        preferredLeft = targetRect.left + targetRect.width + padding
+        break
       default:
         return {
           position: 'fixed',
@@ -237,6 +214,24 @@ export default function CMSTour({ onComplete }) {
           left: '50%',
           transform: 'translate(-50%, -50%)'
         }
+    }
+
+    // If preferred position is off-screen, fall back to center-right of viewport
+    // This ensures the tooltip is always visible
+    if (preferredTop < padding || preferredTop > viewportHeight - tooltipHeight - padding) {
+      // Tooltip would be off-screen vertically - position it in a visible area
+      return {
+        position: 'fixed',
+        top: clampTop(Math.max(targetRect.top, padding)),
+        right: padding,
+        maxHeight: viewportHeight - padding * 2
+      }
+    }
+
+    return {
+      position: 'fixed',
+      top: clampTop(preferredTop),
+      left: clampLeft(preferredLeft)
     }
   }
 

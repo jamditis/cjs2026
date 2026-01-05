@@ -102,6 +102,7 @@ service cloud.firestore {
     // Used for the /updates page and individual update pages
     match /updates/{updateId} {
       // Admins can read ALL updates (including hidden) - check admin first
+      // This must come before the visibility check for queries to work
       allow read: if isAdmin() || isSuperAdmin();
       // Public read for visible updates only (individual document reads)
       allow read: if resource.data.visible == true;

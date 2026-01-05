@@ -293,7 +293,7 @@ function Updates() {
               News and updates
             </h1>
             <p className="font-body text-brand-ink/60 text-lg max-w-2xl mx-auto mb-8">
-              Stay up to date with the latest announcements, deadlines, and stories as we build toward the 10th anniversary summit in Chapel Hill.
+              Stay up to date with the latest announcements, deadlines, and stories as we build toward the 10th anniversary summit in Pittsburgh.
             </p>
 
             <QuickLinks />

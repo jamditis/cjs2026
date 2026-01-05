@@ -362,7 +362,13 @@ function AdminPanel() {
 
         {/* Navigation */}
         <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto admin-scrollbar">
-          {NAV_ITEMS.map((item) => {
+          {NAV_ITEMS
+            .filter(item => {
+              // Only super_admins can see the Admins tab
+              if (item.id === 'admins' && userProfile?.role !== 'super_admin') return false
+              return true
+            })
+            .map((item) => {
             const Icon = item.icon
             const isActive = activeTab === item.id
             return (
@@ -476,7 +482,13 @@ function AdminPanel() {
                 </button>
               </div>
               <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
-                {NAV_ITEMS.map((item) => {
+                {NAV_ITEMS
+                  .filter(item => {
+                    // Only super_admins can see the Admins tab
+                    if (item.id === 'admins' && userProfile?.role !== 'super_admin') return false
+                    return true
+                  })
+                  .map((item) => {
                   const Icon = item.icon
                   const isActive = activeTab === item.id
                   return (
@@ -1118,12 +1130,17 @@ function BroadcastTab({ currentUser, isInk }) {
   }
 
   async function toggleActive(announcement) {
+    const action = announcement.active ? 'deactivate' : 'activate'
+    if (!window.confirm(`${action.charAt(0).toUpperCase() + action.slice(1)} this announcement? ${announcement.active ? 'It will no longer appear on the site.' : 'It will appear on the site immediately.'}`)) {
+      return
+    }
     try {
       await updateDoc(doc(db, 'announcements', announcement.id), {
         active: !announcement.active
       })
     } catch (err) {
       console.error('Failed to toggle announcement:', err)
+      alert(`Failed to ${action} announcement: ${err.message}`)
     }
   }
 
@@ -3304,34 +3321,50 @@ function UpdatesTab({ currentUser, isInk }) {
 
   // Listen to updates in real-time and merge with static updates
   useEffect(() => {
+    // Wait for user authentication before querying Firestore
+    if (!currentUser) {
+      setLoading(false)
+      return
+    }
+
     const q = query(
       collection(db, 'updates'),
       orderBy('date', 'desc'),
       limit(50)
     )
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const firestoreItems = []
-      snapshot.forEach(doc => {
-        firestoreItems.push({ id: doc.id, ...doc.data(), isStatic: false })
-      })
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const firestoreItems = []
+        snapshot.forEach(doc => {
+          firestoreItems.push({ id: doc.id, ...doc.data(), isStatic: false })
+        })
 
-      // Merge: Firestore updates take precedence over static updates by slug
-      const firestoreSlugs = new Set(firestoreItems.map(u => u.slug))
-      const staticItems = staticUpdates
-        .filter(u => !firestoreSlugs.has(u.slug))
-        .map(u => ({ ...u, id: `static-${u.slug}`, isStatic: true }))
+        // Merge: Firestore updates take precedence over static updates by slug
+        const firestoreSlugs = new Set(firestoreItems.map(u => u.slug))
+        const staticItems = staticUpdates
+          .filter(u => !firestoreSlugs.has(u.slug))
+          .map(u => ({ ...u, id: `static-${u.slug}`, isStatic: true }))
 
-      // Combine and sort by date
-      const allItems = [...firestoreItems, ...staticItems]
-        .sort((a, b) => new Date(b.date) - new Date(a.date))
+        // Combine and sort by date
+        const allItems = [...firestoreItems, ...staticItems]
+          .sort((a, b) => new Date(b.date) - new Date(a.date))
 
-      setUpdates(allItems)
-      setLoading(false)
-    })
+        setUpdates(allItems)
+        setLoading(false)
+      },
+      (error) => {
+        console.error('[UpdatesTab] Firestore listener error:', error)
+        // Fall back to static updates only
+        const staticItems = staticUpdates.map(u => ({ ...u, id: `static-${u.slug}`, isStatic: true }))
+        setUpdates(staticItems)
+        setLoading(false)
+      }
+    )
 
     return () => unsubscribe()
-  }, [])
+  }, [currentUser])
 
   function resetForm() {
     setFormData({

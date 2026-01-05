@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Bookmark, BookmarkCheck, Clock, MapPin, Users, Coffee, Utensils, Mic, Lightbulb, BookOpen, Sparkles, ChevronDown } from 'lucide-react'
+import { Bookmark, BookmarkCheck, Clock, MapPin, Users, Coffee, Utensils, Mic, Lightbulb, BookOpen, Sparkles, ChevronDown, AlertTriangle } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
-import { typeColors } from '../content/scheduleData'
+import { useToast } from '../contexts/ToastContext'
+import { typeColors, sessions as allSessions } from '../content/scheduleData'
 
 // Icon mapping for session types
 const typeIcons = {
@@ -68,8 +69,40 @@ function getBookmarkTier(count) {
   }
 }
 
+// Default session duration in minutes (when endTime is not specified)
+const DEFAULT_SESSION_DURATION = 60
+
+// Check if two sessions overlap in time
+function sessionsOverlap(session1, session2) {
+  if (!session1.startTime || !session2.startTime) return false
+  if (session1.day !== session2.day) return false
+
+  const start1 = new Date(session1.startTime).getTime()
+  const start2 = new Date(session2.startTime).getTime()
+
+  // Calculate end times, using default duration if not specified
+  const end1 = session1.endTime
+    ? new Date(session1.endTime).getTime()
+    : start1 + DEFAULT_SESSION_DURATION * 60 * 1000
+  const end2 = session2.endTime
+    ? new Date(session2.endTime).getTime()
+    : start2 + DEFAULT_SESSION_DURATION * 60 * 1000
+
+  // Check for overlap: session1 starts before session2 ends AND session1 ends after session2 starts
+  return start1 < end2 && end1 > start2
+}
+
+// Find conflicting sessions from user's saved sessions
+function findConflicts(targetSession, savedSessionIds) {
+  if (!savedSessionIds?.length) return []
+
+  const savedSessions = allSessions.filter(s => savedSessionIds.includes(s.id))
+  return savedSessions.filter(saved => sessionsOverlap(targetSession, saved))
+}
+
 function SessionCard({ session, index = 0, showSaveButton = true, compact = false, bookmarkCount = 0, onOpenDetail = null }) {
   const { currentUser, userProfile, saveSession, unsaveSession, isSessionSaved, canBookmarkSessions } = useAuth()
+  const toast = useToast()
 
   // Use local state for optimistic UI updates
   const [localSaved, setLocalSaved] = useState(() => {
@@ -90,6 +123,15 @@ function SessionCard({ session, index = 0, showSaveButton = true, compact = fals
   // Only allow saving for registered/confirmed users (or admins)
   const canSave = currentUser && session.isBookmarkable && showSaveButton && canBookmarkSessions()
 
+  // Determine why user can't bookmark (for UI feedback)
+  const getBookmarkBlockReason = () => {
+    if (!showSaveButton || !session.isBookmarkable) return null
+    if (!currentUser) return 'Sign in to save sessions'
+    if (!canBookmarkSessions()) return 'Register for the conference to save sessions'
+    return null
+  }
+  const bookmarkBlockReason = getBookmarkBlockReason()
+
   // Get colors for this session type
   const colors = typeColors[session.type] || typeColors.session
   const Icon = typeIcons[session.type] || Mic
@@ -102,21 +144,57 @@ function SessionCard({ session, index = 0, showSaveButton = true, compact = fals
     e.stopPropagation()
     if (!currentUser || saving) return
 
-    // Optimistic update
     const newSavedState = !localSaved
+
+    // Check for schedule conflicts when adding a session
+    if (newSavedState) {
+      const conflicts = findConflicts(session, userProfile?.savedSessions)
+      if (conflicts.length > 0) {
+        toast.warning(`Schedule conflict: This session overlaps with "${conflicts[0].title}"${conflicts.length > 1 ? ` and ${conflicts.length - 1} other(s)` : ''}`)
+        // Still allow saving - just warn the user
+      }
+    }
+
+    // Optimistic update
     setLocalSaved(newSavedState)
     setSaving(true)
 
     try {
       if (newSavedState) {
         await saveSession(session.id)
+        toast.success('Session added to your schedule')
       } else {
         await unsaveSession(session.id)
+        // Show toast with undo option for removal
+        toast.info(
+          <div className="flex items-center justify-between gap-3">
+            <span>Session removed</span>
+            <button
+              onClick={async () => {
+                setLocalSaved(true)
+                setSaving(true)
+                try {
+                  await saveSession(session.id)
+                } catch (err) {
+                  setLocalSaved(false)
+                  console.error('Undo failed:', err)
+                } finally {
+                  setSaving(false)
+                }
+              }}
+              className="px-2 py-1 text-xs font-medium bg-white/20 hover:bg-white/30 rounded transition-colors"
+            >
+              Undo
+            </button>
+          </div>,
+          { duration: 5000 }
+        )
       }
     } catch (error) {
       // Revert on error
       console.error('Error toggling save:', error)
       setLocalSaved(!newSavedState)
+      toast.error('Failed to update schedule')
     } finally {
       setSaving(false)
     }
@@ -165,20 +243,27 @@ function SessionCard({ session, index = 0, showSaveButton = true, compact = fals
                 </span>
               )
             })()}
-            {canSave && (
+            {canSave ? (
               <button
                 onClick={handleToggleSave}
                 disabled={saving}
-                className={`p-1.5 rounded-full transition-colors ${
+                className={`min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full transition-colors ${
                   localSaved
                     ? 'bg-brand-teal/20 text-brand-teal'
                     : 'bg-brand-ink/5 text-brand-ink/40 hover:text-brand-teal hover:bg-brand-teal/10'
                 } ${saving ? 'opacity-50' : ''}`}
                 title={localSaved ? 'Remove from my schedule' : 'Add to my schedule'}
               >
-                {localSaved ? <BookmarkCheck className="w-4 h-4" /> : <Bookmark className="w-4 h-4" />}
+                {localSaved ? <BookmarkCheck className="w-5 h-5" /> : <Bookmark className="w-5 h-5" />}
               </button>
-            )}
+            ) : bookmarkBlockReason ? (
+              <span
+                className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full bg-brand-ink/5 text-brand-ink/30 cursor-help"
+                title={bookmarkBlockReason}
+              >
+                <Bookmark className="w-5 h-5" />
+              </span>
+            ) : null}
           </div>
         </div>
       </motion.div>
@@ -237,20 +322,27 @@ function SessionCard({ session, index = 0, showSaveButton = true, compact = fals
                 </span>
               )
             })()}
-            {canSave && (
+            {canSave ? (
               <button
                 onClick={handleToggleSave}
                 disabled={saving}
-                className={`p-1.5 rounded-full transition-all ${
+                className={`min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full transition-all ${
                   localSaved
                     ? 'bg-brand-teal text-white shadow-md'
                     : 'bg-brand-ink/5 text-brand-ink/40 hover:text-brand-teal hover:bg-brand-teal/10'
                 } ${saving ? 'opacity-50' : ''}`}
                 title={localSaved ? 'Remove from my schedule' : 'Add to my schedule'}
               >
-                {localSaved ? <BookmarkCheck className="w-4 h-4" /> : <Bookmark className="w-4 h-4" />}
+                {localSaved ? <BookmarkCheck className="w-5 h-5" /> : <Bookmark className="w-5 h-5" />}
               </button>
-            )}
+            ) : bookmarkBlockReason ? (
+              <span
+                className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full bg-brand-ink/5 text-brand-ink/30 cursor-help"
+                title={bookmarkBlockReason}
+              >
+                <Bookmark className="w-5 h-5" />
+              </span>
+            ) : null}
           </div>
         </div>
 
@@ -361,7 +453,7 @@ function SessionCard({ session, index = 0, showSaveButton = true, compact = fals
                   </span>
                 )
               })()}
-              {canSave && (
+              {canSave ? (
                 <button
                   onClick={handleToggleSave}
                   disabled={saving}
@@ -374,7 +466,14 @@ function SessionCard({ session, index = 0, showSaveButton = true, compact = fals
                 >
                   {localSaved ? <BookmarkCheck className="w-5 h-5" /> : <Bookmark className="w-5 h-5" />}
                 </button>
-              )}
+              ) : bookmarkBlockReason ? (
+                <span
+                  className="p-2 rounded-full bg-brand-ink/5 text-brand-ink/30 cursor-help"
+                  title={bookmarkBlockReason}
+                >
+                  <Bookmark className="w-5 h-5" />
+                </span>
+              ) : null}
             </div>
           </div>
         </div>

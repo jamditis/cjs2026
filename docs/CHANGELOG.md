@@ -4,6 +4,44 @@ This file contains detailed historical updates from the CJS2026 website developm
 
 ---
 
+## 2026-01-04
+
+### UX improvements and audit fixes
+
+Comprehensive UI/UX audit and fixes across admin and attendee interfaces:
+
+**CMS improvements:**
+- Added undo functionality for content reordering (Ctrl+Z / Cmd+Z)
+- Up to 10 recent actions can be undone
+- Undo button added to CMS header
+- Increased reorder button touch targets to 40px (WCAG compliant)
+- Added aria-labels to reorder buttons for screen readers
+- Simplified CMS tour from 8 steps to 5 steps (only visible elements)
+
+**Attendee UX:**
+- Bookmark removal now shows undo option in toast (5-second window)
+- Schedule visibility changes require confirmation when making more public
+- PDF schedule export with proper time formatting
+- Added aria-labels to Download and Share buttons
+- Profile cancel/skip button always visible during editing
+
+**Admin UX:**
+- Announcement toggle (active/inactive) requires confirmation dialog
+- Fixed lanyard dismiss button text ("Dismiss lanyard" instead of "Close")
+- CMS tour tooltip positioning fixed for viewport boundaries
+
+**Files modified:**
+- `src/components/CMSManager.jsx` - Undo stack, larger touch targets, aria-labels
+- `src/components/SessionCard.jsx` - Bookmark undo toast
+- `src/components/ShareScheduleModal.jsx` - Visibility confirmation, error feedback
+- `src/pages/Admin.jsx` - Announcement toggle confirmation
+- `src/pages/Dashboard.jsx` - Always-visible cancel button
+- `src/pages/MySchedulePage.jsx` - Aria-labels
+- `src/components/Lanyard.jsx` - Dismiss button text
+- `src/components/CMSTour.jsx` - Simplified tour, viewport-aware positioning
+
+---
+
 ## 2026-01-02
 
 ### Custom CMS implementation
@@ -50,11 +88,11 @@ This prevents regular admins from accidentally breaking the site by changing met
 
 Added interactive walkthrough for first-time CMS users:
 
-- 8-step tour covering all CMS features
+- 5-step tour covering visible CMS features (simplified from 8 steps in 2026-01-04)
 - Spotlight effect on target elements
 - localStorage persistence ("Don't show again" option)
 - "Take tour" button to restart anytime
-- Contextual tooltips on hover
+- Viewport-aware tooltip positioning
 
 **Files:**
 - `src/components/CMSTour.jsx` — Tour component with CMSTour, TourTrigger, CMSTooltip exports
