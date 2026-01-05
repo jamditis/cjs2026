@@ -68,7 +68,7 @@ function getBookmarkTier(count) {
   }
 }
 
-function SessionCard({ session, index = 0, showSaveButton = true, compact = false, bookmarkCount = 0 }) {
+function SessionCard({ session, index = 0, showSaveButton = true, compact = false, bookmarkCount = 0, onOpenDetail = null }) {
   const { currentUser, userProfile, saveSession, unsaveSession, isSessionSaved, canBookmarkSessions } = useAuth()
 
   // Use local state for optimistic UI updates
@@ -216,7 +216,12 @@ function SessionCard({ session, index = 0, showSaveButton = true, compact = fals
                 </>
               )}
             </div>
-            <h4 className="font-heading font-semibold text-brand-ink text-sm leading-tight">{session.title}</h4>
+            <h4
+              className={`font-heading font-semibold text-brand-ink text-sm leading-tight ${onOpenDetail ? 'cursor-pointer hover:text-brand-teal transition-colors' : ''}`}
+              onClick={() => onOpenDetail?.(session)}
+            >
+              {session.title}
+            </h4>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
             {bookmarkCount > 0 && (() => {
@@ -308,7 +313,12 @@ function SessionCard({ session, index = 0, showSaveButton = true, compact = fals
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-3">
             <div className="flex-1 min-w-0">
-              <h4 className="font-heading font-semibold text-brand-ink">{session.title}</h4>
+              <h4
+                className={`font-heading font-semibold text-brand-ink ${onOpenDetail ? 'cursor-pointer hover:text-brand-teal transition-colors' : ''}`}
+                onClick={() => onOpenDetail?.(session)}
+              >
+                {session.title}
+              </h4>
 
               {session.description && (
                 <p className="font-body text-sm text-brand-ink/60 mt-1">{session.description}</p>

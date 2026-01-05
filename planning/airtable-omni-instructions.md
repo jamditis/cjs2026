@@ -31,7 +31,7 @@ Use these instructions to create the tables needed for the CJS 2026 website CMS.
 | hero | headline | Collaborative Journalism Summit |
 | hero | tagline | Prepare to partner. |
 | hero | date_display | June 8–9, 2026 |
-| hero | location | Chapel Hill, North Carolina |
+| hero | location | Pittsburgh, Pennsylvania |
 | hero | badge_text | 10th anniversary edition |
 | hero | registration_note | Registration opens soon |
 | details | section_headline | Save the date |
@@ -40,8 +40,8 @@ Use these instructions to create the tables needed for the CJS 2026 website CMS.
 | details | when_day1_description | Full day of sessions + dinner |
 | details | when_day2_title | Tuesday, June 9 |
 | details | when_day2_description | Morning workshops |
-| details | venue_name | UNC Friday Center |
-| details | venue_location | Chapel Hill, North Carolina |
+| details | venue_name | Pittsburgh venue TBA |
+| details | venue_location | Pittsburgh, Pennsylvania |
 | details | venue_note | Co-located with INN Days |
 | details | who_count | 130–150 attendees |
 | details | who_description | Journalists, media leaders, funders, and academics |
@@ -109,10 +109,10 @@ Use these instructions to create the tables needed for the CJS 2026 website CMS.
 | Summit start date | summit_start_date | 2026-06-08 | Monday, June 8, 2026 |
 | Summit end date | summit_end_date | 2026-06-09 | Tuesday, June 9, 2026 |
 | Date range | summit_date_range | 2026-06-08/2026-06-09 | June 8–9, 2026 |
-| Venue name | venue_name | UNC Friday Center | UNC Friday Center |
-| Venue city | venue_city | Chapel Hill | Chapel Hill |
-| Venue state | venue_state | NC | North Carolina |
-| Full venue | venue_full | UNC Friday Center, Chapel Hill, NC | UNC Friday Center, Chapel Hill, North Carolina |
+| Venue name | venue_name | Pittsburgh venue TBA | Pittsburgh venue TBA |
+| Venue city | venue_city | Pittsburgh | Pittsburgh |
+| Venue state | venue_state | PA | Pennsylvania |
+| Full venue | venue_full | Pittsburgh, PA | Pittsburgh, Pennsylvania |
 | Expected attendees | expected_attendees | 150 | 130–150 |
 | Registration status | registration_status | coming_soon | Registration opens soon |
 | Contact email | contact_email | summit@collaborativejournalism.org | summit@collaborativejournalism.org |
@@ -217,7 +217,7 @@ Use these instructions to create the tables needed for the CJS 2026 website CMS.
 | 2023 | Washington, D.C. | Building Frameworks | https://collaborativejournalism.org/cjs2023/ | 7 | ✓ |
 | 2024 | Detroit, MI | Global Impact | https://collaborativejournalism.org/cjs2024/ | 8 | ✓ |
 | 2025 | Denver, CO | Partnerships with Purpose | https://collaborativejournalism.org/cjs2025/ | 9 | ✓ |
-| 2026 | North Carolina | 10th Anniversary | | 10 | ✓ |
+| 2026 | Pittsburgh, PA | 10th Anniversary | | 10 | ✓ |
 
 ---
 

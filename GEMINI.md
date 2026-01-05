@@ -1,7 +1,7 @@
 # GEMINI.md - Context & Instructions for CJS2026
 
 ## Project Overview
-This project (`cjs2026`) is the official website for the **2026 Collaborative Journalism Summit**, the 10th anniversary edition of the event hosted by the Center for Cooperative Media and INN. It is a single-page React application that serves as the main information hub for the summit, taking place in Chapel Hill, NC in June 2026.
+This project (`cjs2026`) is the official website for the **2026 Collaborative Journalism Summit**, the 10th anniversary edition of the event hosted by the Center for Cooperative Media and INN. It is a single-page React application that serves as the main information hub for the summit, taking place in Pittsburgh, PA in June 2026.
 
 ## Tech Stack
 - **Framework:** React 18
@@ -120,7 +120,7 @@ const response = await fetch('https://us-central1-cjs2026.cloudfunctions.net/sav
 
 **Questions/suggestions:**
 1. Should the splash screen duration be shorter? Currently 2 seconds.
-2. The NC map background opacity is at 0.08 - want it more/less visible?
+2. The PA map background opacity is at 0.08 - want it more/less visible?
 3. Consider adding a loading state to the email form while it submits.
 
 Let me know if you need anything else from the backend side!

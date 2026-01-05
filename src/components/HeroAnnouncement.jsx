@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Feather, Bell, AlertTriangle, AlertCircle } from 'lucide-react'
+import DOMPurify from 'dompurify'
 import { db } from '../firebase'
 import { collection, query, where, orderBy, limit, onSnapshot } from 'firebase/firestore'
 import { getContent } from '../content/siteContent'
@@ -45,7 +46,13 @@ export default function HeroAnnouncement() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const dismissedIds = JSON.parse(localStorage.getItem('dismissed-announcements') || '[]')
+    let dismissedIds = []
+    try {
+      dismissedIds = JSON.parse(localStorage.getItem('dismissed-announcements') || '[]')
+    } catch (e) {
+      // localStorage may be disabled or corrupted
+      dismissedIds = []
+    }
 
     const q = query(
       collection(db, 'announcements'),
@@ -79,9 +86,13 @@ export default function HeroAnnouncement() {
   function dismissAnnouncement() {
     if (!announcement) return
 
-    const dismissedIds = JSON.parse(localStorage.getItem('dismissed-announcements') || '[]')
-    dismissedIds.push(announcement.id)
-    localStorage.setItem('dismissed-announcements', JSON.stringify(dismissedIds))
+    try {
+      const dismissedIds = JSON.parse(localStorage.getItem('dismissed-announcements') || '[]')
+      dismissedIds.push(announcement.id)
+      localStorage.setItem('dismissed-announcements', JSON.stringify(dismissedIds))
+    } catch (e) {
+      // localStorage may be disabled; continue anyway
+    }
 
     setDismissed(true)
     setTimeout(() => setAnnouncement(null), 300)
@@ -110,11 +121,14 @@ export default function HeroAnnouncement() {
             {/* Type icon */}
             <TypeIcon className={`w-4 h-4 ${style.text} flex-shrink-0`} />
 
-            {/* Rich text content */}
+            {/* Rich text content (sanitized for security) */}
             <div
               className={`${style.text} font-body font-medium text-sm sm:text-base announcement-content`}
               dangerouslySetInnerHTML={{
-                __html: announcement.htmlMessage || announcement.message
+                __html: DOMPurify.sanitize(announcement.htmlMessage || announcement.message, {
+                  ALLOWED_TAGS: ['a', 'strong', 'em', 'b', 'i', 'br', 'span'],
+                  ALLOWED_ATTR: ['href', 'target', 'rel', 'class']
+                })
               }}
             />
 

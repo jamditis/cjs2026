@@ -2,7 +2,46 @@ const { onRequest } = require("firebase-functions/v2/https");
 const { onDocumentWritten } = require("firebase-functions/v2/firestore");
 const { defineSecret } = require("firebase-functions/params");
 const admin = require("firebase-admin");
-const cors = require("cors")({ origin: true });
+const crypto = require("crypto");
+
+// CORS configuration - restrict to known origins in production
+const ALLOWED_ORIGINS = [
+  "https://summit.collaborativejournalism.org",
+  "https://cjs2026.web.app",
+  "https://cjs2026.firebaseapp.com",
+  // Allow localhost for development
+  /^http:\/\/localhost:\d+$/
+];
+
+const cors = require("cors")({
+  origin: function (origin, callback) {
+    // In production, require origin header for security
+    // Server-to-server requests should use Cloud Function internal auth, not CORS
+    if (!origin) {
+      // Allow only in development (functions emulator sets no origin)
+      if (process.env.FUNCTIONS_EMULATOR === 'true') {
+        return callback(null, true);
+      }
+      console.warn('CORS blocked: missing origin header');
+      return callback(new Error("Origin header required"));
+    }
+
+    // Check against allowed origins
+    const isAllowed = ALLOWED_ORIGINS.some(allowed => {
+      if (allowed instanceof RegExp) {
+        return allowed.test(origin);
+      }
+      return allowed === origin;
+    });
+
+    if (isAllowed) {
+      callback(null, true);
+    } else {
+      console.warn(`CORS blocked origin: ${origin}`);
+      callback(new Error("Not allowed by CORS"));
+    }
+  }
+});
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -16,6 +55,7 @@ const AIRTABLE_SCHEDULE_TABLE = "Schedule";
 // Define the secrets (will be accessed at runtime)
 const airtableApiKey = defineSecret("AIRTABLE_API_KEY");
 const eventbriteToken = defineSecret("EVENTBRITE_TOKEN");
+const eventbriteWebhookKey = defineSecret("EVENTBRITE_WEBHOOK_KEY");
 
 // Eventbrite config
 const EVENTBRITE_EVENT_ID = "1977919688031";
@@ -24,6 +64,30 @@ const EVENTBRITE_EVENT_ID = "1977919688031";
 let contentCache = null;
 let cacheTimestamp = null;
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+// ============================================
+// Validation Helpers
+// ============================================
+
+/**
+ * Validate email address format
+ * Uses a practical regex that catches most invalid emails without being overly strict
+ * @param {string} email - Email to validate
+ * @returns {boolean} True if email appears valid
+ */
+function isValidEmail(email) {
+  if (!email || typeof email !== 'string') return false;
+
+  // Trim whitespace and check length
+  const trimmed = email.trim().toLowerCase();
+  if (trimmed.length < 5 || trimmed.length > 254) return false;
+
+  // RFC 5322 practical email regex
+  // Matches: local-part@domain where domain has at least one dot
+  const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
+
+  return emailRegex.test(trimmed);
+}
 
 // ============================================
 // Security & Auth Helpers
@@ -220,8 +284,8 @@ exports.saveEmailSignup = onRequest({ cors: true, secrets: [airtableApiKey] }, a
 
     const { email, source = "CJS 2026 Website" } = req.body;
 
-    if (!email || !email.includes("@")) {
-      res.status(400).json({ error: "Valid email required" });
+    if (!isValidEmail(email)) {
+      res.status(400).json({ error: "Please enter a valid email address" });
       return;
     }
 
@@ -278,6 +342,57 @@ exports.health = onRequest((req, res) => {
 });
 
 /**
+ * Trigger CMS sync via GitHub Actions (admin only)
+ * This triggers a repository_dispatch event to run the deploy workflow
+ */
+exports.triggerCMSSync = onRequest({ cors: true }, async (req, res) => {
+  cors(req, res, async () => {
+    if (req.method !== "POST") {
+      res.status(405).send("Method Not Allowed");
+      return;
+    }
+
+    try {
+      const caller = await verifyAuthToken(req.headers.authorization);
+      const isAdminUser = await isAdmin(caller.uid, caller.email);
+
+      if (!isAdminUser) {
+        res.status(403).json({ error: 'Unauthorized: Admin access required' });
+        return;
+      }
+
+      // Note: To actually trigger GitHub Actions, you would need:
+      // 1. A GitHub Personal Access Token stored as a secret
+      // 2. A repository_dispatch endpoint in the workflow
+      //
+      // For now, this just logs the request and returns success
+      // The actual sync happens via Airtable's "Update website" button
+      // which triggers the GitHub webhook directly
+
+      console.log(`CMS sync triggered by ${caller.email} at ${new Date().toISOString()}`);
+
+      // Log the sync request to Firestore (will be picked up by the admin panel)
+      await db.collection('cms_sync_logs').add({
+        timestamp: admin.firestore.FieldValue.serverTimestamp(),
+        triggeredBy: caller.email,
+        status: 'initiated',
+        message: 'Manual sync requested from admin panel. Use Airtable "Update website" button to trigger actual deploy.'
+      });
+
+      res.status(200).json({
+        success: true,
+        message: 'Sync request logged. For full deploy, use the "Update website" button in Airtable.',
+        note: 'GitHub Actions will run automatically when triggered from Airtable.'
+      });
+    } catch (error) {
+      console.error('Error triggering CMS sync:', error);
+      res.status(error.message.includes('Unauthorized') ? 403 : 500)
+        .json({ error: error.message || 'Failed to trigger sync' });
+    }
+  });
+});
+
+/**
  * Save edit request to Firestore
  * For internal use - allows team to request copy edits via web form
  */
@@ -329,7 +444,7 @@ exports.saveEditRequest = onRequest({ cors: true }, async (req, res) => {
 });
 
 /**
- * Get all pending edit requests (for Joe to review)
+ * Get all pending edit requests (admin only)
  */
 exports.getEditRequests = onRequest({ cors: true }, async (req, res) => {
   cors(req, res, async () => {
@@ -339,6 +454,9 @@ exports.getEditRequests = onRequest({ cors: true }, async (req, res) => {
     }
 
     try {
+      // Require admin authentication
+      await requireAdmin(req);
+
       const snapshot = await db.collection("edit_requests")
         .orderBy("createdAt", "desc")
         .get();
@@ -351,7 +469,11 @@ exports.getEditRequests = onRequest({ cors: true }, async (req, res) => {
       res.status(200).json({ success: true, requests });
     } catch (error) {
       console.error("Error fetching edit requests:", error);
-      res.status(500).json({ error: "Failed to fetch edit requests" });
+      if (error.message.includes('Unauthorized')) {
+        res.status(403).json({ error: error.message });
+      } else {
+        res.status(500).json({ error: "Failed to fetch edit requests" });
+      }
     }
   });
 });
@@ -1003,21 +1125,31 @@ exports.getSystemErrors = onRequest({ cors: true }, async (req, res) => {
       await requireAdmin(req);
 
       const limit = parseInt(req.query.limit) || 50;
-      const resolved = req.query.resolved === 'true';
+      // Only filter by resolved if explicitly specified in query
+      const filterByResolved = req.query.resolved !== undefined;
+      const resolvedValue = req.query.resolved === 'true';
 
-      let query = db.collection('system_errors')
-        .orderBy('createdAt', 'desc')
-        .limit(limit);
+      let query = db.collection('system_errors');
 
-      if (resolved !== undefined) {
-        query = query.where('resolved', '==', resolved);
+      // Apply resolved filter first (must come before orderBy for composite index)
+      if (filterByResolved) {
+        query = query.where('resolved', '==', resolvedValue);
       }
+
+      query = query.orderBy('createdAt', 'desc').limit(limit);
 
       const snapshot = await query.get();
       const errors = [];
 
       snapshot.forEach(doc => {
-        errors.push({ id: doc.id, ...doc.data() });
+        const data = doc.data();
+        errors.push({
+          id: doc.id,
+          ...data,
+          // Convert Firestore Timestamps to ISO strings for JSON
+          createdAt: data.createdAt?.toDate?.()?.toISOString() || data.createdAt,
+          resolvedAt: data.resolvedAt?.toDate?.()?.toISOString() || data.resolvedAt
+        });
       });
 
       res.status(200).json({
@@ -1275,17 +1407,138 @@ exports.revokeAdminRole = onRequest({ cors: true }, async (req, res) => {
   });
 });
 
+/**
+ * Get list of all admin users
+ */
+exports.getAdminUsers = onRequest({ cors: true }, async (req, res) => {
+  cors(req, res, async () => {
+    if (req.method !== "GET") {
+      res.status(405).send("Method Not Allowed");
+      return;
+    }
+
+    try {
+      const caller = await verifyAuthToken(req.headers.authorization);
+      const isAdminUser = await isAdmin(caller.uid, caller.email);
+
+      if (!isAdminUser) {
+        res.status(403).json({ error: 'Unauthorized: Admin access required' });
+        return;
+      }
+
+      // Query users with admin or super_admin role
+      const adminSnapshot = await db.collection('users')
+        .where('role', 'in', ['admin', 'super_admin'])
+        .get();
+
+      const admins = [];
+
+      // Add users with role field
+      adminSnapshot.forEach((doc) => {
+        const data = doc.data();
+        admins.push({
+          uid: doc.id,
+          email: data.email,
+          displayName: data.displayName,
+          photoURL: data.photoURL,
+          role: data.role
+        });
+      });
+
+      // Also add hardcoded admin emails if they're not already in the list
+      for (const email of ADMIN_EMAILS) {
+        if (!admins.find(a => a.email === email)) {
+          // Try to find the user by email
+          const userSnapshot = await db.collection('users')
+            .where('email', '==', email)
+            .limit(1)
+            .get();
+
+          if (!userSnapshot.empty) {
+            const doc = userSnapshot.docs[0];
+            const data = doc.data();
+            admins.push({
+              uid: doc.id,
+              email: data.email,
+              displayName: data.displayName,
+              photoURL: data.photoURL,
+              role: data.role || 'admin (hardcoded)'
+            });
+          } else {
+            // User hasn't signed up yet but is in admin list
+            admins.push({
+              uid: null,
+              email,
+              displayName: null,
+              photoURL: null,
+              role: 'admin (pending signup)'
+            });
+          }
+        }
+      }
+
+      // Sort by role (super_admin first) then by email
+      admins.sort((a, b) => {
+        if (a.role === 'super_admin' && b.role !== 'super_admin') return -1;
+        if (b.role === 'super_admin' && a.role !== 'super_admin') return 1;
+        return (a.email || '').localeCompare(b.email || '');
+      });
+
+      res.status(200).json({
+        success: true,
+        admins,
+        count: admins.length
+      });
+    } catch (error) {
+      console.error('Error fetching admin users:', error);
+      res.status(error.message.includes('Unauthorized') ? 403 : 500)
+        .json({ error: error.message || 'Failed to fetch admin users' });
+    }
+  });
+});
+
 // ============================================
 // Eventbrite Integration
 // ============================================
+
+/**
+ * Verify Eventbrite webhook signature
+ * Eventbrite uses HMAC-SHA256 for webhook verification
+ * @param {string} signature - X-Eventbrite-Delivery-Signature header
+ * @param {string} body - Raw request body
+ * @param {string} secret - Webhook signing secret
+ * @returns {boolean} True if signature is valid
+ */
+function verifyEventbriteSignature(signature, body, secret) {
+  if (!signature || !secret) return false;
+
+  try {
+    const expectedSignature = crypto
+      .createHmac('sha256', secret)
+      .update(body, 'utf8')
+      .digest('hex');
+
+    // Constant-time comparison to prevent timing attacks
+    return crypto.timingSafeEqual(
+      Buffer.from(signature),
+      Buffer.from(expectedSignature)
+    );
+  } catch (err) {
+    console.error('Signature verification error:', err);
+    return false;
+  }
+}
 
 /**
  * Webhook endpoint for Eventbrite order notifications
  * Set up in Eventbrite: Settings > Webhooks > Add webhook
  * URL: https://us-central1-cjs2026.cloudfunctions.net/eventbriteWebhook
  * Actions: order.placed, order.updated
+ *
+ * SECURITY: Validates webhook signature using HMAC-SHA256
+ * Set EVENTBRITE_WEBHOOK_KEY secret in Firebase with your Eventbrite webhook key
  */
-exports.eventbriteWebhook = onRequest({ cors: true, secrets: [eventbriteToken] }, async (req, res) => {
+exports.eventbriteWebhook = onRequest({ cors: true, secrets: [eventbriteToken, eventbriteWebhookKey] }, async (req, res) => {
   // Eventbrite sends POST requests for webhooks
   if (req.method !== "POST") {
     res.status(405).send("Method Not Allowed");
@@ -1293,6 +1546,26 @@ exports.eventbriteWebhook = onRequest({ cors: true, secrets: [eventbriteToken] }
   }
 
   try {
+    // Verify webhook signature if secret is configured
+    const webhookSecret = eventbriteWebhookKey.value();
+    if (webhookSecret) {
+      const signature = req.headers['x-eventbrite-delivery-signature'];
+      const rawBody = JSON.stringify(req.body);
+
+      if (!verifyEventbriteSignature(signature, rawBody, webhookSecret)) {
+        console.warn('Invalid Eventbrite webhook signature');
+        await logError('eventbriteWebhook', new Error('Invalid signature'), {
+          hasSignature: !!signature,
+          action: req.body?.config?.action
+        });
+        res.status(401).json({ error: 'Invalid signature' });
+        return;
+      }
+    } else {
+      // Log warning if signature validation is disabled
+      console.warn('EVENTBRITE_WEBHOOK_KEY not configured - signature validation disabled');
+    }
+
     const payload = req.body;
     console.log('Eventbrite webhook received:', JSON.stringify(payload));
 
@@ -1985,3 +2258,504 @@ exports.syncBookmarkCountToAirtable = onDocumentWritten(
     }
   }
 );
+
+// ============================================
+// Custom CMS Functions
+// ============================================
+
+// Define GitHub PAT secret for triggering GitHub Actions
+const githubPat = defineSecret("GITHUB_PAT");
+
+// CMS validation schemas
+const CMS_SCHEMAS = {
+  cmsContent: {
+    required: ['field', 'section', 'content'],
+    optional: ['page', 'component', 'color', 'order', 'visible', 'link']
+  },
+  cmsSchedule: {
+    required: ['sessionId', 'title', 'type', 'day', 'startTime'],
+    optional: ['endTime', 'description', 'room', 'speakers', 'speakerOrgs', 'track', 'order', 'visible', 'isBookmarkable', 'color']
+  },
+  cmsOrganizations: {
+    required: ['name'],
+    optional: ['logoUrl', 'logoPath', 'website', 'isSponsor', 'sponsorTier', 'sponsorOrder', 'description', 'type', 'visible']
+  },
+  cmsTimeline: {
+    required: ['year', 'location'],
+    optional: ['theme', 'link', 'emoji', 'order', 'visible']
+  }
+};
+
+/**
+ * Validate CMS data against schema
+ */
+function validateCMSData(collection, data, isPartialUpdate = false) {
+  const schema = CMS_SCHEMAS[collection];
+  if (!schema) return { valid: false, error: 'Unknown collection' };
+
+  if (!isPartialUpdate) {
+    for (const field of schema.required) {
+      if (data[field] === undefined || data[field] === '') {
+        return { valid: false, error: `Missing required field: ${field}` };
+      }
+    }
+  }
+
+  // Validate field types
+  if (data.order !== undefined && typeof data.order !== 'number') {
+    return { valid: false, error: 'Order must be a number' };
+  }
+  if (data.visible !== undefined && typeof data.visible !== 'boolean') {
+    return { valid: false, error: 'Visible must be boolean' };
+  }
+
+  return { valid: true };
+}
+
+/**
+ * Sanitize CMS data (basic profanity check on text fields)
+ */
+function sanitizeCMSData(data) {
+  const sanitized = { ...data };
+  // Note: For full profanity filtering, the frontend profanityFilter.js should be used
+  // Cloud Functions can do basic sanitization like trimming whitespace
+  const textFields = ['content', 'title', 'description', 'name', 'theme', 'speakers', 'speakerOrgs'];
+  for (const field of textFields) {
+    if (sanitized[field] && typeof sanitized[field] === 'string') {
+      sanitized[field] = sanitized[field].trim();
+    }
+  }
+  return sanitized;
+}
+
+/**
+ * Log CMS version history
+ */
+async function logCMSVersionHistory(collection, documentId, previousValue, newValue, action, user) {
+  try {
+    await db.collection('cmsVersionHistory').add({
+      collection,
+      documentId,
+      field: previousValue?.field || newValue?.field || null,
+      previousValue: previousValue || null,
+      newValue: newValue || null,
+      action,
+      userId: user.uid,
+      userEmail: user.email,
+      timestamp: admin.firestore.FieldValue.serverTimestamp()
+    });
+  } catch (err) {
+    console.error('Failed to log CMS version history:', err);
+  }
+}
+
+/**
+ * Create CMS content (admin only)
+ */
+exports.cmsCreateContent = onRequest({ cors: true }, async (req, res) => {
+  cors(req, res, async () => {
+    if (req.method !== "POST") {
+      res.status(405).send("Method Not Allowed");
+      return;
+    }
+
+    try {
+      const user = await requireAdmin(req);
+      const { collection, data } = req.body;
+
+      // Validate collection name
+      const validCollections = ['cmsContent', 'cmsSchedule', 'cmsOrganizations', 'cmsTimeline'];
+      if (!validCollections.includes(collection)) {
+        res.status(400).json({ error: 'Invalid collection' });
+        return;
+      }
+
+      // Validate required fields
+      const validation = validateCMSData(collection, data);
+      if (!validation.valid) {
+        res.status(400).json({ error: validation.error });
+        return;
+      }
+
+      // Sanitize content
+      const sanitizedData = sanitizeCMSData(data);
+
+      // Add metadata
+      const docData = {
+        ...sanitizedData,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedBy: user.uid,
+        version: 1
+      };
+
+      // Create document
+      const docRef = await db.collection(collection).add(docData);
+
+      // Log to version history
+      await logCMSVersionHistory(collection, docRef.id, null, docData, 'create', user);
+
+      // Log admin action
+      await logAdminAction(user.uid, 'cms_create', null, { collection, documentId: docRef.id });
+
+      res.status(200).json({ success: true, id: docRef.id });
+    } catch (error) {
+      console.error('CMS create error:', error);
+      await logError('cmsCreateContent', error);
+      res.status(error.message.includes('Unauthorized') ? 403 : 500)
+        .json({ error: error.message || 'Failed to create content' });
+    }
+  });
+});
+
+/**
+ * Update CMS content (admin only)
+ */
+exports.cmsUpdateContent = onRequest({ cors: true }, async (req, res) => {
+  cors(req, res, async () => {
+    if (req.method !== "POST") {
+      res.status(405).send("Method Not Allowed");
+      return;
+    }
+
+    try {
+      const user = await requireAdmin(req);
+      const { collection, documentId, data } = req.body;
+
+      // Validate collection
+      const validCollections = ['cmsContent', 'cmsSchedule', 'cmsOrganizations', 'cmsTimeline'];
+      if (!validCollections.includes(collection)) {
+        res.status(400).json({ error: 'Invalid collection' });
+        return;
+      }
+
+      if (!documentId) {
+        res.status(400).json({ error: 'Document ID required' });
+        return;
+      }
+
+      // Get existing document
+      const docRef = db.collection(collection).doc(documentId);
+      const existing = await docRef.get();
+      if (!existing.exists) {
+        res.status(404).json({ error: 'Document not found' });
+        return;
+      }
+
+      // Validate and sanitize
+      const validation = validateCMSData(collection, data, true);  // true = partial update
+      if (!validation.valid) {
+        res.status(400).json({ error: validation.error });
+        return;
+      }
+      const sanitizedData = sanitizeCMSData(data);
+
+      // Update with metadata
+      const updateData = {
+        ...sanitizedData,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedBy: user.uid,
+        version: admin.firestore.FieldValue.increment(1)
+      };
+
+      await docRef.update(updateData);
+
+      // Log to version history
+      await logCMSVersionHistory(collection, documentId, existing.data(), updateData, 'update', user);
+
+      // Log admin action
+      await logAdminAction(user.uid, 'cms_update', null, { collection, documentId });
+
+      res.status(200).json({ success: true });
+    } catch (error) {
+      console.error('CMS update error:', error);
+      await logError('cmsUpdateContent', error);
+      res.status(error.message.includes('Unauthorized') ? 403 : 500)
+        .json({ error: error.message || 'Failed to update content' });
+    }
+  });
+});
+
+/**
+ * Delete CMS content (super admin only)
+ */
+exports.cmsDeleteContent = onRequest({ cors: true }, async (req, res) => {
+  cors(req, res, async () => {
+    if (req.method !== "POST") {
+      res.status(405).send("Method Not Allowed");
+      return;
+    }
+
+    try {
+      const user = await requireSuperAdmin(req);  // Super admin only
+      const { collection, documentId } = req.body;
+
+      // Validate collection
+      const validCollections = ['cmsContent', 'cmsSchedule', 'cmsOrganizations', 'cmsTimeline'];
+      if (!validCollections.includes(collection)) {
+        res.status(400).json({ error: 'Invalid collection' });
+        return;
+      }
+
+      if (!documentId) {
+        res.status(400).json({ error: 'Document ID required' });
+        return;
+      }
+
+      // Get existing document for history
+      const docRef = db.collection(collection).doc(documentId);
+      const existing = await docRef.get();
+      if (!existing.exists) {
+        res.status(404).json({ error: 'Document not found' });
+        return;
+      }
+
+      // If organization with logo, note it for potential cleanup
+      // (Actual Storage deletion would require the Storage SDK)
+      const existingData = existing.data();
+      if (collection === 'cmsOrganizations' && existingData.logoPath) {
+        console.log(`Note: Logo at ${existingData.logoPath} may need cleanup`);
+      }
+
+      // Delete document
+      await docRef.delete();
+
+      // Log to version history
+      await logCMSVersionHistory(collection, documentId, existingData, null, 'delete', user);
+
+      // Log admin action
+      await logAdminAction(user.uid, 'cms_delete', null, { collection, documentId });
+
+      res.status(200).json({ success: true });
+    } catch (error) {
+      console.error('CMS delete error:', error);
+      await logError('cmsDeleteContent', error);
+      res.status(error.message.includes('Unauthorized') ? 403 : 500)
+        .json({ error: error.message || 'Failed to delete content' });
+    }
+  });
+});
+
+/**
+ * Get CMS version history (admin only)
+ */
+exports.cmsGetVersionHistory = onRequest({ cors: true }, async (req, res) => {
+  cors(req, res, async () => {
+    if (req.method !== "GET") {
+      res.status(405).send("Method Not Allowed");
+      return;
+    }
+
+    try {
+      await requireAdmin(req);
+      const { collection, documentId, limit = '20' } = req.query;
+
+      let query = db.collection('cmsVersionHistory')
+        .orderBy('timestamp', 'desc')
+        .limit(parseInt(limit));
+
+      if (collection) {
+        query = query.where('collection', '==', collection);
+      }
+      // Note: Can't combine multiple where clauses with orderBy on different fields
+      // without a composite index. For documentId filtering, do it in memory.
+
+      const snapshot = await query.get();
+      let history = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        timestamp: doc.data().timestamp?.toDate()?.toISOString()
+      }));
+
+      // Filter by documentId in memory if provided
+      if (documentId) {
+        history = history.filter(h => h.documentId === documentId);
+      }
+
+      res.status(200).json({ success: true, history });
+    } catch (error) {
+      console.error('Version history error:', error);
+      res.status(error.message.includes('Unauthorized') ? 403 : 500)
+        .json({ error: error.message || 'Failed to get version history' });
+    }
+  });
+});
+
+/**
+ * Trigger CMS publish via GitHub Actions (admin only)
+ * Creates a publish queue entry and triggers the deploy workflow
+ */
+exports.cmsPublish = onRequest({ cors: true, secrets: [githubPat] }, async (req, res) => {
+  cors(req, res, async () => {
+    if (req.method !== "POST") {
+      res.status(405).send("Method Not Allowed");
+      return;
+    }
+
+    try {
+      const user = await requireAdmin(req);
+      const { changes = [] } = req.body;
+
+      // Create publish queue entry
+      const queueRef = await db.collection('cmsPublishQueue').add({
+        status: 'pending',
+        triggeredBy: user.uid,
+        triggeredByEmail: user.email,
+        triggeredAt: admin.firestore.FieldValue.serverTimestamp(),
+        completedAt: null,
+        error: null,
+        changes
+      });
+
+      // Check if GitHub PAT is configured
+      const token = githubPat.value();
+      if (!token) {
+        // If no GitHub PAT, just log and return success
+        // The admin can manually trigger via Airtable or GitHub
+        await db.collection('cmsPublishQueue').doc(queueRef.id).update({
+          status: 'manual_required',
+          error: 'GITHUB_PAT not configured. Trigger deploy manually via GitHub Actions.'
+        });
+
+        res.status(200).json({
+          success: true,
+          queueId: queueRef.id,
+          message: 'Publish queued. GitHub PAT not configured - trigger deploy manually.',
+          manualRequired: true
+        });
+        return;
+      }
+
+      // Trigger GitHub Actions workflow via repository dispatch
+      const response = await fetch(
+        'https://api.github.com/repos/jamditis/cjs2026/dispatches',
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/vnd.github.v3+json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            event_type: 'cms_publish',
+            client_payload: {
+              queueId: queueRef.id,
+              triggeredBy: user.email
+            }
+          })
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        await db.collection('cmsPublishQueue').doc(queueRef.id).update({
+          status: 'failed',
+          error: `GitHub trigger failed: ${response.status} - ${errorText}`
+        });
+        res.status(500).json({ error: 'Failed to trigger GitHub Actions' });
+        return;
+      }
+
+      // Update status to publishing
+      await db.collection('cmsPublishQueue').doc(queueRef.id).update({
+        status: 'publishing'
+      });
+
+      // Log admin action
+      await logAdminAction(user.uid, 'cms_publish', null, { queueId: queueRef.id, changesCount: changes.length });
+
+      res.status(200).json({
+        success: true,
+        queueId: queueRef.id,
+        message: 'Publish triggered. Site will update in ~60 seconds.'
+      });
+    } catch (error) {
+      console.error('Publish error:', error);
+      await logError('cmsPublish', error);
+      res.status(error.message.includes('Unauthorized') ? 403 : 500)
+        .json({ error: error.message || 'Failed to trigger publish' });
+    }
+  });
+});
+
+/**
+ * Get CMS publish queue (admin only)
+ */
+exports.cmsGetPublishQueue = onRequest({ cors: true }, async (req, res) => {
+  cors(req, res, async () => {
+    if (req.method !== "GET") {
+      res.status(405).send("Method Not Allowed");
+      return;
+    }
+
+    try {
+      await requireAdmin(req);
+      const limit = parseInt(req.query.limit) || 20;
+
+      const snapshot = await db.collection('cmsPublishQueue')
+        .orderBy('triggeredAt', 'desc')
+        .limit(limit)
+        .get();
+
+      const queue = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        triggeredAt: doc.data().triggeredAt?.toDate()?.toISOString(),
+        completedAt: doc.data().completedAt?.toDate()?.toISOString()
+      }));
+
+      res.status(200).json({ success: true, queue });
+    } catch (error) {
+      console.error('Get publish queue error:', error);
+      res.status(error.message.includes('Unauthorized') ? 403 : 500)
+        .json({ error: error.message || 'Failed to get publish queue' });
+    }
+  });
+});
+
+/**
+ * Update publish queue status (called by GitHub Actions)
+ * This endpoint is called from the deploy workflow to update the queue status
+ */
+exports.cmsUpdatePublishStatus = onRequest({ cors: true }, async (req, res) => {
+  cors(req, res, async () => {
+    if (req.method !== "POST") {
+      res.status(405).send("Method Not Allowed");
+      return;
+    }
+
+    try {
+      // This endpoint can be called by GitHub Actions with a secret key
+      // For now, just check that request has valid data
+      const { queueId, status, error: errorMsg, commitSha } = req.body;
+
+      if (!queueId || !status) {
+        res.status(400).json({ error: 'Queue ID and status required' });
+        return;
+      }
+
+      const validStatuses = ['pending', 'publishing', 'success', 'failed'];
+      if (!validStatuses.includes(status)) {
+        res.status(400).json({ error: 'Invalid status' });
+        return;
+      }
+
+      const updateData = {
+        status,
+        completedAt: status === 'success' || status === 'failed'
+          ? admin.firestore.FieldValue.serverTimestamp()
+          : null
+      };
+
+      if (errorMsg) updateData.error = errorMsg;
+      if (commitSha) updateData.gitCommitSha = commitSha;
+
+      await db.collection('cmsPublishQueue').doc(queueId).update(updateData);
+
+      res.status(200).json({ success: true });
+    } catch (error) {
+      console.error('Update publish status error:', error);
+      res.status(500).json({ error: error.message || 'Failed to update status' });
+    }
+  });
+});

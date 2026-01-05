@@ -48,9 +48,17 @@ import {
   Save,
   Pencil,
   Bookmark,
-  Flame
+  Flame,
+  Database,
+  Link2,
+  FileCode,
+  GitBranch,
+  Play,
+  History
 } from 'lucide-react'
+import DOMPurify from 'dompurify'
 import { useAuth } from '../contexts/AuthContext'
+import CMSManager from '../components/CMSManager'
 import { useNavigate } from 'react-router-dom'
 import { db } from '../firebase'
 import { collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, limit, serverTimestamp, getDoc, setDoc } from 'firebase/firestore'
@@ -63,6 +71,7 @@ const NAV_ITEMS = [
   { id: 'updates', label: 'Updates', icon: FileText, description: 'News & updates content' },
   { id: 'attendees', label: 'Attendees', icon: Users, description: 'User management' },
   { id: 'sessions', label: 'Sessions', icon: Bookmark, description: 'Session popularity' },
+  { id: 'cms', label: 'CMS', icon: FileText, description: 'Content management' },
   { id: 'activity', label: 'Activity', icon: Activity, description: 'User actions' },
   { id: 'errors', label: 'Errors', icon: AlertTriangle, description: 'System errors' },
   { id: 'jobs', label: 'Jobs', icon: Briefcase, description: 'Background tasks' },
@@ -70,6 +79,13 @@ const NAV_ITEMS = [
   { id: 'audit', label: 'Audit', icon: FileText, description: 'Admin actions' },
   { id: 'settings', label: 'Settings', icon: Settings, description: 'Goals & configuration' }
 ]
+
+// DOMPurify config for announcements
+const SANITIZE_CONFIG = {
+  ALLOWED_TAGS: ['a', 'strong', 'em', 'b', 'i', 'br', 'span'],
+  ALLOWED_ATTR: ['href', 'target', 'rel', 'class']
+}
+const sanitizeHtml = (html) => DOMPurify.sanitize(html, SANITIZE_CONFIG)
 
 // Default settings
 const DEFAULT_SETTINGS = {
@@ -212,7 +228,7 @@ function daysUntil(dateStr) {
 
 // Main Admin Panel
 function AdminPanel() {
-  const { currentUser, logout } = useAuth()
+  const { currentUser, userProfile, logout } = useAuth()
   const navigate = useNavigate()
   const { theme, toggleTheme, isInk } = useAdminTheme()
   const { settings, updateSettings, loading: settingsLoading } = useAdminSettings()
@@ -542,6 +558,7 @@ function AdminPanel() {
               {activeTab === 'updates' && <UpdatesTab currentUser={currentUser} isInk={isInk} />}
               {activeTab === 'attendees' && <AttendeesTab currentUser={currentUser} isInk={isInk} />}
               {activeTab === 'sessions' && <SessionsTab currentUser={currentUser} isInk={isInk} />}
+              {activeTab === 'cms' && <CMSTab currentUser={currentUser} userRole={userProfile?.role} isInk={isInk} />}
               {activeTab === 'activity' && <ActivityTab currentUser={currentUser} isInk={isInk} />}
               {activeTab === 'errors' && <ErrorsTab currentUser={currentUser} isInk={isInk} />}
               {activeTab === 'jobs' && <JobsTab currentUser={currentUser} isInk={isInk} />}
@@ -1274,7 +1291,7 @@ function BroadcastTab({ currentUser, isInk }) {
               <div className="p-4 rounded-xl bg-brand-teal/10 border-2 border-brand-teal/30">
                 <div
                   className="text-brand-teal font-body font-medium text-sm announcement-content"
-                  dangerouslySetInnerHTML={{ __html: generateHtmlMessage() }}
+                  dangerouslySetInnerHTML={{ __html: sanitizeHtml(generateHtmlMessage()) }}
                 />
               </div>
             </div>
@@ -1350,7 +1367,7 @@ function BroadcastTab({ currentUser, isInk }) {
                     </div>
                     <div
                       className="font-admin-body text-[var(--admin-text)] announcement-content"
-                      dangerouslySetInnerHTML={{ __html: announcement.htmlMessage || announcement.message }}
+                      dangerouslySetInnerHTML={{ __html: sanitizeHtml(announcement.htmlMessage || announcement.message) }}
                     />
                     <p className="font-admin-mono text-xs text-[var(--admin-text-muted)] mt-2">
                       Created by {announcement.createdByEmail} • {announcement.createdAt?.toDate?.()?.toLocaleDateString() || 'Just now'}
@@ -1523,7 +1540,7 @@ function BroadcastTab({ currentUser, isInk }) {
                           editType === 'urgent' ? 'text-brand-cardinal' :
                           'text-brand-teal'
                         }`}
-                        dangerouslySetInnerHTML={{ __html: generateEditHtmlMessage() }}
+                        dangerouslySetInnerHTML={{ __html: sanitizeHtml(generateEditHtmlMessage()) }}
                       />
                     </div>
                   </div>
@@ -1553,6 +1570,11 @@ function BroadcastTab({ currentUser, isInk }) {
       </AnimatePresence>
     </div>
   )
+}
+
+// CMS Tab - Full content management system
+function CMSTab({ currentUser, userRole, isInk }) {
+  return <CMSManager currentUser={currentUser} userRole={userRole} isInk={isInk} />
 }
 
 // Format time string for display
@@ -2955,6 +2977,30 @@ function AdminsTab({ currentUser, isInk }) {
   const [selectedRole, setSelectedRole] = useState('admin')
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState(null)
+  const [admins, setAdmins] = useState([])
+  const [loadingAdmins, setLoadingAdmins] = useState(true)
+
+  // Fetch current admins from Firestore
+  useEffect(() => {
+    async function fetchAdmins() {
+      setLoadingAdmins(true)
+      try {
+        const token = await currentUser.getIdToken()
+        const response = await fetch('https://us-central1-cjs2026.cloudfunctions.net/getAdminUsers', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        })
+        const data = await response.json()
+        if (data.success) {
+          setAdmins(data.admins || [])
+        }
+      } catch (err) {
+        console.error('Failed to fetch admins:', err)
+      } finally {
+        setLoadingAdmins(false)
+      }
+    }
+    fetchAdmins()
+  }, [currentUser, result]) // Refetch when result changes (after grant/revoke)
 
   async function grantAdmin() {
     setLoading(true)
@@ -3075,6 +3121,57 @@ function AdminsTab({ currentUser, isInk }) {
         </div>
       </div>
 
+      {/* Current admins list */}
+      <div className="admin-surface p-6">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-10 h-10 rounded-xl admin-glass flex items-center justify-center" style={{ borderColor: 'rgba(245, 158, 11, 0.3)' }}>
+            <Users className="w-5 h-5 text-admin-amber" />
+          </div>
+          <div>
+            <h3 className="font-admin-heading text-lg font-semibold text-[var(--admin-text)]">Current admins</h3>
+            <p className="font-admin-body text-sm text-[var(--admin-text-secondary)]">{admins.length} users with admin access</p>
+          </div>
+        </div>
+
+        {loadingAdmins ? (
+          <div className="flex items-center justify-center py-8">
+            <Loader2 className="w-6 h-6 text-admin-teal animate-spin" />
+          </div>
+        ) : admins.length === 0 ? (
+          <p className="font-admin-body text-[var(--admin-text-muted)] text-center py-8">No admins found</p>
+        ) : (
+          <div className="space-y-3">
+            {admins.map((admin) => (
+              <div key={admin.uid || admin.email} className="flex items-center gap-4 p-4 rounded-xl admin-glass">
+                <div className="w-10 h-10 rounded-xl admin-glass flex items-center justify-center flex-shrink-0">
+                  {admin.photoURL ? (
+                    <img src={admin.photoURL} alt="" className="w-10 h-10 rounded-xl object-cover" />
+                  ) : (
+                    <User className="w-5 h-5 text-[var(--admin-text-secondary)]" />
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-admin-body text-sm font-medium text-[var(--admin-text)] truncate">
+                    {admin.displayName || admin.email}
+                  </p>
+                  <p className="font-admin-mono text-xs text-[var(--admin-text-muted)] truncate">{admin.email}</p>
+                </div>
+                <span className={`admin-badge flex-shrink-0 ${
+                  admin.role === 'super_admin' ? 'admin-badge-warning' : 'admin-badge-info'
+                }`}>
+                  {admin.role === 'super_admin' ? (
+                    <><Shield className="w-3 h-3 mr-1" /> Super</>
+                  ) : (
+                    <><Shield className="w-3 h-3 mr-1" /> Admin</>
+                  )}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Current session */}
       <div className="admin-surface p-6">
         <h3 className="font-admin-body font-semibold text-[var(--admin-text)] mb-4">Current session</h3>
         <div className="flex items-center gap-4 p-4 rounded-xl admin-glass-teal">

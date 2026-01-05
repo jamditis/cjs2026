@@ -1,6 +1,6 @@
 # 2026 Collaborative Journalism Summit
 
-**June 8–9, 2026 • Chapel Hill, NC**
+**June 8–9, 2026 • Pittsburgh, PA**
 
 The 10th anniversary edition of the Collaborative Journalism Summit.
 
@@ -17,7 +17,7 @@ CJS2026 marks a milestone: **10 years** of collaborative journalism.
 ### Event details
 
 - **When**: Monday, June 8 – Tuesday, June 9, 2026
-- **Where**: UNC Friday Center, Chapel Hill, North Carolina
+- **Where**: Pittsburgh, Pennsylvania
 - **Co-located with**: [INN Days](https://inn.org) (June 9–11)
 
 ### Format
@@ -56,7 +56,7 @@ CJS2026 marks a milestone: **10 years** of collaborative journalism.
 | 2023 | Washington, D.C. | |
 | 2024 | Detroit, MI | |
 | 2025 | Denver, CO | |
-| 2026 | Chapel Hill, NC | **10th anniversary** ← You are here |
+| 2026 | Pittsburgh, PA | **10th anniversary** ← You are here |
 
 ---
 

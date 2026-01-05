@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   User,
@@ -240,6 +240,7 @@ const PHOTO_CONFIG = {
 
 function Dashboard() {
   const { currentUser, userProfile, logout, updateUserProfile, needsProfileSetup } = useAuth()
+  const navigate = useNavigate()
   const [editing, setEditing] = useState(false)
   const [editData, setEditData] = useState({
     displayName: '',
@@ -596,6 +597,8 @@ function Dashboard() {
   async function handleLogout() {
     try {
       await logout()
+      // Redirect to home page after successful logout
+      navigate('/', { replace: true })
     } catch (err) {
       console.error('Logout error:', err)
     }
@@ -714,7 +717,7 @@ function Dashboard() {
       bgClass: 'bg-brand-green-dark/10',
       textClass: 'text-brand-green-dark',
       icon: CheckCircle,
-      description: 'See you in Chapel Hill!',
+      description: 'See you in Pittsburgh!',
     },
   }
 
@@ -1159,7 +1162,7 @@ function Dashboard() {
                           </div>
                         )}
                         <h2>You're all set!</h2>
-                        <p>You can always update your profile later. See you in Chapel Hill!</p>
+                        <p>You can always update your profile later. See you in Pittsburgh!</p>
                         {/* Show all badges */}
                         <div className="flex flex-wrap justify-center gap-1 mt-4">
                           {getAttendanceBadges(stepperData.attendedSummits || []).map(badge => (
@@ -1214,7 +1217,7 @@ function Dashboard() {
                         Tickets purchased
                       </h2>
                       <p className="font-body text-brand-ink/60">
-                        See you in Chapel Hill!
+                        See you in Pittsburgh!
                       </p>
                       <button
                         onClick={async () => {
@@ -1315,8 +1318,8 @@ function Dashboard() {
                       <MapPin className="w-5 h-5 text-brand-teal" />
                     </div>
                     <div>
-                      <p className="font-heading font-semibold text-brand-ink">UNC Friday Center</p>
-                      <p className="font-body text-sm text-brand-ink/60">Chapel Hill, North Carolina</p>
+                      <p className="font-heading font-semibold text-brand-ink">Pittsburgh venue TBA</p>
+                      <p className="font-body text-sm text-brand-ink/60">Pittsburgh, Pennsylvania</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3 lg:gap-4">
@@ -1324,7 +1327,7 @@ function Dashboard() {
                       <Clock className="w-5 h-5 text-brand-teal" />
                     </div>
                     <div>
-                      <p className="font-heading font-semibold text-brand-ink">June 8-9, 2026</p>
+                      <p className="font-heading font-semibold text-brand-ink">June 8–9, 2026</p>
                       <p className="font-body text-sm text-brand-ink/60">See schedule for session times</p>
                     </div>
                   </div>

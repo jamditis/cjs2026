@@ -38,6 +38,12 @@ yarn-error.log*
 
 # Testing
 coverage/
+test-screenshots/
 
 # Misc
 *.local
+
+# Service account keys (NEVER COMMIT)
+*-firebase-adminsdk*.json
+*-serviceaccount*.json
+service-account*.json

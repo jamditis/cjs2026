@@ -74,7 +74,29 @@
       "Bash(npx playwright install:*)",
       "Bash(node:*)",
       "Bash(npm run generate-schedule:*)",
-      "Bash(npm run generate-organizations:*)"
+      "Bash(npm run generate-organizations:*)",
+      "Bash(npm run deploy:*)",
+      "Bash(firebase functions:secrets:set:*)",
+      "Skill(frontend-design:frontend-design)",
+      "Bash(timeout /t 3)",
+      "WebFetch(domain:cheatsheetseries.owasp.org)",
+      "WebFetch(domain:community.auth0.com)",
+      "WebFetch(domain:developer.authid.ai)",
+      "Bash(git rebase:*)",
+      "WebFetch(domain:www.vecteezy.com)",
+      "WebFetch(domain:dryicons.com)",
+      "WebFetch(domain:www.freepik.com)",
+      "Bash(find:*)",
+      "Bash(npx --yes sharp-cli:*)",
+      "Bash(npx sharp-cli:*)",
+      "Bash(npm run generate-all:*)",
+      "Bash(firebase functions:secrets:access:*)",
+      "Bash(del service-account.json)",
+      "Bash(npm ls:*)",
+      "Bash(npm audit fix:*)",
+      "Bash(firebase functions:list:*)",
+      "Bash(npm run lint)"
     ]
-  }
+  },
+  "outputStyle": "Explanatory"
 }

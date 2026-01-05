@@ -19,6 +19,7 @@ function Navbar() {
     { name: 'Updates', path: '/updates' },
     { name: 'Schedule', path: '/schedule' },
     { name: 'Sponsors', path: '/sponsors' },
+    { name: 'FAQ', path: '/faq' },
     { name: 'Contact', path: '/contact' },
   ]
 
@@ -87,11 +88,12 @@ function Navbar() {
           )}
         </div>
 
-        {/* Mobile menu button */}
+        {/* Mobile menu button - min 44x44px touch target for accessibility */}
         <button
-          className="md:hidden p-2 text-brand-ink"
+          className="md:hidden p-3 min-w-[44px] min-h-[44px] flex items-center justify-center text-brand-ink -mr-2"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           aria-label="Toggle menu"
+          aria-expanded={mobileMenuOpen}
         >
           {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
@@ -99,13 +101,13 @@ function Navbar() {
 
       {/* Mobile navigation */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-paper border-t border-brand-ink/10 px-6 py-4">
-          <div className="flex flex-col gap-4">
+        <div className="md:hidden bg-paper border-t border-brand-ink/10 px-4 py-3">
+          <div className="flex flex-col gap-1">
             {homeSectionLinks.map((item) => (
               <a
                 key={item.name}
                 href={item.href}
-                className="font-body text-brand-ink/70 hover:text-brand-teal font-medium py-2"
+                className="font-body text-brand-ink/70 hover:text-brand-teal hover:bg-brand-ink/5 font-medium py-3 px-2 rounded-lg min-h-[44px] flex items-center"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {item.name}
@@ -115,10 +117,10 @@ function Navbar() {
               <Link
                 key={item.name}
                 to={item.path}
-                className={`font-body font-medium py-2 ${
+                className={`font-body font-medium py-3 px-2 rounded-lg min-h-[44px] flex items-center ${
                   location.pathname === item.path
-                    ? 'text-brand-teal'
-                    : 'text-brand-ink/70 hover:text-brand-teal'
+                    ? 'text-brand-teal bg-brand-teal/10'
+                    : 'text-brand-ink/70 hover:text-brand-teal hover:bg-brand-ink/5'
                 }`}
                 onClick={() => setMobileMenuOpen(false)}
               >

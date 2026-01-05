@@ -184,7 +184,7 @@
         "Coronavirus collaboration: How newsrooms are partnering to cover the biggest story of our lifetime",
         "Rising temperatures, rising collaboration: Climate crisis partnerships"
       ],
-      "historicalNote": "Charlotte, NC was the planned location. COVID prevented this, making 2026's return to North Carolina a 'full circle' moment."
+      "historicalNote": "Charlotte, NC was the planned location before COVID forced the summit to go virtual."
     },
     {
       "year": 2021,
@@ -388,12 +388,12 @@
     {
       "year": 2026,
       "location": {
-        "city": "Chapel Hill",
-        "state": "NC",
-        "venue": "UNC Friday Center",
+        "city": "Pittsburgh",
+        "state": "PA",
+        "venue": "Pittsburgh venue TBA",
         "coordinates": {
-          "lat": 35.9132,
-          "lng": -79.0558
+          "lat": 40.4406,
+          "lng": -79.9959
         }
       },
       "format": "in-person",
@@ -405,18 +405,18 @@
         "end": "2026-06-09"
       },
       "iconicBuilding": {
-        "name": "Old Well",
-        "description": "UNC Chapel Hill landmark",
-        "imageKey": "old-well"
+        "name": "Pittsburgh skyline",
+        "description": "The Steel City's iconic bridges and skyline",
+        "imageKey": "pittsburgh-skyline"
       },
       "plannedHighlights": [
         "10th anniversary celebration",
         "State of Collaboration: 10-year edition",
         "Alumni reunion programming",
         "Timeline installation",
-        "Full circle: returning to North Carolina"
+        "A new chapter in a storied journalism city"
       ],
-      "historicalNote": "North Carolina was originally planned for 2020 before COVID. The 2026 summit completes that journey, making it a fitting location for the 10th anniversary."
+      "historicalNote": "Pittsburgh, with its rich journalism heritage and vibrant media innovation scene, provides the perfect setting for the 10th anniversary celebration."
     }
   ],
   "recurringElements": {

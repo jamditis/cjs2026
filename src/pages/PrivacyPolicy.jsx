@@ -2,10 +2,12 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
+import { PrivacySEO } from '../components'
 
 function PrivacyPolicy() {
   return (
     <>
+      <PrivacySEO />
       <Navbar />
       <div className="min-h-screen bg-paper pt-24 pb-16">
         <div className="max-w-3xl mx-auto px-6">
@@ -17,7 +19,7 @@ function PrivacyPolicy() {
               Privacy policy
             </h1>
             <p className="font-body text-brand-ink/50 mb-8">
-              Last updated: December 2025
+              Last updated: January 2026
             </p>
 
             <div className="prose prose-ink max-w-none font-body text-brand-ink/80 space-y-6">

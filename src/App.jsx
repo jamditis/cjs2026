@@ -30,7 +30,7 @@ const SummitHistory = [
   { year: '2023', location: 'Washington, D.C.', theme: 'Building Frameworks', icon: Users, link: 'https://collaborativejournalism.org/cjs2023/' },
   { year: '2024', location: 'Detroit, MI', theme: 'Global Impact', icon: Award, link: 'https://collaborativejournalism.org/cjs2024/' },
   { year: '2025', location: 'Denver, CO', theme: 'Partnerships with Purpose', icon: ArrowRight, link: 'https://collaborativejournalism.org/cjs2025/' },
-  { year: '2026', location: 'North Carolina', theme: '10th Anniversary', icon: History, link: null },
+  { year: '2026', location: 'Pittsburgh, PA', theme: '10th Anniversary', icon: History, link: null },
 ]
 
 // ============================================
@@ -339,9 +339,9 @@ function App() {
             <svg className="absolute bottom-0 w-full h-48 opacity-[0.05]" viewBox="0 0 1200 150" preserveAspectRatio="none">
               <path d="M0 150 L0 100 L200 50 L400 90 L600 30 L800 70 L1000 45 L1200 80 L1200 150 Z" fill="#2C3E50"/>
             </svg>
-            {/* NC Map accent - centered */}
+            {/* PA Map accent - centered */}
             <motion.img
-              src="/nc-shapes-green.png"
+              src="/pa-map.png"
               alt=""
               className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] md:w-[700px] lg:w-[900px] opacity-[0.08]"
               initial={{ opacity: 0, scale: 0.9 }}
@@ -387,7 +387,7 @@ function App() {
                 transition={{ delay: 0.6 }}
               >
                  <p className="font-body text-lg md:text-xl text-brand-ink/70 mb-1">June 8–9, 2026</p>
-                 <p className="font-body text-brand-ink/50 mb-10">Chapel Hill, North Carolina</p>
+                 <p className="font-body text-brand-ink/50 mb-10">Pittsburgh, Pennsylvania</p>
               </motion.div>
 
               {/* 10th anniversary badge */}
@@ -469,8 +469,8 @@ function App() {
               </InfoCard>
 
               <InfoCard icon={MapPin} title="Where" delay={0.1}>
-                <p><strong>UNC Friday Center</strong></p>
-                <p className="text-sm">Chapel Hill, North Carolina</p>
+                <p><strong>Pittsburgh venue TBA</strong></p>
+                <p className="text-sm">Pittsburgh, Pennsylvania</p>
                 <p className="text-sm mt-2 text-brand-ink/50">Co-located with INN Days</p>
               </InfoCard>
 
@@ -640,7 +640,7 @@ function App() {
         <footer id="updates" className="py-16 px-6 bg-parchment">
           <div className="max-w-4xl mx-auto text-center">
             <div className="mb-10">
-              <h3 className="font-heading font-semibold text-2xl text-brand-ink mb-2">Join us in Chapel Hill</h3>
+              <h3 className="font-heading font-semibold text-2xl text-brand-ink mb-2">Join us in Pittsburgh</h3>
               <p className="text-brand-ink/60 mb-6 font-body">Secure your spot at the 10th anniversary summit.</p>
               <EmailSignup />
             </div>

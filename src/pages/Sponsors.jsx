@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { Sparkles, Plane, Calendar, Mic, UtensilsCrossed, Gift, ShieldCheck, Cookie, Tag, Mail } from 'lucide-react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
+import { SponsorsSEO } from '../components'
 import { sponsors, hasSponsors, sponsorsByTier, tierDisplayNames } from '../content/organizationsData'
 
 // Main sponsorship packages with explicit Tailwind classes
@@ -100,10 +101,10 @@ const additionalOpportunities = [
     description: 'Underwrite our Monday dinner with keynote speaker and recognition for top collaborations. Includes a speaking slot if desired.',
   },
   {
-    name: 'North Carolina welcome gift',
+    name: 'Pittsburgh welcome gift',
     price: '$5,000',
     icon: Gift,
-    description: 'Welcome participants with NC BBQ sauce and locally-handcrafted wooden utensils. Your name included on the gift bags!',
+    description: 'Welcome participants with Pittsburgh-themed goodies and locally-crafted items. Your name included on the gift bags!',
   },
   {
     name: 'Mini safety kits',
@@ -174,6 +175,7 @@ function SponsorPackageCard({ pkg, index }) {
 function Sponsors() {
   return (
     <>
+      <SponsorsSEO />
       <Navbar />
       <div className="min-h-screen bg-paper pt-24 pb-16">
       <div className="max-w-6xl mx-auto px-6">

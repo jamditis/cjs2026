@@ -32,9 +32,11 @@ export default function Lanyard({
       const btn = document.getElementById('nav-auth-btn');
       if (btn) {
         const rect = btn.getBoundingClientRect();
-        // Center of button, offset for lanyard width
+        // Center of button, offset for lanyard wrapper width
         const btnCenterX = rect.left + rect.width / 2;
-        const rightPos = window.innerWidth - btnCenterX - 250; // Offset to center strap on button
+        // Wrapper is 400px (450px on large screens), strap hangs at center
+        const wrapperWidth = window.innerWidth >= 1200 ? 450 : 400;
+        const rightPos = window.innerWidth - btnCenterX - (wrapperWidth / 2);
         setAnchorPos({
           right: Math.max(0, rightPos),
           top: rect.top - 15 // Start above button so strap comes from behind

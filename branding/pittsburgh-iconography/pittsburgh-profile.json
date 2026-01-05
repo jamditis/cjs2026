@@ -1,0 +1,275 @@
+{
+  "imageProfile": {
+    "name": "CJS2026 Pittsburgh Map Illustration",
+    "version": "1.0",
+    "created": "2026-01-02",
+    "purpose": "Background decorative element for CJS2026 website hero section",
+    "usage": {
+      "primaryFile": "pa-map.png",
+      "location": "public/pa-map.png",
+      "cssOpacity": 0.08,
+      "positioning": "centered, 500-900px width responsive",
+      "altText": ""
+    }
+  },
+
+  "artDirection": {
+    "style": "hand-illustrated",
+    "medium": "watercolor and ink wash with pencil details",
+    "aesthetic": "sketch and parchment",
+    "influences": [
+      "vintage cartography",
+      "naturalist field guides",
+      "WPA poster art",
+      "Appalachian folk art"
+    ],
+    "avoid": [
+      "vector graphics",
+      "photorealism",
+      "corporate logos",
+      "sports iconography",
+      "AI-generated slickness"
+    ]
+  },
+
+  "composition": {
+    "primaryShape": "Pennsylvania state outline",
+    "focalPoint": "Three Rivers confluence (Pittsburgh) in southwest region",
+    "iconicSymbol": {
+      "preferred": "ruffed_grouse",
+      "alternative": "cardinal",
+      "placement": "perched near Pittsburgh marker or eastern border",
+      "rationale": "Ruffed grouse is PA state bird; cardinal maintains CJS brand continuity"
+    },
+    "geographicFeatures": [
+      {
+        "name": "Three Rivers",
+        "elements": ["Allegheny River", "Monongahela River", "Ohio River"],
+        "treatment": "blue watercolor ribbons with hand-drawn curves",
+        "emphasis": "high"
+      },
+      {
+        "name": "The Point",
+        "description": "Triangle confluence where rivers meet",
+        "treatment": "subtle golden or teal highlight",
+        "emphasis": "high"
+      },
+      {
+        "name": "Allegheny Mountains",
+        "location": "central and western Pennsylvania",
+        "treatment": "blue-grey ridgelines with pencil hatching",
+        "emphasis": "medium"
+      },
+      {
+        "name": "Pittsburgh bridges",
+        "count": "2-4 simplified arch silhouettes",
+        "treatment": "steel grey, integrated into river crossings",
+        "emphasis": "medium"
+      },
+      {
+        "name": "Forested hills",
+        "location": "throughout western PA",
+        "treatment": "sage green watercolor washes with tree symbols",
+        "emphasis": "low"
+      },
+      {
+        "name": "Lake Erie shoreline",
+        "location": "northwest corner notch",
+        "treatment": "subtle blue edge",
+        "emphasis": "low"
+      }
+    ]
+  },
+
+  "colorPalette": {
+    "brand": {
+      "teal": {
+        "hex": "#2A9D8F",
+        "rgb": "rgb(42, 157, 143)",
+        "use": "rivers, water, primary accent"
+      },
+      "cream": {
+        "hex": "#F5F0E6",
+        "rgb": "rgb(245, 240, 230)",
+        "use": "parchment base, paper texture"
+      },
+      "ink": {
+        "hex": "#2C3E50",
+        "rgb": "rgb(44, 62, 80)",
+        "use": "outlines, borders, dark details"
+      },
+      "cardinal": {
+        "hex": "#CA3553",
+        "rgb": "rgb(202, 53, 83)",
+        "use": "bird, highlight accents"
+      }
+    },
+    "pittsburghAdditions": {
+      "steelGrey": {
+        "hex": "#6B7B8C",
+        "rgb": "rgb(107, 123, 140)",
+        "use": "bridges, industrial silhouettes"
+      },
+      "riverBlue": {
+        "hex": "#4A7C91",
+        "rgb": "rgb(74, 124, 145)",
+        "use": "river depth, water shadows"
+      },
+      "forestSage": {
+        "hex": "#8B9A8B",
+        "rgb": "rgb(139, 154, 139)",
+        "use": "forested hillsides, vegetation"
+      },
+      "rustAccent": {
+        "hex": "#B87333",
+        "rgb": "rgb(184, 115, 51)",
+        "use": "subtle industrial heritage hints"
+      },
+      "pointGold": {
+        "hex": "#C9A227",
+        "rgb": "rgb(201, 162, 39)",
+        "use": "very sparingly for The Point marker"
+      }
+    },
+    "constraints": {
+      "maxColors": 8,
+      "saturation": "muted, desaturated",
+      "blacksAndWhites": "avoid pure black (#000) and pure white (#FFF)",
+      "avoidColors": ["#FFB612", "neon colors", "bright primaries"]
+    }
+  },
+
+  "technicalSpecs": {
+    "format": "PNG",
+    "background": "transparent",
+    "dimensions": {
+      "minimum": {
+        "width": 2000,
+        "height": "proportional"
+      },
+      "ideal": {
+        "width": 3000,
+        "height": "proportional"
+      }
+    },
+    "fileSize": {
+      "maximum": "2MB",
+      "target": "under 1MB"
+    },
+    "colorSpace": "sRGB",
+    "dpi": 72
+  },
+
+  "pittsburghIconography": {
+    "essential": [
+      {
+        "element": "Three Rivers confluence",
+        "description": "Allegheny and Monongahela rivers meeting to form Ohio River",
+        "visualTreatment": "Blue watercolor ribbons with visible brushstrokes",
+        "importance": "critical"
+      },
+      {
+        "element": "The Point (Point State Park)",
+        "description": "Triangle where downtown Pittsburgh sits at river confluence",
+        "visualTreatment": "Emphasized meeting point, possible teal or gold highlight",
+        "importance": "critical"
+      },
+      {
+        "element": "Bridges",
+        "description": "Pittsburgh has 446 bridges, more than any city in the world",
+        "visualTreatment": "2-4 simplified arch silhouettes in steel grey",
+        "importance": "high"
+      },
+      {
+        "element": "Hills and ridges",
+        "description": "Mt. Washington, surrounding Appalachian foothills",
+        "visualTreatment": "Layered ridgeline silhouettes with watercolor gradients",
+        "importance": "high"
+      }
+    ],
+    "optional": [
+      {
+        "element": "Duquesne Incline",
+        "description": "Historic cable car on Mt. Washington",
+        "visualTreatment": "Tiny incline car silhouette on hillside",
+        "importance": "medium"
+      },
+      {
+        "element": "Cathedral of Learning",
+        "description": "42-story gothic tower at University of Pittsburgh",
+        "visualTreatment": "Subtle skyline silhouette",
+        "importance": "low"
+      },
+      {
+        "element": "Ruffed Grouse",
+        "description": "Pennsylvania state bird",
+        "visualTreatment": "Hand-illustrated bird perched on eastern border or near Pittsburgh",
+        "importance": "medium"
+      },
+      {
+        "element": "Mountain Laurel",
+        "description": "Pennsylvania state flower",
+        "visualTreatment": "Small floral elements in forest areas",
+        "importance": "low"
+      }
+    ],
+    "avoid": [
+      "Sports team logos or colors (Steelers, Penguins, Pirates)",
+      "Corporate logos (Heinz, US Steel, PPG)",
+      "Photorealistic skyline images",
+      "Black and gold color scheme",
+      "Clean vector graphics",
+      "Generic 'city' iconography"
+    ]
+  },
+
+  "promptForArtist": {
+    "summary": "Create a hand-illustrated watercolor map of Pennsylvania for the Collaborative Journalism Summit 2026 website. Style should match vintage cartography with visible brushstrokes and paper texture. Emphasize Pittsburgh's Three Rivers confluence in the southwest with 2-3 simplified bridge arches. Include Allegheny Mountain ridges in muted blue-grey, forested hills in sage green, and river systems in teal. Optional: Include the Pennsylvania state bird (ruffed grouse) perched near Pittsburgh. Color palette is muted and earthy—teal, cream, ink blue, sage green. NO sports references, NO corporate logos, NO vector-clean edges. Think WPA poster art meets naturalist field guide.",
+    "references": [
+      "WPA National Parks posters",
+      "John James Audubon bird illustrations",
+      "Vintage National Geographic maps",
+      "Rifle Paper Co. illustration style"
+    ],
+    "outputFormat": "PNG with transparent background, minimum 2000px wide"
+  },
+
+  "alternativeApproaches": [
+    {
+      "name": "Bridge-focused silhouette",
+      "description": "Simplified PA outline with prominent Pittsburgh bridge arches at The Point",
+      "pros": "Very Pittsburgh-specific, clean, scalable",
+      "cons": "Less illustrative warmth than current NC map"
+    },
+    {
+      "name": "Rivers-only abstraction",
+      "description": "PA outline with only the Three Rivers confluence rendered, rest minimal",
+      "pros": "Modern, clean, emphasizes Pittsburgh's defining feature",
+      "cons": "May feel too sparse compared to detailed NC map"
+    },
+    {
+      "name": "Full illustrated map",
+      "description": "Complete watercolor PA map matching NC style with all geographic features",
+      "pros": "Direct style match, rich detail, strong sense of place",
+      "cons": "Requires skilled illustrator, longer production time",
+      "recommended": true
+    },
+    {
+      "name": "Keystone frame with Pittsburgh inset",
+      "description": "Keystone shape (PA symbol) framing a detailed Pittsburgh illustration",
+      "pros": "Uses iconic PA shape, allows detailed city focus",
+      "cons": "Different composition than NC map, may not work as background"
+    }
+  ],
+
+  "pittsburghFacts": {
+    "nickname": "The Steel City, City of Bridges",
+    "definingFeature": "Three Rivers confluence (Allegheny + Monongahela = Ohio)",
+    "bridgeCount": 446,
+    "terrain": "Built on hills, river valleys",
+    "state": "Pennsylvania (Keystone State)",
+    "stateBird": "Ruffed Grouse",
+    "stateFlower": "Mountain Laurel",
+    "cjs2026Dates": "June 8-9, 2026"
+  }
+}

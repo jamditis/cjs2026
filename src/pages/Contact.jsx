@@ -3,10 +3,12 @@ import { motion } from 'framer-motion'
 import { Mail, MapPin, Globe, Twitter, ExternalLink, Lightbulb } from 'lucide-react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
+import { ContactSEO } from '../components'
 
 function Contact() {
   return (
     <>
+      <ContactSEO />
       <Navbar />
       <div className="min-h-screen bg-paper pt-24 pb-16">
       <div className="max-w-3xl mx-auto px-6">
@@ -47,7 +49,7 @@ function Contact() {
             </a>
 
             <a
-              href="https://maps.google.com/?q=UNC+Friday+Center,+Chapel+Hill,+NC"
+              href="https://maps.google.com/?q=Pittsburgh,+PA"
               target="_blank"
               rel="noopener noreferrer"
               className="card-sketch p-5 flex items-center gap-4 hover:border-brand-teal/50 transition-colors group"
@@ -57,8 +59,8 @@ function Contact() {
               </div>
               <div className="flex-1">
                 <p className="font-heading font-semibold text-brand-ink group-hover:text-brand-teal transition-colors">Venue</p>
-                <p className="font-body text-sm text-brand-ink/60">UNC Friday Center</p>
-                <p className="font-body text-sm text-brand-ink/60">Chapel Hill, North Carolina</p>
+                <p className="font-body text-sm text-brand-ink/60">Pittsburgh venue TBA</p>
+                <p className="font-body text-sm text-brand-ink/60">Pittsburgh, Pennsylvania</p>
               </div>
               <ExternalLink className="w-4 h-4 text-brand-ink/30 group-hover:text-brand-teal transition-colors" />
             </a>

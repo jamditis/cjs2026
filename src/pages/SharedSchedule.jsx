@@ -7,6 +7,7 @@ import { db } from '../firebase'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import SessionCard from '../components/SessionCard'
+import { SkeletonProfile, SkeletonSchedule } from '../components/Skeleton'
 import { getSessionsByIds } from '../content/scheduleData'
 import { useAuth } from '../contexts/AuthContext'
 import { useBookmarkCounts } from '../hooks/useBookmarkCounts'
@@ -105,9 +106,9 @@ function SharedSchedule() {
           </Link>
 
           {loading ? (
-            <div className="text-center py-16">
-              <div className="w-12 h-12 border-3 border-brand-teal/20 border-t-brand-teal rounded-full animate-spin mx-auto mb-4" />
-              <p className="font-body text-brand-ink/60">Loading schedule...</p>
+            <div role="status" aria-label="Loading schedule">
+              <SkeletonProfile className="mb-12" />
+              <SkeletonSchedule sessions={3} />
             </div>
           ) : error ? (
             <motion.div
