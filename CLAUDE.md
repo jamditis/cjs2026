@@ -69,8 +69,23 @@ This file provides guidance to Claude Code when working with the CJS2026 website
 - What moderation tools are needed?
 - What does the sponsor report look like?
 
-### Known issues
-- None currently blocking
+### Known issues / Backlog
+
+**UI bugs:**
+- Session info modal is misaligned (see screenshot - modal appears off-center/bottom)
+
+**Speaker & organization data model improvements:**
+- Currently: Single text field for "speakers" and "speaker orgs" per session
+- Problem: Most sessions have multiple speakers from different orgs
+- Needed:
+  1. Multi-speaker input in session editor (add/remove speakers)
+  2. Each speaker entry: name, org, org URL, bio, photo, etc.
+  3. Auto-create organizations in Firebase when adding speaker orgs
+  4. Organizations should exist even if not sponsors (visible in admin)
+  5. Relationship tracking: which attendees/speakers/sponsors belong to which orgs
+  6. Reverse lookup: given an org, see all associated people
+- This is a data model change: flat strings → proper relational structure
+- Affects: cmsSchedule, cmsOrganizations, possibly users collection
 
 ---
 
