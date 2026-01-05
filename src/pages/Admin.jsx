@@ -53,7 +53,9 @@ import {
   FileCode,
   GitBranch,
   Play,
-  History
+  History,
+  PenSquare,
+  Sparkles
 } from 'lucide-react'
 import DOMPurify from 'dompurify'
 import { useAuth } from '../contexts/AuthContext'
@@ -66,11 +68,11 @@ import { updates as staticUpdates } from '../content/updatesData'
 // Navigation items with icons
 const NAV_ITEMS = [
   { id: 'dashboard', label: 'Overview', icon: BarChart3, description: 'System health & metrics' },
+  { id: 'cms', label: 'Edit Content', icon: PenSquare, description: 'Website content & sponsors', featured: true },
   { id: 'broadcast', label: 'Broadcast', icon: Megaphone, description: 'Site announcements' },
   { id: 'updates', label: 'Updates', icon: FileText, description: 'News & updates content' },
   { id: 'attendees', label: 'Attendees', icon: Users, description: 'User management' },
   { id: 'sessions', label: 'Sessions', icon: Bookmark, description: 'Session popularity' },
-  { id: 'cms', label: 'CMS', icon: FileText, description: 'Content management' },
   { id: 'admins', label: 'Admins', icon: UserCog, description: 'Access control' },
   { id: 'settings', label: 'Settings', icon: Settings, description: 'Goals & configuration' }
 ]
@@ -366,17 +368,24 @@ function AdminPanel() {
             .map((item) => {
             const Icon = item.icon
             const isActive = activeTab === item.id
+            const isFeatured = item.featured && !isActive
             return (
               <button
                 key={item.id}
                 onClick={() => setActiveTab(item.id)}
-                className={`admin-nav-item w-full ${isActive ? 'active' : ''}`}
+                className={`admin-nav-item w-full ${isActive ? 'active' : ''} ${isFeatured ? 'relative ring-1 ring-admin-teal/30 bg-admin-teal/5' : ''}`}
                 title={sidebarCollapsed ? item.label : undefined}
               >
-                <Icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-admin-teal' : ''}`} />
+                {isFeatured && (
+                  <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-admin-teal opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-admin-teal"></span>
+                  </span>
+                )}
+                <Icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-admin-teal' : ''} ${isFeatured ? 'text-admin-teal' : ''}`} />
                 {!sidebarCollapsed && (
                   <div className="flex-1 min-w-0">
-                    <span className="block text-sm font-medium">{item.label}</span>
+                    <span className={`block text-sm font-medium ${isFeatured ? 'text-admin-teal' : ''}`}>{item.label}</span>
                     <span className="block text-[11px] text-[var(--admin-text-muted)] truncate">{item.description}</span>
                   </div>
                 )}
@@ -385,8 +394,8 @@ function AdminPanel() {
           })}
         </nav>
 
-        {/* Theme toggle + User section */}
-        <div className="p-3 border-t border-[var(--admin-border)]">
+        {/* Theme toggle + User section - Sticky at bottom */}
+        <div className="sticky bottom-0 p-3 border-t border-[var(--admin-border)] bg-[var(--admin-sidebar)] backdrop-blur-xl shadow-[0_-8px_16px_-4px_rgba(0,0,0,0.2)]">
           {/* Theme toggle */}
           <button
             onClick={toggleTheme}
@@ -486,6 +495,7 @@ function AdminPanel() {
                   .map((item) => {
                   const Icon = item.icon
                   const isActive = activeTab === item.id
+                  const isFeatured = item.featured && !isActive
                   return (
                     <button
                       key={item.id}
@@ -493,10 +503,16 @@ function AdminPanel() {
                         setActiveTab(item.id)
                         setMobileMenuOpen(false)
                       }}
-                      className={`admin-nav-item w-full ${isActive ? 'active' : ''}`}
+                      className={`admin-nav-item w-full ${isActive ? 'active' : ''} ${isFeatured ? 'relative ring-1 ring-admin-teal/30 bg-admin-teal/5' : ''}`}
                     >
-                      <Icon className="w-5 h-5" />
-                      <span className="font-medium">{item.label}</span>
+                      {isFeatured && (
+                        <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-admin-teal opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-3 w-3 bg-admin-teal"></span>
+                        </span>
+                      )}
+                      <Icon className={`w-5 h-5 ${isFeatured ? 'text-admin-teal' : ''}`} />
+                      <span className={`font-medium ${isFeatured ? 'text-admin-teal' : ''}`}>{item.label}</span>
                     </button>
                   )
                 })}
