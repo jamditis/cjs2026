@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, lazy, Suspense } from 'react'
+import React, { useRef } from 'react'
 import { motion, AnimatePresence, useInView } from 'framer-motion'
 import {
   Calendar,
@@ -17,9 +17,6 @@ import {
 import { BlurText, ParticlesBackground, HeroAnnouncement, HomeSEO } from '../components'
 import Navbar from '../components/Navbar'
 import EmailSignup from '../components/EmailSignup'
-
-// Lazy load the Lanyard component (heavy 3D component)
-const Lanyard = lazy(() => import('../components/Lanyard'))
 
 // Import static content from Airtable
 import { getContent, getContentMeta, getColorClass, timeline } from '../content/siteContent'
@@ -241,22 +238,6 @@ function HistoryTimeline() {
 // ============================================
 function Home() {
   const summitDate = '2026-06-08T09:00:00'
-  const [showLanyard, setShowLanyard] = useState(false)
-
-  // Show lanyard after page load (only if not previously dismissed)
-  useEffect(() => {
-    const wasDismissed = localStorage.getItem('cjs2026_lanyard_dismissed')
-    if (!wasDismissed) {
-      const timer = setTimeout(() => setShowLanyard(true), 1500)
-      return () => clearTimeout(timer)
-    }
-  }, [])
-
-  // Handle lanyard dismiss - persist to localStorage
-  const handleDismissLanyard = () => {
-    setShowLanyard(false)
-    localStorage.setItem('cjs2026_lanyard_dismissed', 'true')
-  }
 
   return (
     <div className="min-h-screen bg-paper">
@@ -267,16 +248,6 @@ function Home() {
           Hero Section - Illustrated style
           ============================================ */}
       <section id="about" className="relative min-h-screen flex flex-col overflow-hidden pt-20">
-        {/* 3D Lanyard badge - shows after page load (persists dismiss) */}
-        {showLanyard && (
-          <Suspense fallback={null}>
-            <Lanyard
-              position={[0, 0, 20]}
-              gravity={[0, -40, 0]}
-              onDismiss={handleDismissLanyard}
-            />
-          </Suspense>
-        )}
         <ParticlesBackground color="#8B9A8B" particleCount={50} />
 
         {/* Decorative mountains background */}

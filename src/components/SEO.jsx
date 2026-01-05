@@ -1,7 +1,7 @@
 import { Helmet } from 'react-helmet-async'
 
 const SITE_URL = 'https://summit.collaborativejournalism.org'
-const DEFAULT_IMAGE = `${SITE_URL}/og-image.png`
+const DEFAULT_IMAGE = `${SITE_URL}/og-image.jpg`
 
 // JSON-LD structured data for the main event
 const eventJsonLd = {
