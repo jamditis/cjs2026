@@ -62,6 +62,13 @@ async function fetchAirtable(tableId, options = {}) {
   if (options.filterByFormula) {
     url.searchParams.append('filterByFormula', options.filterByFormula);
   }
+  // Use cellFormat=string to convert linked records to their primary field value (name)
+  // This prevents getting record IDs like "rec123" for linked Speaker records
+  url.searchParams.append('cellFormat', 'string');
+  // Use user timezone for consistent date handling
+  url.searchParams.append('timeZone', 'America/New_York');
+  // Return field names as specified (not IDs)
+  url.searchParams.append('userLocale', 'en-us');
 
   const response = await fetch(url.toString(), {
     headers: { 'Authorization': `Bearer ${API_KEY}` }
@@ -81,6 +88,10 @@ async function fetchAirtable(tableId, options = {}) {
   while (offset) {
     const nextUrl = new URL(`https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${tableId}`);
     nextUrl.searchParams.append('offset', offset);
+    // Apply same formatting to paginated requests
+    nextUrl.searchParams.append('cellFormat', 'string');
+    nextUrl.searchParams.append('timeZone', 'America/New_York');
+    nextUrl.searchParams.append('userLocale', 'en-us');
     if (options.filterByFormula) {
       nextUrl.searchParams.append('filterByFormula', options.filterByFormula);
     }

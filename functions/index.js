@@ -3,6 +3,7 @@ const { onDocumentWritten } = require("firebase-functions/v2/firestore");
 const { defineSecret } = require("firebase-functions/params");
 const admin = require("firebase-admin");
 const crypto = require("crypto");
+const Busboy = require("busboy");
 
 // CORS configuration - restrict to known origins in production
 const ALLOWED_ORIGINS = [
@@ -2758,4 +2759,192 @@ exports.cmsUpdatePublishStatus = onRequest({ cors: true }, async (req, res) => {
       res.status(500).json({ error: error.message || 'Failed to update status' });
     }
   });
+});
+
+/**
+ * Upload image for CMS (admin only)
+ * Handles multipart form uploads for sponsor logos, etc.
+ *
+ * Expects:
+ * - FormData with 'file' field (image file)
+ * - FormData with 'category' field (e.g., 'sponsors', 'timeline')
+ * - Authorization header with Bearer token
+ *
+ * Returns:
+ * - { url: string, path: string } on success
+ */
+exports.cmsUploadImage = onRequest({ cors: true }, async (req, res) => {
+  // Handle CORS preflight
+  if (req.method === 'OPTIONS') {
+    // Set CORS headers for preflight
+    const origin = req.headers.origin;
+    const isAllowed = ALLOWED_ORIGINS.some(allowed => {
+      if (allowed instanceof RegExp) return allowed.test(origin);
+      return allowed === origin;
+    });
+
+    if (isAllowed) {
+      res.set('Access-Control-Allow-Origin', origin);
+      res.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
+      res.set('Access-Control-Allow-Headers', 'Authorization, Content-Type');
+      res.set('Access-Control-Max-Age', '3600');
+      res.status(204).send('');
+      return;
+    } else {
+      res.status(403).send('Not allowed by CORS');
+      return;
+    }
+  }
+
+  // Set CORS headers for actual request
+  const origin = req.headers.origin;
+  const isAllowed = ALLOWED_ORIGINS.some(allowed => {
+    if (allowed instanceof RegExp) return allowed.test(origin);
+    return allowed === origin;
+  });
+
+  if (isAllowed) {
+    res.set('Access-Control-Allow-Origin', origin);
+  }
+
+  if (req.method !== 'POST') {
+    res.status(405).json({ error: 'Method Not Allowed' });
+    return;
+  }
+
+  try {
+    // Verify admin authentication
+    const user = await requireAdmin(req);
+
+    // Parse multipart form data
+    const busboy = Busboy({ headers: req.headers });
+
+    let fileBuffer = null;
+    let fileName = null;
+    let mimeType = null;
+    let category = 'general';
+
+    const parsePromise = new Promise((resolve, reject) => {
+      busboy.on('file', (fieldname, file, info) => {
+        const { filename, mimeType: mime } = info;
+
+        // Validate file type
+        const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp', 'image/svg+xml'];
+        if (!allowedTypes.includes(mime)) {
+          reject(new Error(`Invalid file type: ${mime}. Allowed: PNG, JPEG, GIF, WebP, SVG`));
+          return;
+        }
+
+        fileName = filename;
+        mimeType = mime;
+
+        const chunks = [];
+        file.on('data', (chunk) => {
+          chunks.push(chunk);
+        });
+
+        file.on('end', () => {
+          fileBuffer = Buffer.concat(chunks);
+
+          // Validate file size (2MB max)
+          if (fileBuffer.length > 2 * 1024 * 1024) {
+            reject(new Error('File too large. Maximum size is 2MB.'));
+            return;
+          }
+        });
+      });
+
+      busboy.on('field', (fieldname, value) => {
+        if (fieldname === 'category') {
+          // Sanitize category to prevent path traversal
+          category = value.replace(/[^a-zA-Z0-9-_]/g, '').toLowerCase() || 'general';
+        }
+      });
+
+      busboy.on('finish', () => {
+        if (!fileBuffer || !fileName) {
+          reject(new Error('No file provided'));
+          return;
+        }
+        resolve();
+      });
+
+      busboy.on('error', (err) => {
+        reject(err);
+      });
+    });
+
+    // Pipe request to busboy
+    if (req.rawBody) {
+      // In Firebase Functions v2, raw body is available directly
+      busboy.end(req.rawBody);
+    } else {
+      req.pipe(busboy);
+    }
+
+    await parsePromise;
+
+    // Generate unique filename with timestamp
+    const timestamp = Date.now();
+    const sanitizedFileName = fileName.replace(/[^a-zA-Z0-9.-]/g, '_');
+    const storagePath = `cms-images/${category}/${timestamp}_${sanitizedFileName}`;
+
+    // Upload to Firebase Storage
+    const bucket = admin.storage().bucket();
+    const file = bucket.file(storagePath);
+
+    await file.save(fileBuffer, {
+      metadata: {
+        contentType: mimeType,
+        metadata: {
+          uploadedBy: user.uid,
+          uploadedByEmail: user.email,
+          uploadedAt: new Date().toISOString()
+        }
+      }
+    });
+
+    // Make file publicly readable
+    await file.makePublic();
+
+    // Get public URL
+    const publicUrl = `https://storage.googleapis.com/${bucket.name}/${storagePath}`;
+
+    // Log the upload
+    await logActivity({
+      type: 'cms_upload',
+      description: `Uploaded ${category} image: ${sanitizedFileName}`,
+      userId: user.uid,
+      userEmail: user.email,
+      metadata: {
+        path: storagePath,
+        category,
+        size: fileBuffer.length,
+        mimeType
+      }
+    });
+
+    console.log(`CMS image uploaded by ${user.email}: ${storagePath}`);
+
+    res.status(200).json({
+      success: true,
+      url: publicUrl,
+      path: storagePath
+    });
+
+  } catch (error) {
+    console.error('CMS upload error:', error);
+
+    // Determine appropriate status code
+    let status = 500;
+    if (error.message.includes('Unauthorized') || error.message.includes('Admin')) {
+      status = 403;
+    } else if (error.message.includes('Invalid file') || error.message.includes('too large') || error.message.includes('No file')) {
+      status = 400;
+    }
+
+    res.status(status).json({
+      error: error.message || 'Failed to upload image'
+    });
+  }
 });

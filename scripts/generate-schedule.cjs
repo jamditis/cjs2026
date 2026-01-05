@@ -39,6 +39,13 @@ async function fetchAllRecords() {
   do {
     const url = new URL(baseUrl);
     url.searchParams.append('pageSize', '100');
+    // Use cellFormat=string to convert linked records to their primary field value (name)
+    // This prevents getting record IDs like "rec123" for linked Speaker records
+    url.searchParams.append('cellFormat', 'string');
+    // Use user timezone for consistent date handling
+    url.searchParams.append('timeZone', 'America/New_York');
+    // Return field names as specified (not IDs)
+    url.searchParams.append('userLocale', 'en-us');
     if (offset) {
       url.searchParams.append('offset', offset);
     }
