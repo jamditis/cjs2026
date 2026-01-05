@@ -30,7 +30,8 @@ import {
   ArrowDown,
   Sparkles,
   HelpCircle,
-  Undo2
+  Undo2,
+  Database
 } from 'lucide-react'
 import CMSTour, { TourTrigger, CMSTooltip } from './CMSTour'
 import { db } from '../firebase'
@@ -2674,6 +2675,47 @@ function CMSVersionHistory({ currentUser }) {
 function CMSPublishQueue({ currentUser, pendingChanges, onPublish, isPublishing }) {
   const [queue, setQueue] = useState([])
   const [loading, setLoading] = useState(true)
+  const [isSyncing, setIsSyncing] = useState(false)
+  const [syncResults, setSyncResults] = useState(null)
+
+  // Sync all CMS collections to Airtable
+  const handleSyncToAirtable = async () => {
+    setIsSyncing(true)
+    setSyncResults(null)
+    const results = { content: null, schedule: null, organizations: null, timeline: null }
+
+    try {
+      const token = await currentUser.getIdToken()
+      const collections = ['cmsContent', 'cmsSchedule', 'cmsOrganizations', 'cmsTimeline']
+
+      for (const collection of collections) {
+        try {
+          const response = await fetch(`${FUNCTIONS_URL}/syncCMSToAirtable`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ collection })
+          })
+
+          const data = await response.json()
+          const key = collection.replace('cms', '').toLowerCase()
+          results[key] = response.ok ? data : { error: data.error }
+        } catch (err) {
+          const key = collection.replace('cms', '').toLowerCase()
+          results[key] = { error: err.message }
+        }
+      }
+
+      setSyncResults(results)
+    } catch (error) {
+      console.error('Sync error:', error)
+      setSyncResults({ error: error.message })
+    } finally {
+      setIsSyncing(false)
+    }
+  }
 
   useEffect(() => {
     async function fetchQueue() {
@@ -2827,6 +2869,79 @@ function CMSPublishQueue({ currentUser, pendingChanges, onPublish, isPublishing 
             <p className="font-admin-body text-sm text-[var(--admin-text)]">Live in ~60 seconds</p>
           </div>
         </div>
+      </div>
+
+      {/* Airtable sync */}
+      <div className="admin-surface p-6">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h3 className="font-admin-heading text-lg font-semibold text-[var(--admin-text)]">
+              Sync to Airtable
+            </h3>
+            <p className="font-admin-body text-sm text-[var(--admin-text-muted)] mt-1">
+              Push CMS content back to Airtable for backup and visibility
+            </p>
+          </div>
+          <button
+            onClick={handleSyncToAirtable}
+            disabled={isSyncing}
+            className="flex items-center gap-2 px-4 py-2 bg-admin-amber text-white rounded-lg hover:bg-admin-amber/80 disabled:opacity-50 transition-all font-admin-body"
+          >
+            {isSyncing ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Database className="w-4 h-4" />
+            )}
+            {isSyncing ? 'Syncing...' : 'Sync all to Airtable'}
+          </button>
+        </div>
+
+        {/* Sync results */}
+        {syncResults && (
+          <div className="space-y-2 mt-4">
+            {syncResults.error ? (
+              <div className="p-3 rounded-lg bg-admin-rose/10 border border-admin-rose/20">
+                <div className="flex items-center gap-2 text-admin-rose">
+                  <AlertCircle className="w-4 h-4" />
+                  <span className="font-admin-body text-sm">{syncResults.error}</span>
+                </div>
+              </div>
+            ) : (
+              <>
+                {Object.entries(syncResults).map(([key, result]) => (
+                  result && (
+                    <div
+                      key={key}
+                      className={`p-3 rounded-lg ${
+                        result.error
+                          ? 'bg-admin-rose/10 border border-admin-rose/20'
+                          : 'bg-admin-emerald/10 border border-admin-emerald/20'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="font-admin-body text-sm text-[var(--admin-text)] capitalize">
+                          {key}
+                        </span>
+                        {result.error ? (
+                          <span className="font-admin-mono text-xs text-admin-rose">{result.error}</span>
+                        ) : (
+                          <span className="font-admin-mono text-xs text-admin-emerald">
+                            {result.created} created, {result.updated} updated
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )
+                ))}
+              </>
+            )}
+          </div>
+        )}
+
+        <p className="font-admin-body text-xs text-[var(--admin-text-muted)] mt-4">
+          Note: This syncs Site content, Schedule, Organizations, and Timeline to their respective Airtable tables.
+          Logo images are not synced (they remain in Firebase Storage).
+        </p>
       </div>
     </div>
   )

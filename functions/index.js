@@ -2948,3 +2948,253 @@ exports.cmsUploadImage = onRequest({ cors: true }, async (req, res) => {
     });
   }
 });
+
+/**
+ * Sync CMS content from Firestore to Airtable (admin only)
+ *
+ * This allows admins to push changes made in the admin dashboard
+ * back to Airtable for backup/visibility purposes.
+ *
+ * POST /syncCMSToAirtable
+ * Body: { collection: 'cmsContent' | 'cmsTimeline' | 'cmsOrganizations' | 'cmsSchedule' }
+ *
+ * Returns: { success: true, created: N, updated: N, skipped: N }
+ */
+exports.syncCMSToAirtable = onRequest({ cors: true, secrets: [airtableApiKey] }, async (req, res) => {
+  cors(req, res, async () => {
+    if (req.method !== "POST") {
+      res.status(405).send("Method Not Allowed");
+      return;
+    }
+
+    try {
+      const user = await requireAdmin(req);
+      const { collection = 'cmsContent' } = req.body;
+
+      // Map Firestore collections to Airtable tables
+      const collectionToTable = {
+        'cmsContent': AIRTABLE_SITE_CONTENT_TABLE,
+        'cmsTimeline': 'Summit History',
+        'cmsOrganizations': 'Organizations',
+        'cmsSchedule': AIRTABLE_SCHEDULE_TABLE
+      };
+
+      const airtableTable = collectionToTable[collection];
+      if (!airtableTable) {
+        res.status(400).json({ error: `Invalid collection: ${collection}` });
+        return;
+      }
+
+      console.log(`Starting sync from Firestore ${collection} to Airtable ${airtableTable}...`);
+
+      // 1. Fetch all documents from Firestore
+      const firestoreSnapshot = await db.collection(collection).get();
+      const firestoreDocs = firestoreSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+      console.log(`Found ${firestoreDocs.length} documents in Firestore ${collection}`);
+
+      // 2. Fetch all records from Airtable to find existing ones
+      const airtableUrl = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(airtableTable)}`;
+      const apiKey = airtableApiKey.value();
+
+      const existingRecords = [];
+      let offset = null;
+      do {
+        const url = offset
+          ? `${airtableUrl}?offset=${offset}&pageSize=100`
+          : `${airtableUrl}?pageSize=100`;
+
+        const response = await fetch(url, {
+          headers: { 'Authorization': `Bearer ${apiKey}` }
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Airtable fetch error: ${response.status} ${errorText}`);
+        }
+
+        const data = await response.json();
+        existingRecords.push(...data.records);
+        offset = data.offset;
+      } while (offset);
+
+      console.log(`Found ${existingRecords.length} existing records in Airtable`);
+
+      // 3. Build lookup map for existing Airtable records
+      // Key format depends on collection type
+      const getKey = (record) => {
+        if (collection === 'cmsContent') {
+          return `${record.fields.Section || ''}_${record.fields.Field || ''}`;
+        } else if (collection === 'cmsTimeline') {
+          return record.fields.Year?.toString() || '';
+        } else if (collection === 'cmsOrganizations') {
+          return record.fields.Name || '';
+        } else if (collection === 'cmsSchedule') {
+          return record.fields['session_id'] || record.fields['Session title'] || '';
+        }
+        return '';
+      };
+
+      const existingByKey = new Map();
+      for (const record of existingRecords) {
+        const key = getKey(record);
+        if (key) {
+          existingByKey.set(key, record);
+        }
+      }
+
+      // 4. Prepare batches for create/update
+      const toCreate = [];
+      const toUpdate = [];
+      let skipped = 0;
+
+      for (const doc of firestoreDocs) {
+        let key, fields;
+
+        if (collection === 'cmsContent') {
+          key = `${doc.section || ''}_${doc.field || ''}`;
+          fields = {
+            'Field': doc.field,
+            'Content': doc.content,
+            'Section': doc.section,
+            'Page': doc.page || 'Home',
+            'Color': doc.color || 'ink',
+            'Order': doc.order || 0,
+            'Visible': doc.visible !== false,
+            'Component': doc.component || '',
+            'Link': doc.link || ''
+          };
+        } else if (collection === 'cmsTimeline') {
+          key = doc.year?.toString() || '';
+          fields = {
+            'Year': doc.year,
+            'Location': doc.location,
+            'Theme': doc.theme || '',
+            'Link': doc.link || '',
+            'Emoji': doc.emoji || '',
+            'Order': doc.order || 0,
+            'Visible': doc.visible !== false
+          };
+        } else if (collection === 'cmsOrganizations') {
+          key = doc.name || '';
+          fields = {
+            'Name': doc.name,
+            'Description': doc.description || '',
+            'Website': doc.website || '',
+            'Sponsor': doc.sponsor === true,
+            'Sponsor tier': doc.sponsorTier || '',
+            'Sponsor order': doc.sponsorOrder || 0,
+            'Type': doc.type || '',
+            'Visible': doc.visible !== false
+            // Note: Logo not synced (handled separately via Storage)
+          };
+        } else if (collection === 'cmsSchedule') {
+          key = doc.session_id || doc.title || '';
+          fields = {
+            'Session title': doc.title,
+            'Type': doc.type || 'session',
+            'Day': doc.day,
+            'Start time': doc.startTime,
+            'End time': doc.endTime || '',
+            'Description': doc.description || '',
+            'Room': doc.room || '',
+            'Speakers': doc.speakers || '',
+            'Speaker orgs': doc.speakerOrgs || '',
+            'Track': doc.track || '',
+            'Order': doc.order || 0,
+            'Visible': doc.visible !== false,
+            'session_id': doc.session_id || ''
+          };
+        }
+
+        if (!key) {
+          skipped++;
+          continue;
+        }
+
+        const existingRecord = existingByKey.get(key);
+        if (existingRecord) {
+          toUpdate.push({ id: existingRecord.id, fields });
+        } else {
+          toCreate.push({ fields });
+        }
+      }
+
+      // 5. Execute batch creates (Airtable allows 10 at a time)
+      let created = 0;
+      for (let i = 0; i < toCreate.length; i += 10) {
+        const batch = toCreate.slice(i, i + 10);
+        const response = await fetch(airtableUrl, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${apiKey}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ records: batch, typecast: true })
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error(`Airtable create error: ${errorText}`);
+          // Continue with other batches
+        } else {
+          const data = await response.json();
+          created += data.records.length;
+        }
+      }
+
+      // 6. Execute batch updates (Airtable allows 10 at a time)
+      let updated = 0;
+      for (let i = 0; i < toUpdate.length; i += 10) {
+        const batch = toUpdate.slice(i, i + 10);
+        const response = await fetch(airtableUrl, {
+          method: 'PATCH',
+          headers: {
+            'Authorization': `Bearer ${apiKey}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ records: batch, typecast: true })
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error(`Airtable update error: ${errorText}`);
+          // Continue with other batches
+        } else {
+          const data = await response.json();
+          updated += data.records.length;
+        }
+      }
+
+      // Log the sync action
+      await logAdminAction(user.uid, 'cms_sync_to_airtable', null, {
+        collection,
+        airtableTable,
+        created,
+        updated,
+        skipped
+      });
+
+      console.log(`Sync complete: ${created} created, ${updated} updated, ${skipped} skipped`);
+
+      res.status(200).json({
+        success: true,
+        collection,
+        airtableTable,
+        created,
+        updated,
+        skipped,
+        total: firestoreDocs.length
+      });
+
+    } catch (error) {
+      console.error('CMS sync to Airtable error:', error);
+      await logError('syncCMSToAirtable', error);
+      res.status(error.message.includes('Unauthorized') ? 403 : 500)
+        .json({ error: error.message || 'Failed to sync to Airtable' });
+    }
+  });
+});

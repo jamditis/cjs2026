@@ -35,7 +35,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # Generate content from Firestore CMS
+      # Generate content from Firestore CMS (admin dashboard)
       - name: Generate content from Firestore
         run: |
           echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > service-account.json
