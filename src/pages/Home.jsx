@@ -22,7 +22,7 @@ import EmailSignup from '../components/EmailSignup'
 const Lanyard = lazy(() => import('../components/Lanyard'))
 
 // Import static content from Airtable
-import { getContent, getContentMeta, getColorClass, timeline, stats } from '../content/siteContent'
+import { getContent, getContentMeta, getColorClass, timeline } from '../content/siteContent'
 import { sponsors, hasSponsors, sponsorsByTier, tierDisplayNames } from '../content/organizationsData'
 
 // ============================================
@@ -498,29 +498,52 @@ function Home() {
             {getContent('history', 'section_description', 'Since 2017, the Collaborative Journalism Summit has brought together practitioners, funders, and innovators. This year, we celebrate a decade of proving that journalism is stronger when we collaborate.')}
           </motion.p>
 
-          {/* Stats with CountUp animation - data from CMS */}
+          {/* Stats with CountUp animation - historical data, hardcoded for reliability */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
-            {stats.map((stat, index) => {
-              // Parse value for CountUp - handle "2,569" format
-              const numericValue = parseInt(stat.value?.replace(/[^0-9]/g, '') || '0', 10)
-              const suffix = stat.value?.includes('+') ? '+' : ''
-              const duration = numericValue > 100 ? 2 : numericValue > 5 ? 1.5 : 0.8
-
-              return (
-                <motion.div
-                  key={stat.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                >
-                  <p className="font-accent text-5xl md:text-6xl text-brand-green-dark">
-                    <CountUp end={numericValue} duration={duration} suffix={suffix} />
-                  </p>
-                  <p className="text-brand-green-dark/70 text-sm font-body mt-1">{stat.label}</p>
-                </motion.div>
-              )
-            })}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0 }}
+            >
+              <p className="font-accent text-5xl md:text-6xl text-brand-green-dark">
+                <CountUp end={10} duration={1.5} />
+              </p>
+              <p className="text-brand-green-dark/70 text-sm font-body mt-1">Summits</p>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+            >
+              <p className="font-accent text-5xl md:text-6xl text-brand-green-dark">
+                <CountUp end={6} duration={1.5} />
+              </p>
+              <p className="text-brand-green-dark/70 text-sm font-body mt-1">Cities</p>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+            >
+              <p className="font-accent text-5xl md:text-6xl text-brand-green-dark">
+                <CountUp end={2569} duration={2} />
+              </p>
+              <p className="text-brand-green-dark/70 text-sm font-body mt-1">Registrations</p>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3 }}
+            >
+              <p className="font-accent text-5xl md:text-6xl text-brand-green-dark">
+                <CountUp end={1} duration={0.8} />
+              </p>
+              <p className="text-brand-green-dark/70 text-sm font-body mt-1">Mission</p>
+            </motion.div>
           </div>
 
           <div className="divider-sketch opacity-50 mb-16"></div>
