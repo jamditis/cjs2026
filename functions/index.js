@@ -2850,13 +2850,16 @@ exports.syncCMSToAirtable = onRequest({ cors: true, secrets: [airtableApiKey] },
             'Name': doc.name,
             'Description': doc.description || '',
             'Website': doc.website || '',
-            'Sponsor': doc.sponsor === true,
+            'Sponsor': doc.isSponsor === true,
             'Sponsor tier': doc.sponsorTier || '',
             'Sponsor order': doc.sponsorOrder || 0,
             'Type': doc.type || '',
             'Visible': doc.visible !== false
-            // Note: Logo not synced (handled separately via Storage)
           };
+          // Sync logo URL as Airtable attachment (array of {url} objects)
+          if (doc.logoUrl) {
+            fields['Logo'] = [{ url: doc.logoUrl }];
+          }
         } else if (collection === 'cmsSchedule') {
           key = doc.session_id || doc.title || '';
           fields = {
