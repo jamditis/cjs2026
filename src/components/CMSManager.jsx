@@ -2077,9 +2077,8 @@ function OrganizationEditModal({ org, isNew, isSuperAdmin = false, onSave, onClo
             />
           </div>
 
-          {/* SUPER ADMIN ONLY: Sponsor settings */}
-          {isSuperAdmin && (
-            <>
+          {/* Sponsor settings (all admins can edit) */}
+          <>
               <div className="flex items-center gap-2">
                 <input
                   type="checkbox"
@@ -2123,8 +2122,7 @@ function OrganizationEditModal({ org, isNew, isSuperAdmin = false, onSave, onClo
                   </div>
                 </div>
               )}
-            </>
-          )}
+          </>
 
           <div>
             <label className="block text-sm font-admin-body text-[var(--admin-text-muted)] mb-1">
