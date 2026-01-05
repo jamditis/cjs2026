@@ -5,14 +5,17 @@
  */
 
 const AIRTABLE_BASE_ID = 'appL8Sn87xUotm4jF';
-const TABLE_NAME = 'Task Tracker';
+const TABLE_NAME = 'Task tracker';
 
-// Get API key from environment
-const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
+// Load .env file
+require('dotenv').config();
+
+// Get API key from environment (supports both variable names)
+const AIRTABLE_API_KEY = process.env.AIRTABLE_PAT_KEY || process.env.AIRTABLE_API_KEY;
 
 if (!AIRTABLE_API_KEY) {
-  console.error('Error: AIRTABLE_API_KEY environment variable not set');
-  console.log('\nRun with: AIRTABLE_API_KEY="your_key" node scripts/setup-task-tracker.cjs');
+  console.error('Error: AIRTABLE_PAT_KEY environment variable not set');
+  console.log('\nEnsure .env file has AIRTABLE_PAT_KEY=your_key');
   process.exit(1);
 }
 
@@ -53,75 +56,76 @@ const CATEGORIES = [
 ];
 
 // Initial tasks to populate based on our work
+// Field names match existing Airtable structure: Assigned (not Assignee), Notes (not Description)
 const INITIAL_TASKS = [
   // DONE
   {
     Name: 'Fix stats animation bug on homepage',
-    Description: 'Stats were using wrong data structure - fixed to use {id, value, label} format',
+    Notes: 'Stats were using wrong data structure - fixed to use {id, value, label} format. Hardcoded historical values for reliability.',
     Status: 'Done',
     Priority: 'High',
     Category: 'Bug Fix',
-    Assignee: ['Joe Amditis'],
+    Assigned: ['Joe Amditis'],
     'Date Added': new Date().toISOString().split('T')[0],
     'Date Completed': new Date().toISOString().split('T')[0]
   },
   {
     Name: 'Remove legacy App.jsx and unused code',
-    Description: '~1,720 lines of dead code removed including App.jsx, Register.jsx, ForgotPassword.jsx, timeline-data.json',
+    Notes: '~1,720 lines of dead code removed including App.jsx, Register.jsx, ForgotPassword.jsx, timeline-data.json',
     Status: 'Done',
     Priority: 'Medium',
     Category: 'DevOps',
-    Assignee: ['Joe Amditis'],
+    Assigned: ['Joe Amditis'],
     'Date Added': new Date().toISOString().split('T')[0],
     'Date Completed': new Date().toISOString().split('T')[0]
   },
   {
     Name: 'Update FAQ - remove early bird and parallel tracks',
-    Description: 'No early bird pricing this year, single track schedule (no parallel sessions)',
+    Notes: 'No early bird pricing this year, single track schedule (no parallel sessions)',
     Status: 'Done',
     Priority: 'Medium',
     Category: 'Content',
-    Assignee: ['Joe Amditis'],
+    Assigned: ['Joe Amditis'],
     'Date Added': new Date().toISOString().split('T')[0],
     'Date Completed': new Date().toISOString().split('T')[0]
   },
   {
     Name: 'Update OG image and favicons to Pittsburgh',
-    Description: 'Replaced Chapel Hill imagery with Pittsburgh branding',
+    Notes: 'Replaced Chapel Hill imagery with Pittsburgh branding',
     Status: 'Done',
     Priority: 'High',
     Category: 'Design',
-    Assignee: ['Joe Amditis'],
+    Assigned: ['Joe Amditis'],
     'Date Added': new Date().toISOString().split('T')[0],
     'Date Completed': new Date().toISOString().split('T')[0]
   },
   {
     Name: 'Fix attendee count stats (2,569 not 1,500)',
-    Description: 'Updated all locations with accurate stats from Eventbrite CSV analysis',
+    Notes: 'Updated all locations with accurate stats from Eventbrite CSV analysis',
     Status: 'Done',
     Priority: 'High',
     Category: 'Content',
-    Assignee: ['Joe Amditis'],
+    Assigned: ['Joe Amditis'],
     'Date Added': new Date().toISOString().split('T')[0],
     'Date Completed': new Date().toISOString().split('T')[0]
   },
   {
     Name: 'Create email outreach lists from historical data',
-    Description: 'Generated Super Fans, Class of 2020, OG attendees, Lapsed, and Recent lists',
+    Notes: 'Generated Super Fans, Class of 2020, OG attendees, Lapsed, and Recent lists',
     Status: 'Done',
     Priority: 'Medium',
     Category: 'Marketing',
-    Assignee: ['Joe Amditis'],
+    Assigned: ['Joe Amditis'],
     'Date Added': new Date().toISOString().split('T')[0],
     'Date Completed': new Date().toISOString().split('T')[0]
   },
   {
     Name: 'Add lesson documentation from sessions',
-    Description: 'Created lessons/content-accuracy.md and lessons/historical-data-analysis.md',
+    Notes: 'Created lessons in .claude/lessons/ folder',
     Status: 'Done',
     Priority: 'Low',
     Category: 'Admin',
-    Assignee: ['Joe Amditis'],
+    Assigned: ['Joe Amditis'],
     'Date Added': new Date().toISOString().split('T')[0],
     'Date Completed': new Date().toISOString().split('T')[0]
   },
@@ -129,98 +133,99 @@ const INITIAL_TASKS = [
   // TO DO / BACKLOG
   {
     Name: 'Update Airtable location fields to Pittsburgh',
-    Description: 'Update venue_location, 2026_location, signup_headline with Pittsburgh info',
+    Notes: 'Update venue_location, 2026_location, signup_headline with Pittsburgh info',
     Status: 'To Do',
     Priority: 'High',
     Category: 'Content',
-    Assignee: ['Stefanie Murray'],
+    Assigned: ['Stefanie Murray'],
     'Date Added': new Date().toISOString().split('T')[0]
   },
   {
     Name: 'Confirm Pittsburgh venue name',
-    Description: 'Need to update venue_name in Airtable once confirmed',
+    Notes: 'Need to update venue_name in Airtable once confirmed',
     Status: 'Backlog',
     Priority: 'High',
     Category: 'Admin',
-    Assignee: [],
+    Assigned: [],
     'Date Added': new Date().toISOString().split('T')[0]
   },
   {
     Name: 'Deploy Firebase Storage rules',
-    Description: 'Profile photo upload rules are configured but need deployment',
+    Notes: 'Profile photo upload rules are configured but need deployment',
     Status: 'To Do',
     Priority: 'Medium',
     Category: 'DevOps',
-    Assignee: ['Joe Amditis'],
+    Assigned: ['Joe Amditis'],
     'Date Added': new Date().toISOString().split('T')[0]
   },
   {
     Name: 'Send Super Fans outreach email',
-    Description: 'Use planning/email-campaign-templates.md and planning/outreach-lists/super-fans.csv',
+    Notes: 'Use planning/email-campaign-templates.md and planning/outreach-lists/super-fans.csv',
     Status: 'Backlog',
     Priority: 'Medium',
     Category: 'Marketing',
-    Assignee: ['Stefanie Murray'],
+    Assigned: ['Stefanie Murray'],
     'Date Added': new Date().toISOString().split('T')[0]
   },
   {
     Name: 'Send Class of 2020 re-engagement email',
-    Description: '552 pandemic first-timers who never returned - use "finally meet in person" messaging',
+    Notes: '552 pandemic first-timers who never returned - use "finally meet in person" messaging',
     Status: 'Backlog',
     Priority: 'Medium',
     Category: 'Marketing',
-    Assignee: ['Stefanie Murray'],
+    Assigned: ['Stefanie Murray'],
     'Date Added': new Date().toISOString().split('T')[0]
   },
   {
     Name: 'Archive unused CMS components',
-    Description: 'Move CMSManager.jsx, CMSTour.jsx, cmsArchitecture.js to deprecated folder',
+    Notes: 'Move CMSManager.jsx, CMSTour.jsx, cmsArchitecture.js to deprecated folder',
     Status: 'Backlog',
     Priority: 'Low',
     Category: 'DevOps',
-    Assignee: ['Joe Amditis'],
+    Assigned: ['Joe Amditis'],
     'Date Added': new Date().toISOString().split('T')[0]
   },
   {
     Name: 'Set up Eventbrite registration',
-    Description: 'Create 2026 event in Eventbrite, configure ticket types',
+    Notes: 'Create 2026 event in Eventbrite, configure ticket types',
     Status: 'Backlog',
     Priority: 'High',
     Category: 'Admin',
-    Assignee: [],
+    Assigned: [],
     'Date Added': new Date().toISOString().split('T')[0]
   },
   {
     Name: 'Finalize session schedule',
-    Description: 'Populate Schedule table in Airtable with confirmed sessions',
+    Notes: 'Populate Schedule table in Airtable with confirmed sessions',
     Status: 'Backlog',
     Priority: 'High',
     Category: 'Content',
-    Assignee: ['Stefanie Murray'],
+    Assigned: ['Stefanie Murray'],
     'Date Added': new Date().toISOString().split('T')[0]
   },
   {
     Name: 'Recruit additional sponsors',
-    Description: 'Knight Foundation is presenting sponsor - need lead/supporting sponsors',
+    Notes: 'Knight Foundation is presenting sponsor - need lead/supporting sponsors',
     Status: 'In Progress',
     Priority: 'High',
     Category: 'Admin',
-    Assignee: ['Stefanie Murray'],
+    Assigned: ['Stefanie Murray'],
     'Date Added': new Date().toISOString().split('T')[0]
   },
   {
     Name: 'Review session pitch submissions',
-    Description: 'Deadline is January 31 - need to review and select sessions',
+    Notes: 'Deadline is January 31 - need to review and select sessions',
     Status: 'To Do',
     Priority: 'High',
     Category: 'Content',
-    Assignee: ['Stefanie Murray', 'Joe Amditis'],
+    Assigned: ['Stefanie Murray', 'Joe Amditis'],
     'Date Added': new Date().toISOString().split('T')[0]
   }
 ];
 
-async function makeRequest(method, endpoint, body = null) {
-  const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(endpoint)}`;
+async function makeRequest(method, endpoint, body = null, queryParams = '') {
+  const encodedEndpoint = encodeURIComponent(endpoint);
+  const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodedEndpoint}${queryParams}`;
   const options = {
     method,
     headers: {
@@ -245,7 +250,7 @@ async function makeRequest(method, endpoint, body = null) {
 async function checkTableExists() {
   try {
     // Try to get one record from the table
-    const data = await makeRequest('GET', `${TABLE_NAME}?maxRecords=1`);
+    const data = await makeRequest('GET', TABLE_NAME, null, '?maxRecords=1');
     return { exists: true, records: data.records };
   } catch (error) {
     if (error.message.includes('NOT_FOUND') || error.message.includes('Could not find')) {
@@ -308,11 +313,11 @@ async function main() {
       console.error('   Error creating records:', error.message);
       console.log('\n   The table may need these fields configured:');
       console.log('   - Name (Primary field, Single line text)');
-      console.log('   - Description (Long text)');
+      console.log('   - Notes (Rich text)');
       console.log('   - Status (Single select: Backlog, To Do, In Progress, Review, Done)');
       console.log('   - Priority (Single select: Critical, High, Medium, Low)');
       console.log('   - Category (Single select: Frontend, Backend, Content, Design, DevOps, Marketing, Admin, Bug Fix)');
-      console.log('   - Assignee (Multiple select: Joe Amditis, Stefanie Murray, Etienne Claret)');
+      console.log('   - Assigned (Multiple select: Joe Amditis, Stefanie Murray, Etienne Claret)');
       console.log('   - Date Added (Date)');
       console.log('   - Date Completed (Date)');
       process.exit(1);
