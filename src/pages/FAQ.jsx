@@ -32,7 +32,7 @@ const FAQ_DATA = [
     questions: [
       {
         q: 'How do I register for CJS2026?',
-        a: 'Registration is available through Eventbrite. Click the "Get tickets" button on our homepage or visit our Eventbrite page directly. Early bird pricing is available for a limited time.'
+        a: 'Registration is available through Eventbrite. Click the "Get tickets" button on our homepage or visit our Eventbrite page directly.'
       },
       {
         q: 'What does registration include?',
@@ -58,7 +58,7 @@ const FAQ_DATA = [
       },
       {
         q: 'What is the schedule like?',
-        a: 'Monday begins with breakfast and registration at 8:00 AM, followed by a full day of keynotes and sessions. An evening dinner and networking event runs until about 9:00 PM. Tuesday features morning workshop tracks from 8:30 AM to 12:00 PM.'
+        a: 'Monday begins with breakfast and registration at 8:00 AM, followed by a full day of keynotes and sessions. An evening dinner and networking event runs until about 9:00 PM. Tuesday features morning workshops from 8:30 AM to 12:00 PM.'
       },
       {
         q: 'Can I attend just one day?',
@@ -103,10 +103,6 @@ const FAQ_DATA = [
       {
         q: 'Will sessions be recorded?',
         a: 'Select sessions may be recorded and shared after the event. We\'ll communicate which sessions will be available and share links with registered attendees.'
-      },
-      {
-        q: 'What are the workshop tracks on Tuesday?',
-        a: 'Tuesday features two parallel tracks: "Collaborating 101" for those new to collaborative journalism, and "Advanced Collaboration" for experienced practitioners. Both tracks offer hands-on learning and skill building.'
       }
     ]
   }

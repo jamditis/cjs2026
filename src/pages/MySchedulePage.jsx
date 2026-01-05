@@ -128,7 +128,6 @@ function MySchedulePage() {
               <ul className="font-body text-sm text-brand-ink/70 space-y-2">
                 <li>Click the bookmark icon on any session to remove it from your schedule.</li>
                 <li>Check back as sessions are finalized - more details will be added in spring 2026.</li>
-                <li>Some sessions may run concurrently - plan accordingly!</li>
                 <li>Use the share button to let others see your schedule, or download a PDF for offline access.</li>
               </ul>
             </motion.div>
