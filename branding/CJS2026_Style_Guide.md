@@ -454,7 +454,7 @@ Consider creating specific hashtags for:
 ### Standard disclaimers and calls-to-action
 
 **Registration CTA**
-"Register now for CJS2026 at [URL]. Early bird pricing available through [date]."
+"Register now for CJS2026 at [URL]. Space is limited to 150 attendees."
 
 **Scholarship information**
 "Scholarship tickets are available to ensure cost is not a barrier to participation. Email summit@collaborativejournalism.org to request one."
@@ -615,7 +615,7 @@ The Summit is committed to ensuring all attendees can fully participate, regardl
 ✅ Good: "Three journalists reviewing printed collaborative reporting guidelines at a conference table"
 
 ❌ Poor: "Screenshot"
-✅ Good: "Registration form showing early bird pricing of $199, available until February 1, 2026"
+✅ Good: "Registration form showing standard pricing of $299 with 'Limited to 150 attendees' badge"
 
 ❌ Poor: "Graph"
 ✅ Good: "Bar graph showing 52% of attendees preferred lightning talks, 30% preferred plenary sessions, and 18% preferred concurrent sessions"

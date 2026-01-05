@@ -1,10 +1,15 @@
 # CJS 2026 announcement materials
 
+> ⚠️ **LOCATION UPDATE (January 2026):** Summit moved from Pittsburgh, PA to **Pittsburgh, PA**.
+> Venue TBD. Same dates (June 8-9, 2026). INN Days co-location status TBD.
+> Many materials below need updating before use.
+
 Save-the-date announcement for the 10th anniversary Collaborative Journalism Summit.
 
 **Links:**
 - Website: https://collaborativejournalism.org/cjs2026
 - Direct: https://cjs2026.web.app
+- Session pitch form: https://airtable.com/appL8Sn87xUotm4jF/pag23Y1hW5Y58hSy0/form
 
 ---
 
@@ -13,7 +18,7 @@ Save-the-date announcement for the 10th anniversary Collaborative Journalism Sum
 **Subject line options:**
 - Save the date: 2026 Collaborative Journalism Summit
 - CJS turns 10 — save the date for June 2026
-- Prepare to partner: CJS 2026 is coming to Pittsburgh
+- Prepare to partner: CJS 2026 is coming to Pennsylvania
 
 **Body:**
 
@@ -21,7 +26,7 @@ The 2026 Collaborative Journalism Summit is coming to Pittsburgh, Pennsylvania o
 
 Since 2017, the Collaborative Journalism Summit has brought together journalists, funders, researchers, and media leaders to explore how we can work together in the public interest. Over the past decade, we've hosted nearly 1,500 attendees across 8 cities, building a community committed to the idea that journalism is stronger when we collaborate.
 
-For our 10th edition, we're heading to Pittsburgh and co-locating with INN Days (June 9–11).
+For our 10th edition, we're returning to Pennsylvania and co-locating with INN Days (June 9–11) at [VENUE TBD].
 
 **What to expect:**
 - Keynote sessions and lightning talks on Monday
@@ -59,7 +64,7 @@ This year marks our 10th anniversary.
 **Tweet 2:**
 Since 2017, we've hosted nearly 1,500 attendees across 8 cities — from Montclair to Philadelphia, Chicago to Denver.
 
-For our 10th edition, we're heading to Pittsburgh and co-locating with @INNnerds Days.
+For our 10th edition, we're heading to Pennsylvania and co-locating with @INNnerds Days at [VENUE TBD].
 
 **Tweet 3:**
 Prepare to partner.
@@ -74,7 +79,7 @@ I'm excited to share that the 2026 Collaborative Journalism Summit will take pla
 
 Since the first summit in 2017, we've brought together nearly 1,500 journalists, funders, researchers, and media leaders across 8 cities to explore how collaborative journalism can serve the public interest.
 
-For our 10th edition, we're co-locating with INN Days in Pittsburgh. The summit will feature keynote sessions, lightning talks, and hands-on workshops for both newcomers and experienced collaborators.
+For our 10th edition, we're co-locating with INN Days at [VENUE TBD]. The summit will feature keynote sessions, lightning talks, and hands-on workshops for both newcomers and experienced collaborators.
 
 Registration opens in early 2026. If you're interested in attending, speaking, or sponsoring, sign up for updates at the link below.
 
@@ -96,11 +101,11 @@ Save the date: The 2026 Collaborative Journalism Summit is heading to Pittsburgh
 
 This year marks our 10th anniversary — a decade of bringing journalists together to work in the public interest.
 
-Since 2017, we've hosted nearly 1,500 attendees across 8 cities. For our 10th edition, we're co-locating with INN Days in Pittsburgh.
+Since 2017, we've hosted nearly 1,500 attendees across 8 cities. For our 10th edition, we're co-locating with INN Days at [VENUE TBD].
 
 Registration opens in early 2026. Link in bio to sign up for updates.
 
-#CollaborativeJournalism #CJS2026 #Journalism #MediaCollaboration #Pittsburgh
+#CollaborativeJournalism #CJS2026 #Journalism #MediaCollaboration #Pennsylvania
 
 ---
 
@@ -108,7 +113,7 @@ Registration opens in early 2026. Link in bio to sign up for updates.
 
 **Headline:** Save the date: 2026 Collaborative Journalism Summit
 
-The 10th annual Collaborative Journalism Summit will take place June 8–9, 2026 in Pittsburgh, Pennsylvania, co-located with INN Days.
+The 10th annual Collaborative Journalism Summit will take place June 8–9, 2026 in Pittsburgh, Pennsylvania, co-located with INN Days at [VENUE TBD].
 
 Since 2017, the summit has brought together journalists, funders, and media leaders to explore collaborative approaches to journalism. Registration opens in early 2026.
 
@@ -121,7 +126,7 @@ Sign up for updates: https://collaborativejournalism.org/cjs2026
 Hey everyone — save the date for the 2026 Collaborative Journalism Summit!
 
 **When:** June 8–9, 2026
-**Where:** Pittsburgh, Pennsylvania (venue TBA)
+**Where:** Pittsburgh, Pennsylvania ([VENUE TBD])
 **What:** Our 10th anniversary edition, co-located with INN Days
 
 Registration opens in early 2026. Sign up for updates here: https://collaborativejournalism.org/cjs2026
@@ -132,15 +137,15 @@ Registration opens in early 2026. Sign up for updates here: https://collaborativ
 
 **FOR IMMEDIATE RELEASE**
 
-**10th annual Collaborative Journalism Summit set for June 2026 in Pittsburgh**
+**10th annual Collaborative Journalism Summit set for June 2026 in Pennsylvania**
 
-*Landmark event will co-locate with INN Days in Pittsburgh*
+*Landmark event will co-locate with INN Days at [VENUE TBD]*
 
-PITTSBURGH, PA — The Center for Cooperative Media and the Institute for Nonprofit News announced today that the 2026 Collaborative Journalism Summit will take place June 8–9, 2026 in Pittsburgh, Pennsylvania.
+CHAPEL HILL, NC — The Center for Cooperative Media and the Institute for Nonprofit News announced today that the 2026 Collaborative Journalism Summit will take place June 8–9, 2026 at [VENUE TBD] in Pennsylvania.
 
 The event marks the 10th anniversary of the summit, which launched in 2017 in Montclair, New Jersey. Over the past decade, the summit has hosted nearly 1,500 attendees across eight cities, establishing itself as the premier gathering for journalists exploring collaborative approaches to public interest journalism.
 
-"For ten years, the Collaborative Journalism Summit has been a place where journalists come to learn from each other and build partnerships," said Stefanie Murray, director of the Center for Cooperative Media. "We're excited to celebrate this milestone in Pittsburgh and continue growing this community."
+"For ten years, the Collaborative Journalism Summit has been a place where journalists come to learn from each other and build partnerships," said Stefanie Murray, director of the Center for Cooperative Media. "We're excited to celebrate this milestone in Pennsylvania and continue growing this community."
 
 The 2026 summit will co-locate with INN Days, the Institute for Nonprofit News's annual conference, which runs June 9–11. Attendees can participate in both events.
 
@@ -165,27 +170,30 @@ amditisj@montclair.edu
 
 ## Image assets
 
+> ⚠️ **NOTE:** Image assets below reference NC branding and need to be updated for Pittsburgh.
+
 For social posts, use:
-- `branding/og-image.png` — Main social sharing image (NC map with cardinal, "Prepare to partner")
-- `branding/cjs2026-nc-outline-shapes-green.png` — Clean green NC outline
-- `branding/cjs2026-nc-topographical.png` — Illustrated NC map (no text)
+- `branding/og-image.png` — Main social sharing image *(NEEDS UPDATE for Pittsburgh)*
+- `branding/cjs2026-nc-outline-shapes-green.png` — *(OUTDATED - was NC outline)*
+- `branding/cjs2026-nc-topographical.png` — *(OUTDATED - was NC map)*
 
 ---
 
 ## Hashtags
 
 Primary: #CJS2026 #CollaborativeJournalism
-Secondary: #Journalism #MediaCollaboration #NorthCarolina #ChapelHill
+Secondary: #Journalism #MediaCollaboration #Pennsylvania #Pittsburgh
 
 ---
 
 ## Key messages
 
 1. **10th anniversary** — A decade of bringing journalists together
-2. **Pittsburgh, PA** — June 8–9, 2026 (venue TBA)
-3. **Co-located with INN Days** — Two events, one trip
+2. **Pittsburgh, PA** — June 8–9, 2026 (venue TBD)
+3. **Co-located with INN Days** — *(TBD - confirm if still co-located)*
 4. **Registration opens early 2026** — Sign up now for updates
-5. **"Prepare to partner"** — The tagline
+5. **Session pitches open** — Submit your session idea by January 31, 2026
+6. **"Prepare to partner"** — The tagline
 
 ## Tone
 

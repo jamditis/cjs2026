@@ -98,6 +98,17 @@ service cloud.firestore {
       allow delete: if isAdmin() || isSuperAdmin();
     }
 
+    // Updates (news/announcements) - public read for visible, admin write
+    // Used for the /updates page and individual update pages
+    match /updates/{updateId} {
+      // Admins can read ALL updates (including hidden) - check admin first
+      allow read: if isAdmin() || isSuperAdmin();
+      // Public read for visible updates only (individual document reads)
+      allow read: if resource.data.visible == true;
+      // Only admins can create, update, delete
+      allow create, update, delete: if isAdmin() || isSuperAdmin();
+    }
+
     // ═══════════════════════════════════════════════════════════════
     // CMS COLLECTIONS - Custom CMS for managing site content
     // ═══════════════════════════════════════════════════════════════
