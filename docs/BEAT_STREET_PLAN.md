@@ -1,4 +1,4 @@
-# Pittsburgh Explorer: Isometric Conference Guide Game
+# Beat Street: Isometric Conference Guide Game
 
 ## Executive Summary
 
@@ -218,7 +218,7 @@ The game is a **separate Firebase project** but needs to verify users are **conf
 
 **Architecture:**
 ```
-User → Pittsburgh Explorer (Project B)
+User → Beat Street (Project B)
          ↓
          Calls verifyAttendee() Cloud Function
          ↓
@@ -229,7 +229,7 @@ User → Pittsburgh Explorer (Project B)
          ↓
          Returns { verified: true, attendeeData: {...} }
          ↓
-      Pittsburgh Explorer grants access
+      Beat Street grants access
 ```
 
 ### Implementation
@@ -238,7 +238,7 @@ User → Pittsburgh Explorer (Project B)
 
 ```javascript
 /**
- * Verify CJS2026 attendee for Pittsburgh Explorer game
+ * Verify CJS2026 attendee for Beat Street game
  * Security: rate-limited, audit-logged, App Check supported
  */
 exports.verifyAttendeeForGame = onRequest({
@@ -314,7 +314,7 @@ exports.verifyAttendeeForGame = onRequest({
 });
 ```
 
-**Pittsburgh Explorer Client:**
+**Beat Street Client:**
 
 ```javascript
 // Verify user is CJS2026 attendee
@@ -491,7 +491,7 @@ export default {
         maximumFileSizeToCacheBytes: 5 * 1024 * 1024, // 5MB max per file
       },
       manifest: {
-        name: 'Pittsburgh Explorer',
+        name: 'Beat Street',
         short_name: 'PGH Explorer',
         description: 'Interactive CJS2026 venue guide',
         display: 'fullscreen',
@@ -973,7 +973,7 @@ Based on enhanced engagement data:
 
 ## 10. Cost Analysis
 
-### Separate Firebase Project (Pittsburgh Explorer)
+### Separate Firebase Project (Beat Street)
 
 #### Monthly Costs During Active Use
 
@@ -1018,7 +1018,7 @@ Based on enhanced engagement data:
 
 | Week | Tasks |
 |------|-------|
-| **1** | Set up new Firebase project `pittsburgh-explorer-cjs2026`, Cloudflare Pages, GitHub repo |
+| **1** | Set up new Firebase project `beat-street-cjs2026`, Cloudflare Pages, GitHub repo |
 | **1** | Extract Pittsburgh OSM data, run through OSM2World |
 | **2** | Create initial isometric tileset (Penzilla pack + Midjourney landmarks) |
 | **2** | Set up Phaser 3.60+ with React wrapper, basic map rendering |
@@ -1140,8 +1140,8 @@ Based on enhanced engagement data:
 
 ### Immediate (This Week)
 1. [ ] Confirm venue (David L. Lawrence Convention Center)
-2. [ ] Create new Firebase project: `pittsburgh-explorer-cjs2026`
-3. [ ] Set up GitHub repo: `jamditis/pittsburgh-explorer`
+2. [ ] Create new Firebase project: `beat-street-cjs2026`
+3. [ ] Set up GitHub repo: `jamditis/beat-street`
 4. [ ] Extract Pittsburgh OSM data for downtown area
 5. [ ] Purchase Penzilla asset pack ($7)
 

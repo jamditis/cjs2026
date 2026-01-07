@@ -1,6 +1,6 @@
-# Pittsburgh Explorer - Implementation Blueprint
+# Beat Street - Implementation Blueprint
 
-> **Purpose:** This document is a condensed, actionable guide for building Pittsburgh Explorer in a fresh repository. Copy this file to your new repo as `IMPLEMENTATION.md`.
+> **Purpose:** This document is a condensed, actionable guide for building Beat Street in a fresh repository. Copy this file to your new repo as `IMPLEMENTATION.md`.
 
 ---
 
@@ -8,7 +8,7 @@
 
 | Item | Value |
 |------|-------|
-| **Project** | Pittsburgh Explorer - Isometric 3D wayfinding game |
+| **Project** | Beat Street - Isometric 3D wayfinding game |
 | **Event** | CJS2026 (June 8-9, 2026, Pittsburgh PA) |
 | **Stack** | Vite + React 18 + Phaser 3.60+ + Tailwind CSS |
 | **Hosting** | Cloudflare Pages (game) + Firebase (backend) |
@@ -23,8 +23,8 @@
 
 ```bash
 # Create and clone
-gh repo create pittsburgh-explorer --public --clone
-cd pittsburgh-explorer
+gh repo create beat-street --public --clone
+cd beat-street
 
 # Initialize with Vite + React + TypeScript
 npm create vite@latest . -- --template react-ts
@@ -45,7 +45,7 @@ npm install -D @types/node vite-plugin-pwa workbox-window
 ### Directory Structure
 
 ```
-pittsburgh-explorer/
+beat-street/
 ├── public/
 │   ├── assets/
 │   │   ├── tilesets/        # Isometric tile images
@@ -58,7 +58,7 @@ pittsburgh-explorer/
 │   │   ├── scenes/          # Phaser scenes
 │   │   │   ├── BootScene.ts
 │   │   │   ├── PreloadScene.ts
-│   │   │   ├── PittsburghScene.ts
+│   │   │   ├── CityMapScene.ts
 │   │   │   └── ConventionCenterScene.ts
 │   │   ├── entities/        # Player, NPCs
 │   │   ├── systems/         # Presence, POI, navigation
@@ -172,7 +172,7 @@ export const eventBus = new EventBus();
 import Phaser from 'phaser';
 import { BootScene } from './scenes/BootScene';
 import { PreloadScene } from './scenes/PreloadScene';
-import { PittsburghScene } from './scenes/PittsburghScene';
+import { CityMapScene } from './scenes/CityMapScene';
 import { ConventionCenterScene } from './scenes/ConventionCenterScene';
 
 export const gameConfig: Phaser.Types.Core.GameConfig = {
@@ -188,7 +188,7 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
     default: 'arcade',
     arcade: { debug: false },
   },
-  scene: [BootScene, PreloadScene, PittsburghScene, ConventionCenterScene],
+  scene: [BootScene, PreloadScene, CityMapScene, ConventionCenterScene],
   render: {
     pixelArt: true,
     antialias: false,
@@ -233,18 +233,18 @@ npm install -g firebase-tools
 
 # Login and create project
 firebase login
-firebase projects:create pittsburgh-explorer-cjs2026
+firebase projects:create beat-street-cjs2026
 
 # Initialize
 firebase init
 # Select: Firestore, Functions, Hosting
-# Use existing project: pittsburgh-explorer-cjs2026
+# Use existing project: beat-street-cjs2026
 ```
 
 ### Firestore Collections
 
 ```
-pittsburgh-explorer-cjs2026/
+beat-street-cjs2026/
 ├── verified_attendees/{attendeeId}
 │   ├── uid: string (from CJS2026)
 │   ├── displayName: string
@@ -520,8 +520,8 @@ export default defineConfig({
         ],
       },
       manifest: {
-        name: 'Pittsburgh Explorer',
-        short_name: 'PGH Explorer',
+        name: 'Beat Street',
+        short_name: 'Beat Street',
         description: 'CJS2026 Interactive Venue Guide',
         theme_color: '#2A9D8F',
         background_color: '#F5F0E6',
@@ -544,7 +544,7 @@ export default defineConfig({
 import { useState, useEffect } from 'react';
 import { openDB, IDBPDatabase } from 'idb';
 
-const DB_NAME = 'pittsburgh-explorer';
+const DB_NAME = 'beat-street';
 const STORE_NAME = 'offline-data';
 
 export function useOffline() {
@@ -600,7 +600,7 @@ wrangler login
 
 # Deploy
 npm run build
-wrangler pages deploy dist --project-name=pittsburgh-explorer
+wrangler pages deploy dist --project-name=beat-street
 ```
 
 ### Firebase Hosting (Alternative)
@@ -621,9 +621,9 @@ firebase deploy --only functions
 ## 7. Implementation Checklist
 
 ### Phase 1: Foundation (Weeks 1-2)
-- [ ] Create GitHub repo `pittsburgh-explorer`
+- [ ] Create GitHub repo `beat-street`
 - [ ] Set up Vite + React + Phaser scaffold
-- [ ] Create Firebase project `pittsburgh-explorer-cjs2026`
+- [ ] Create Firebase project `beat-street-cjs2026`
 - [ ] Configure Firestore collections and rules
 - [ ] Implement EventBus for React ↔ Phaser
 - [ ] Basic Phaser scene with placeholder tiles
