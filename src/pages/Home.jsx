@@ -237,7 +237,7 @@ function HistoryTimeline() {
 // Home Page
 // ============================================
 function Home() {
-  const summitDate = '2026-06-08T09:00:00'
+  const summitDate = '2026-06-15T09:00:00'
 
   return (
     <div className="min-h-screen bg-paper">

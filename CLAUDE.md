@@ -15,34 +15,47 @@ This file provides guidance to Claude Code when working with the CJS2026 website
 
 ### Recent work (this session)
 - **Meeting notes processed:** CCM Weekly Team Meeting Jan 7, 2026 - venue decision update
+- **Meeting notes processed:** INN x CCM Meeting Jan 7, 2026 - Pittsburgh confirmed as strong favorite
 
-### 🚨 CRITICAL: Venue & Date Decision Pending
+### 🚨 CRITICAL: Venue & Date Decision - Pittsburgh Strongly Favored
 
-**Background:** UNC/North Carolina venue fell through (contract issues with INN). Now deciding between two Pennsylvania options:
+**LATEST (Jan 7, 2026 - INN x CCM Meeting):** Pittsburgh is now the strong favorite. INN will NOT go to Philadelphia.
 
-| Option | Venue | Dates | Status |
-|--------|-------|-------|--------|
-| **Philadelphia** | Temple University | May 14-15, 2026 | Contacted Dawn (event planner) |
-| **Pittsburgh** | Duquesne University | June 15-16, 2026 | Event request form submitted to Megan |
+**INN's position (from Courtney):**
+- "I don't think we'd be able to do it that soon" for May dates
+- "We probably won't go to Philly, nor probably would we do that next year"
+- INN tried to coordinate with LENFEST conference (May 19-21 in Philly) but couldn't agree for 2026
 
-**Key factors:**
-- INN conference will be at Wyndham in Pittsburgh (June 16-18) - within 5 miles of Duquesne
-- Temple may be cheaper (Gene/Luttrell/David Boardman connections)
-- Pittsburgh has Andy's university consortium partnership
-- Decision expected by ~Jan 10-13, 2026
+**Confirmed dates for Pittsburgh:**
+- **CJS:** Monday-Tuesday, June 15-16, 2026 at Duquesne University
+- **INN:** Tuesday-Thursday, June 16-18, 2026 at Wyndham downtown (5 miles from Duquesne)
+- **Overlap day:** Tuesday, June 16 - attendees can attend both conferences
 
-**⚠️ DATES IN CODEBASE ARE WRONG:** Currently shows "June 8-9" but:
-- If Pittsburgh → should be **June 15-16**
-- If Philadelphia → should be **May 14-15**
+**Timeline:**
+- INN expects Pittsburgh contract signed "today or tomorrow" (Jan 7-8)
+- INN will announce "Monday or Tuesday" (Jan 12-13) once signed
+- CCM submitting Duquesne event request immediately
+- **Goal:** Joint announcement if CCM confirms Duquesne in time
 
-**Once venue is confirmed, update:**
-1. `src/components/SEO.jsx` - lines 12-13, 18, 21-22, 78, 80, 132
+**Website status (from Joe):**
+- Website already points to Pittsburgh
+- Just needs FAQ and updates page finished
+- Ready for quick swap if needed
+
+**Philadelphia option (Temple University, May 14-15):** No longer viable - INN won't participate.
+
+**⚠️ DATES IN CODEBASE:** Currently shows "June 8-9" but should be **June 15-16** for Pittsburgh.
+
+**Once Pittsburgh is officially confirmed, update:**
+1. `src/components/SEO.jsx` - lines 12-13, 18, 21-22, 78, 80, 132 (change dates to June 15-16)
 2. `src/pages/Home.jsx` - line 240 (summitDate constant)
-3. Airtable fields (see table below)
+3. Airtable fields (see table below - use Pittsburgh column)
 4. Run `npm run generate-all`
 
 ### Pending items
-- **BLOCKING:** Venue/date decision (see above) - 6+ weeks behind on promotion
+- **NEARLY RESOLVED:** Venue/date decision (see above) - Pittsburgh strongly favored, INN announcement expected Jan 12-13, then CCM can finalize and update website
+- **Once venue confirmed:** Update dates/location in SEO.jsx, Home.jsx, and Airtable (6+ weeks behind on promotion)
+- FAQ and updates page need to be finished (per Joe's website status)
 - Firebase Storage rules for profile photos: config ready, needs deploy
 - Organization logos: Need to re-upload in admin CMS (Airtable URLs expired)
 
@@ -111,7 +124,7 @@ This file provides guidance to Claude Code when working with the CJS2026 website
 ## Quick facts
 
 - **Event:** 2026 Collaborative Journalism Summit (10th anniversary)
-- **Dates/Location:** ⚠️ TBD - Philadelphia (May 14-15) OR Pittsburgh (June 15-16) - decision pending
+- **Dates/Location:** ⚠️ Pittsburgh strongly favored (June 15-16 at Duquesne) - official confirmation expected Jan 12-13
 - **Stack:** Vite + React 18, Tailwind CSS, Framer Motion, Firebase (Hosting, Auth, Firestore, Functions, Storage)
 - **CMS:** Airtable (headless) → static JS files at build time
 - **Live:** https://summit.collaborativejournalism.org and https://cjs2026.web.app
@@ -139,7 +152,7 @@ This file provides guidance to Claude Code when working with the CJS2026 website
 
 ### Pending Airtable updates (venue decision required)
 
-⚠️ **BLOCKED** until venue decision is made. Values depend on which city is chosen:
+⚠️ **Pittsburgh is strongly favored** (see venue decision above). Use Pittsburgh column values once officially confirmed:
 
 | Field | Section | If Philadelphia | If Pittsburgh |
 |-------|---------|-----------------|---------------|
