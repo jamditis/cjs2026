@@ -555,7 +555,321 @@ function NetworkStatus() {
 
 ---
 
-## 7. Gamification System
+## 7. Interior Building Exploration
+
+### Overview
+
+Attendees can walk **into and around accurate interior layouts** of key buildings:
+- **David L. Lawrence Convention Center** (primary venue - 4 floors)
+- **The Westin Pittsburgh** (connected hotel via skywalk)
+- **Post-conference venues** (reception locations, restaurants)
+
+This transforms the game from a city overview into a **true wayfinding tool** with seamless exterior-to-interior navigation.
+
+### David L. Lawrence Convention Center Layout
+
+Based on official venue documentation, the center spans **1.5 million square feet** across 4 levels:
+
+| Floor | Key Spaces | Size | CJS2026 Use |
+|-------|-----------|------|-------------|
+| **Floor 1** | Exhibit Halls A & B, Loading Docks | 76,500 sq ft | Sponsor booths, exhibits |
+| **Floor 2** | Concourse A, Quiet Room | - | Circulation, accessibility |
+| **Floor 3** | Spirit of Pittsburgh Ballroom, 38 meeting rooms, South Terrace | 31,610 sq ft ballroom | Main sessions, registration, receptions |
+| **Floor 4** | 13 meeting rooms, 2 lecture halls, North Terrace | 250-seat halls | Breakout sessions, workshops |
+
+**Unique Features to Model:**
+- **Column-free exhibit hall** (236,000 sq ft - largest in US)
+- **Suspension cable roof** (Pittsburgh bridge-inspired architecture)
+- **Green roof terraces** (South: 20,000 sq ft, North: 60,000 sq ft)
+- **Skywalk to Westin Hotel** (Floor 3 connection)
+- **Riverfront Plaza** (500-foot water feature)
+
+### Multi-Floor Architecture
+
+**Phaser 3.50+ native isometric** supports multi-layer maps. Implementation:
+
+```javascript
+// Each floor as separate tilemap layers in single scene
+class ConventionCenterScene extends Phaser.Scene {
+  create(data) {
+    // Load all floor layers
+    this.floors = {
+      1: this.createFloorLayers('floor1'),
+      3: this.createFloorLayers('floor3'),
+      4: this.createFloorLayers('floor4')
+    };
+
+    // Show only current floor
+    this.setActiveFloor(data.entranceFloor || 1);
+
+    // Notify React UI
+    EventBus.emit('entered-building', {
+      building: 'convention-center',
+      floors: [1, 3, 4],
+      currentFloor: this.currentFloor
+    });
+  }
+
+  createFloorLayers(floorKey) {
+    const layers = {
+      ground: this.map.createLayer(`${floorKey}_ground`, this.tileset),
+      walls: this.map.createLayer(`${floorKey}_walls`, this.tileset),
+      furniture: this.map.createLayer(`${floorKey}_furniture`, this.tileset),
+      interactive: this.map.getObjectLayer(`${floorKey}_interactive`)
+    };
+
+    // Hide initially, set depth for proper rendering
+    const baseDepth = parseInt(floorKey.replace('floor', '')) * 1000;
+    Object.values(layers).forEach((layer, i) => {
+      if (layer.setVisible) {
+        layer.setVisible(false);
+        layer.setDepth(baseDepth + (i * 100));
+      }
+    });
+
+    return layers;
+  }
+
+  setActiveFloor(floorNum) {
+    // Hide all floors
+    Object.values(this.floors).forEach(floor => {
+      Object.values(floor).forEach(layer => {
+        if (layer.setVisible) layer.setVisible(false);
+      });
+    });
+
+    // Show current floor
+    Object.values(this.floors[floorNum]).forEach(layer => {
+      if (layer.setVisible) layer.setVisible(true);
+    });
+
+    this.currentFloor = floorNum;
+    EventBus.emit('floor-changed', { floor: floorNum });
+  }
+}
+```
+
+### Exterior-to-Interior Transitions
+
+**Seamless building entry pattern:**
+
+```javascript
+// In PittsburghExteriorScene
+enterBuilding(buildingId) {
+  // Show loading indicator
+  EventBus.emit('show-loading', {
+    message: 'Entering David L. Lawrence Convention Center...',
+    showFloorSelector: true
+  });
+
+  // Fade transition
+  this.cameras.main.fadeOut(500, 0, 0, 0);
+
+  this.cameras.main.once('camerafadeoutcomplete', () => {
+    // Switch to interior scene
+    this.scene.start('ConventionCenterScene', {
+      entranceFloor: 1,
+      returnPosition: { x: this.player.x, y: this.player.y }
+    });
+  });
+}
+```
+
+### Floor Transition System
+
+**Elevators and stairs as interactive zones:**
+
+```javascript
+// Trigger zones defined in Tiled object layer
+createFloorTransitions() {
+  const transitions = this.map.getObjectLayer('transitions').objects;
+
+  transitions.forEach(obj => {
+    const zone = this.add.zone(obj.x, obj.y, obj.width, obj.height);
+    this.physics.world.enable(zone);
+
+    // Properties from Tiled
+    zone.targetFloor = obj.properties.find(p => p.name === 'targetFloor')?.value;
+    zone.type = obj.properties.find(p => p.name === 'type')?.value; // 'stairs' | 'elevator'
+
+    this.physics.add.overlap(this.player, zone, () => {
+      EventBus.emit('floor-transition-available', {
+        type: zone.type,
+        currentFloor: this.currentFloor,
+        targetFloor: zone.targetFloor
+      });
+    });
+  });
+}
+```
+
+### React Floor Selector UI
+
+```jsx
+// components/FloorSelector.jsx
+export function FloorSelector() {
+  const [currentFloor, setCurrentFloor] = useState(1);
+  const [building, setBuilding] = useState(null);
+
+  useEffect(() => {
+    EventBus.on('entered-building', ({ building, currentFloor }) => {
+      setBuilding(building);
+      setCurrentFloor(currentFloor);
+    });
+    EventBus.on('floor-changed', ({ floor }) => setCurrentFloor(floor));
+    EventBus.on('exited-building', () => setBuilding(null));
+  }, []);
+
+  if (!building) return null;
+
+  return (
+    <div className="fixed bottom-20 left-1/2 -translate-x-1/2
+                    bg-paper rounded-full shadow-lg px-6 py-3
+                    flex gap-4 items-center border-2 border-teal-600">
+      <span className="font-display text-ink text-sm">Floor:</span>
+      {[1, 3, 4].map(floor => (
+        <button
+          key={floor}
+          onClick={() => EventBus.emit('switch-floor', floor)}
+          className={`w-10 h-10 rounded-full font-bold transition-all
+            ${currentFloor === floor
+              ? 'bg-teal-600 text-white scale-110'
+              : 'bg-cream text-ink hover:bg-teal-100'}`}
+        >
+          {floor}
+        </button>
+      ))}
+      <button
+        onClick={() => EventBus.emit('exit-building')}
+        className="ml-4 text-sm underline text-ink hover:text-teal-600"
+      >
+        Exit
+      </button>
+    </div>
+  );
+}
+```
+
+### Floor Plan Data Sources
+
+| Source | Type | Cost | Notes |
+|--------|------|------|-------|
+| **ExpoFP** | Interactive 3D | Free to view | [expofp.com/david-l-lawrence-convention-center](https://expofp.com/david-l-lawrence-convention-center) |
+| **AIA Pittsburgh** | PDF (Floor 1) | Free | [aiapgh.org](https://aiapgh.org/wp-content/uploads/2015/03/GroundFloorParkingEntrance_DLCC.pdf) |
+| **Venue Planning Team** | CAD/PDF | Request | Contact [pittsburghcc.com/planners](https://www.pittsburghcc.com/planners/) |
+| **Threshold360** | Virtual Tour | Free | [map.threshold360.com/7761098](https://map.threshold360.com/7761098) |
+
+### Tiled Editor Workflow for Interior Maps
+
+```
+1. Import Floor Plan as Reference
+   └─> Download PDF from AIA Pittsburgh or ExpoFP
+   └─> Convert to PNG (300 DPI): pdftoppm -png -r 300 floor-plan.pdf output
+   └─> In Tiled: Layer → Image Layer → Load PNG (50% opacity, locked)
+
+2. Set Up Isometric Grid
+   └─> Map Properties: Orientation = Isometric
+   └─> Tile Size: 64×32 (2:1 ratio)
+   └─> Calculate map size from building dimensions
+
+3. Create Layer Structure
+   └─> floor1_ground (walkable areas)
+   └─> floor1_walls (collision)
+   └─> floor1_furniture (tables, booths)
+   └─> floor1_interactive (object layer: rooms, elevators)
+   └─> Repeat for floor3, floor4
+
+4. Add Interactive Objects (in Tiled)
+   └─> Type: "session-room"
+   └─> Properties: { roomId, capacity, floor, sessionIds[] }
+
+   └─> Type: "elevator"
+   └─> Properties: { servesFloors: [1, 3, 4] }
+
+   └─> Type: "sponsor-booth"
+   └─> Properties: { sponsorId, tier }
+
+5. Export as JSON for Phaser
+```
+
+### Connected Buildings
+
+**The Westin Pittsburgh (via skywalk):**
+- Floor 3 connection point
+- Model lobby and key spaces only
+- Useful for hotel-based receptions
+
+**Post-Conference Venues:**
+- Add as separate interior maps (modular)
+- Examples: restaurants, bars, reception halls
+- Load on-demand when player approaches
+
+### Interior POI Types
+
+| POI Type | Icon | Interaction |
+|----------|------|-------------|
+| **Session Room** | 🎤 | Tap → Show current/upcoming sessions |
+| **Sponsor Booth** | 🏢 | Tap → Sponsor info, QR check-in |
+| **Registration** | 📋 | Tap → Registration info |
+| **Restroom** | 🚻 | Tap → Accessibility info |
+| **Elevator** | ⬆️ | Tap → Floor selector |
+| **Exit** | 🚪 | Tap → Return to exterior map |
+| **Food/Drink** | ☕ | Tap → Menu, hours |
+| **Terrace** | 🌿 | Tap → Weather, capacity |
+
+### Performance Considerations
+
+**For 1.5M sq ft building:**
+- **Chunk loading**: Load only current floor + adjacent areas
+- **Layer culling**: Only render visible layers
+- **Preload strategy**: Load all floors during entrance transition
+- **Memory limit**: Keep under 50MB for iOS PWA support
+
+```javascript
+// Chunk-based loading for large floors
+const CHUNK_SIZE = 32; // tiles
+
+updateVisibleChunks() {
+  const playerChunk = this.getPlayerChunk();
+  const visibleRange = 2; // Load 2 chunks in each direction
+
+  for (let x = -visibleRange; x <= visibleRange; x++) {
+    for (let y = -visibleRange; y <= visibleRange; y++) {
+      this.loadChunk(playerChunk.x + x, playerChunk.y + y);
+    }
+  }
+
+  // Unload distant chunks
+  this.unloadDistantChunks(playerChunk, visibleRange + 1);
+}
+```
+
+### Mini-Map with Context
+
+```jsx
+// Show building location + current floor
+function LocationContext({ building, floor }) {
+  return (
+    <div className="fixed top-4 right-4 bg-paper p-3 rounded-lg shadow-lg">
+      <div className="flex items-center gap-2">
+        <Building className="text-teal-600" size={20} />
+        <div>
+          <div className="font-display text-ink">{building}</div>
+          <div className="text-sm text-gray-600">Floor {floor}</div>
+        </div>
+      </div>
+      <div className="mt-2 text-xs text-teal-600 underline cursor-pointer"
+           onClick={() => EventBus.emit('show-building-map')}>
+        View full building map
+      </div>
+    </div>
+  );
+}
+```
+
+---
+
+## 8. Gamification System
 
 ### Research-Backed Feature Selection
 
@@ -616,7 +930,7 @@ function NetworkStatus() {
 
 ---
 
-## 8. Sponsor Analytics & ROI
+## 9. Sponsor Analytics & ROI
 
 ### Expected Sponsor Value
 
@@ -657,7 +971,7 @@ Based on enhanced engagement data:
 
 ---
 
-## 9. Cost Analysis
+## 10. Cost Analysis
 
 ### Separate Firebase Project (Pittsburgh Explorer)
 
@@ -698,7 +1012,7 @@ Based on enhanced engagement data:
 
 ---
 
-## 10. Development Timeline
+## 11. Development Timeline
 
 ### Phase 1: Foundation (Weeks 1-4)
 
@@ -748,7 +1062,7 @@ Based on enhanced engagement data:
 
 ---
 
-## 11. Risk Assessment
+## 12. Risk Assessment
 
 ### Technical Risks
 
@@ -779,7 +1093,7 @@ Based on enhanced engagement data:
 
 ---
 
-## 12. Success Metrics
+## 13. Success Metrics
 
 ### Adoption
 - **Target:** 45% of confirmed attendees active in game
@@ -806,7 +1120,7 @@ Based on enhanced engagement data:
 
 ---
 
-## 13. Open Questions for Discussion
+## 14. Open Questions for Discussion
 
 1. **Venue confirmation:** Is David L. Lawrence Convention Center confirmed? Need floor plans.
 
@@ -822,7 +1136,7 @@ Based on enhanced engagement data:
 
 ---
 
-## 14. Next Steps
+## 15. Next Steps
 
 ### Immediate (This Week)
 1. [ ] Confirm venue (David L. Lawrence Convention Center)
