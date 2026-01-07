@@ -1,6 +1,6 @@
 # 2026 Collaborative Journalism Summit
 
-**June 8–9, 2026 • Pittsburgh, PA**
+**10th Anniversary Edition**
 
 The 10th anniversary edition of the Collaborative Journalism Summit.
 
@@ -16,19 +16,23 @@ CJS2026 marks a milestone: **10 years** of collaborative journalism.
 
 ### Event details
 
-- **When**: Monday, June 8 – Tuesday, June 9, 2026
-- **Where**: Pittsburgh, Pennsylvania
-- **Co-located with**: [INN Days](https://inn.org) (June 9–11)
+> ⚠️ **Venue decision pending** - Deciding between:
+> - **Philadelphia** (Temple University) - May 14-15, 2026
+> - **Pittsburgh** (Duquesne University) - June 15-16, 2026
+
+- **When**: TBD (May or June 2026)
+- **Where**: Pennsylvania (Philadelphia or Pittsburgh)
+- **Co-located with**: [INN Days](https://inn.org) (if Pittsburgh selected)
 
 ### Format
 
-**Monday (Main summit)**
+**Day 1 (Main summit)**
 - 8 curated sessions with invited speakers
 - 8 lightning talks from community pitches
 - Structured networking throughout
 - Evening dinner and celebration
 
-**Tuesday (Workshops)**
+**Day 2 (Workshops)**
 - Track 1: Collaborating 101 — introduction to the field
 - Track 2: Advanced collaboration — invite-only intensive
 
@@ -39,7 +43,7 @@ CJS2026 marks a milestone: **10 years** of collaborative journalism.
 | Stat | Value |
 |------|-------|
 | Summits held | 10 |
-| Cities visited | 6 (Pittsburgh will be #7!) |
+| Cities visited | 6 (Pennsylvania will be #7!) |
 | Total registrations | 2,569 |
 | Unique attendees | 1,981 |
 | Mission | Working together in the public interest |
@@ -57,7 +61,7 @@ CJS2026 marks a milestone: **10 years** of collaborative journalism.
 | 2023 | Washington, D.C. | |
 | 2024 | Detroit, MI | |
 | 2025 | Denver, CO | |
-| 2026 | Pittsburgh, PA | **10th anniversary** ← You are here |
+| 2026 | TBD (Philadelphia or Pittsburgh) | **10th anniversary** ← You are here |
 
 ---
 

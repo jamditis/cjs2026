@@ -4,7 +4,7 @@ This file provides guidance to Claude Code when working with the CJS2026 website
 
 ---
 
-## 📋 Session handoff (last updated: 2026-01-05 evening)
+## 📋 Session handoff (last updated: 2026-01-07)
 
 ### Current state
 - Site is live at summit.collaborativejournalism.org
@@ -14,16 +14,35 @@ This file provides guidance to Claude Code when working with the CJS2026 website
 - Admin panel streamlined: 6 tabs (Overview, Edit Content, Broadcast, Updates, Attendees, Sessions, Settings)
 
 ### Recent work (this session)
-- **Firestore→Airtable sync:** Added `syncCMSToAirtable` Cloud Function for manual backup to Airtable
-- **Admin cleanup:** Removed 6 unused monitoring Cloud Functions (getAdminLogs, getActivityLogs, getSystemErrors, resolveError, getBackgroundJobs, invalidateCache)
-- **Admin cleanup:** Removed 4 UI tabs (Activity, Errors, Jobs, Audit) - use `firebase functions:log` instead
-- **Logo sync:** Added logo URL syncing to Airtable for organizations
-- **CMS UX:** Made "Edit Content" tab prominent (2nd position, pulsing indicator, teal accent)
-- **Sidebar UX:** Made user profile section sticky at bottom of admin sidebar
-- **Bug fix:** Fixed `doc.sponsor` → `doc.isSponsor` field name in Airtable sync
+- **Meeting notes processed:** CCM Weekly Team Meeting Jan 7, 2026 - venue decision update
+
+### 🚨 CRITICAL: Venue & Date Decision Pending
+
+**Background:** UNC/North Carolina venue fell through (contract issues with INN). Now deciding between two Pennsylvania options:
+
+| Option | Venue | Dates | Status |
+|--------|-------|-------|--------|
+| **Philadelphia** | Temple University | May 14-15, 2026 | Contacted Dawn (event planner) |
+| **Pittsburgh** | Duquesne University | June 15-16, 2026 | Event request form submitted to Megan |
+
+**Key factors:**
+- INN conference will be at Wyndham in Pittsburgh (June 16-18) - within 5 miles of Duquesne
+- Temple may be cheaper (Gene/Luttrell/David Boardman connections)
+- Pittsburgh has Andy's university consortium partnership
+- Decision expected by ~Jan 10-13, 2026
+
+**⚠️ DATES IN CODEBASE ARE WRONG:** Currently shows "June 8-9" but:
+- If Pittsburgh → should be **June 15-16**
+- If Philadelphia → should be **May 14-15**
+
+**Once venue is confirmed, update:**
+1. `src/components/SEO.jsx` - lines 12-13, 18, 21-22, 78, 80, 132
+2. `src/pages/Home.jsx` - line 240 (summitDate constant)
+3. Airtable fields (see table below)
+4. Run `npm run generate-all`
 
 ### Pending items
-- Pittsburgh venue pivot: Airtable content updates pending (see table below)
+- **BLOCKING:** Venue/date decision (see above) - 6+ weeks behind on promotion
 - Firebase Storage rules for profile photos: config ready, needs deploy
 - Organization logos: Need to re-upload in admin CMS (Airtable URLs expired)
 
@@ -91,7 +110,8 @@ This file provides guidance to Claude Code when working with the CJS2026 website
 
 ## Quick facts
 
-- **Event:** 2026 Collaborative Journalism Summit (10th anniversary), June 8-9, Pittsburgh, PA
+- **Event:** 2026 Collaborative Journalism Summit (10th anniversary)
+- **Dates/Location:** ⚠️ TBD - Philadelphia (May 14-15) OR Pittsburgh (June 15-16) - decision pending
 - **Stack:** Vite + React 18, Tailwind CSS, Framer Motion, Firebase (Hosting, Auth, Firestore, Functions, Storage)
 - **CMS:** Airtable (headless) → static JS files at build time
 - **Live:** https://summit.collaborativejournalism.org and https://cjs2026.web.app
@@ -117,15 +137,24 @@ This file provides guidance to Claude Code when working with the CJS2026 website
 **CMS-controlled:** Hero text, timeline, stats, info cards, footer, sponsors, schedule
 **NOT CMS-controlled:** React components, styling, auth system, component logic
 
-### Pending Airtable updates (Pittsburgh pivot)
+### Pending Airtable updates (venue decision required)
 
-| Field | Section | Required value | Status |
-|-------|---------|----------------|--------|
-| `location` | hero | "Pittsburgh, Pennsylvania" | ⏳ PENDING |
-| `venue_location` | details | "Pittsburgh, Pennsylvania" | ⏳ PENDING |
-| `venue_name` | details | *TBD - new venue* | ⏳ PENDING |
-| `2026_location` | timeline | "Pittsburgh, PA" | ⏳ PENDING |
-| `signup_headline` | footer | "Join us in Pittsburgh" | ⏳ PENDING |
+⚠️ **BLOCKED** until venue decision is made. Values depend on which city is chosen:
+
+| Field | Section | If Philadelphia | If Pittsburgh |
+|-------|---------|-----------------|---------------|
+| `location` | hero | "Philadelphia, Pennsylvania" | "Pittsburgh, Pennsylvania" |
+| `venue_location` | details | "Philadelphia, Pennsylvania" | "Pittsburgh, Pennsylvania" |
+| `venue_name` | details | "Temple University" | "Duquesne University" |
+| `2026_location` | timeline | "Philadelphia, PA" | "Pittsburgh, PA" |
+| `signup_headline` | footer | "Join us in Philadelphia" | "Join us in Pittsburgh" |
+| `date_display` | details | "May 14–15, 2026" | "June 15–16, 2026" |
+| `monday_label` | details | "Wednesday, May 14" | "Monday, June 15" |
+| `tuesday_label` | details | "Thursday, May 15" | "Tuesday, June 16" |
+
+**Also update in code (not CMS-controlled):**
+- `src/components/SEO.jsx` - JSON-LD dates/location
+- `src/pages/Home.jsx:240` - `summitDate` constant for countdown
 
 ---
 
