@@ -1,4 +1,4 @@
-# Beat Street - Implementation Blueprint
+# Beat Street: CJS Navigator - Implementation Blueprint
 
 > **Purpose:** This document is a condensed, actionable guide for building Beat Street in a fresh repository. Copy this file to your new repo as `IMPLEMENTATION.md`.
 
@@ -8,10 +8,10 @@
 
 | Item | Value |
 |------|-------|
-| **Project** | Beat Street - Isometric 3D wayfinding game |
-| **Event** | CJS2026 (June 8-9, 2026, Pittsburgh PA) |
+| **Project** | Beat Street: CJS Navigator - Isometric conference companion |
+| **Event** | CJS2026 (June 8-9, 2026) |
 | **Stack** | Vite + React 18 + Phaser 3.60+ + Tailwind CSS |
-| **Hosting** | Cloudflare Pages (game) + Firebase (backend) |
+| **Hosting** | Cloudflare Pages (assets) + Firebase (backend) |
 | **Auth** | Cross-project verification via CJS2026 Firebase |
 | **Est. Cost** | $0-75/month (free tiers cover most usage) |
 
@@ -196,7 +196,7 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
 };
 ```
 
-### React Game Container
+### React Map Container
 
 ```tsx
 // src/components/GameContainer.tsx
@@ -394,7 +394,7 @@ export function ConsentModal({ onConsent }: ConsentModalProps) {
         </h2>
 
         <p className="text-ink/80 mb-6">
-          Would you like other attendees to see your location in the game?
+          Would you like other attendees to see your location in Beat Street?
           This helps with networking and finding colleagues.
         </p>
 
@@ -513,7 +513,7 @@ export default defineConfig({
             urlPattern: /\/assets\/.*/,
             handler: 'CacheFirst',
             options: {
-              cacheName: 'game-assets',
+              cacheName: 'map-assets',
               expiration: { maxEntries: 200, maxAgeSeconds: 86400 * 30 },
             },
           },
@@ -522,7 +522,7 @@ export default defineConfig({
       manifest: {
         name: 'Beat Street',
         short_name: 'Beat Street',
-        description: 'CJS2026 Interactive Venue Guide',
+        description: 'Beat Street: CJS Navigator - Interactive conference companion',
         theme_color: '#2A9D8F',
         background_color: '#F5F0E6',
         display: 'standalone',
@@ -589,7 +589,7 @@ export function useOffline() {
 
 ## 6. Deployment
 
-### Cloudflare Pages (Recommended for Game Assets)
+### Cloudflare Pages (Recommended for Map Assets)
 
 ```bash
 # Install Wrangler CLI
@@ -698,7 +698,7 @@ firebase deploy --only functions
 
 | Decision | Choice | Rationale |
 |----------|--------|-----------|
-| Game engine | Phaser 3.60+ | Native isometric support, proven mobile performance |
+| Rendering engine | Phaser 3.60+ | Native isometric support, proven mobile performance |
 | UI framework | React 18 | Matches CJS2026 stack, easy overlays |
 | Hosting | Cloudflare Pages | Free unlimited bandwidth, global CDN |
 | Backend | Firebase | Real-time database, easy auth integration |

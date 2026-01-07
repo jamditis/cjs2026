@@ -1,10 +1,10 @@
-# Beat Street: Isometric Conference Guide Game
+# Beat Street: CJS Navigator
 
 ## Executive Summary
 
-A standalone isometric 3D web game that serves as an interactive attendee guide for the 2026 Collaborative Journalism Summit in Pittsburgh. Attendees navigate a stylized, geotagged Pittsburgh cityscape to discover conference venues, local points of interest, restaurants, and networking opportunities.
+An isometric interactive map and conference companion for the 2026 Collaborative Journalism Summit. Attendees navigate a stylized, geotagged cityscape to discover conference venues, local points of interest, restaurants, and networking opportunities.
 
-**Key Differentiator:** Unlike typical conference apps, this creates a memorable, gamified experience that encourages exploration while providing practical wayfinding and schedule integration.
+**Key Differentiator:** Unlike typical conference apps, this creates a memorable, playful experience that encourages exploration while providing practical wayfinding and schedule integration.
 
 **Research-Backed Projections:**
 - **340% increase** in sponsor booth visits with scavenger hunt gamification
@@ -37,11 +37,11 @@ A standalone isometric 3D web game that serves as an interactive attendee guide 
 
 | Layer | Technology | Rationale |
 |-------|------------|-----------|
-| **Game Engine** | **Phaser 3.60+** or **Phaser 4 RC6** | Native isometric support (v3.50+), up to 16x mobile performance (v4), proven production-ready |
+| **Rendering Engine** | **Phaser 3.60+** or **Phaser 4 RC6** | Native isometric support (v3.50+), up to 16x mobile performance (v4), proven production-ready |
 | **UI Framework** | React 18 (wrapper) | Familiar to team, handles menus/modals/overlays via EventBus pattern |
 | **Map Data** | OpenStreetMap + OSM2World | Free, accurate Pittsburgh data with building heights, exports to glTF/OBJ |
 | **Tile Editor** | Tiled Map Editor | Industry standard for isometric tile maps, exports JSON for Phaser |
-| **Static Hosting** | Cloudflare Pages | Free unlimited bandwidth for game assets |
+| **Static Hosting** | Cloudflare Pages | Free unlimited bandwidth for map assets |
 | **Database** | Firebase Firestore (new project) | Real-time sync, user data, POI metadata |
 | **Auth** | Cloud Function Proxy | Verify against CJS2026 confirmed attendees (see Section 4) |
 | **PWA** | Vite PWA Plugin + Workbox | Offline-first for poor venue WiFi |
@@ -238,7 +238,7 @@ User → Beat Street (Project B)
 
 ```javascript
 /**
- * Verify CJS2026 attendee for Beat Street game
+ * Verify CJS2026 attendee for Beat Street
  * Security: rate-limited, audit-logged, App Check supported
  */
 exports.verifyAttendeeForGame = onRequest({
@@ -382,7 +382,7 @@ async function verifyCJS2026Attendee() {
 **Privacy-preserving approach:**
 - Share **zone/room level** location, not exact coordinates
 - Example: "Ballroom A" or "Session: Investigative Journalism 101"
-- No GPS required - uses in-game position only
+- No GPS required - uses in-map position only
 - Coarse location protects privacy while enabling networking
 
 ### Consent Flow
@@ -531,7 +531,7 @@ export default {
 | Game engine/core JS | CacheFirst | Never changes during event |
 | Tile sprites/images | CacheFirst | Static assets |
 | Schedule/POI data | StaleWhileRevalidate | Show cached, update in background |
-| User game state | IndexedDB | Complex data, queued for sync |
+| User session state | IndexedDB | Complex data, queued for sync |
 
 ### Offline UI Indicators
 
@@ -564,7 +564,7 @@ Attendees can walk **into and around accurate interior layouts** of key building
 - **The Westin Pittsburgh** (connected hotel via skywalk)
 - **Post-conference venues** (reception locations, restaurants)
 
-This transforms the game from a city overview into a **true wayfinding tool** with seamless exterior-to-interior navigation.
+This transforms the navigator from a city overview into a **true wayfinding tool** with seamless exterior-to-interior navigation.
 
 ### David L. Lawrence Convention Center Layout
 
@@ -979,7 +979,7 @@ Based on enhanced engagement data:
 
 | Service | Free Tier | Expected Usage | Estimated Cost |
 |---------|-----------|----------------|----------------|
-| **Cloudflare Pages** | Unlimited | Game assets (100MB) | $0 |
+| **Cloudflare Pages** | Unlimited | Map assets (100MB) | $0 |
 | **Firebase Hosting** | 10GB bandwidth | Minimal (CDN handles assets) | $0 |
 | **Firestore** | 50K reads/day | ~200K reads/day peak | $15-30/month |
 | **Firebase Auth** | 10K/month | ~2000 users | $0 |
@@ -1078,7 +1078,7 @@ Based on enhanced engagement data:
 
 | Risk | Likelihood | Impact | Mitigation |
 |------|------------|--------|------------|
-| Users confused by game navigation | Medium | High | Clear onboarding, traditional map fallback |
+| Users confused by map navigation | Medium | High | Clear onboarding, traditional map fallback |
 | Low adoption rate | Medium | High | Integrate with CJS2026 dashboard, clear value proposition |
 | Gamification feels forced | Medium | Medium | 100% optional, balance solo/team activities |
 | Privacy concerns | Low | High | Privacy-first design, GDPR compliant, clear consent |
@@ -1096,7 +1096,7 @@ Based on enhanced engagement data:
 ## 13. Success Metrics
 
 ### Adoption
-- **Target:** 45% of confirmed attendees active in game
+- **Target:** 45% of confirmed attendees using Beat Street
 - **Stretch:** 60%+ adoption
 
 ### Engagement
@@ -1124,11 +1124,11 @@ Based on enhanced engagement data:
 
 1. **Venue confirmation:** Is David L. Lawrence Convention Center confirmed? Need floor plans.
 
-2. **INN Days integration:** Same game instance with different POI layer, or separate?
+2. **INN Days integration:** Same Beat Street instance with different POI layer, or separate?
 
 3. **Art style approval:** Review Penzilla pack + Midjourney mockups before production.
 
-4. **Sponsor tiers:** Should sponsors have branded booths/buildings in the game?
+4. **Sponsor tiers:** Should sponsors have branded booths/buildings in the navigator?
 
 5. **Beta timing:** How many weeks before summit should beta launch?
 
