@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, Link, Navigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import DOMPurify from 'dompurify'
 import {
   ArrowLeft,
   Calendar,
@@ -253,12 +254,15 @@ function UpdateDetail() {
                 <div
                   className="font-body text-brand-ink/80 leading-relaxed space-y-4"
                   dangerouslySetInnerHTML={{
-                    __html: update.content
-                      .replace(/\*\*(.*?)\*\*/g, '<strong class="text-brand-ink">$1</strong>')
-                      .replace(/\*(.*?)\*/g, '<em>$1</em>')
-                      .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" class="text-brand-teal hover:underline">$1</a>')
-                      .replace(/\n\n/g, '</p><p class="mb-4">')
-                      .replace(/^- (.*?)$/gm, '<li class="ml-4">$1</li>')
+                    __html: DOMPurify.sanitize(
+                      update.content
+                        .replace(/\*\*(.*?)\*\*/g, '<strong class="text-brand-ink">$1</strong>')
+                        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                        .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" class="text-brand-teal hover:underline" target="_blank" rel="noopener noreferrer">$1</a>')
+                        .replace(/\n\n/g, '</p><p class="mb-4">')
+                        .replace(/^- (.*?)$/gm, '<li class="ml-4">$1</li>'),
+                      { ALLOWED_TAGS: ['a', 'strong', 'em', 'p', 'li', 'br'], ALLOWED_ATTR: ['href', 'class', 'target', 'rel'] }
+                    )
                   }}
                 />
               </div>

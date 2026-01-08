@@ -91,6 +91,23 @@ function isValidEmail(email) {
 }
 
 // ============================================
+// Airtable Security Helpers
+// ============================================
+
+/**
+ * Escape values for Airtable filterByFormula to prevent formula injection
+ * Prevents attacks like: " OR TRUE OR uid="
+ * @param {string} value - Value to escape
+ * @returns {string} Safely escaped value wrapped in quotes
+ */
+function escapeAirtableFormula(value) {
+  if (value === null || value === undefined) return '""';
+  const str = String(value);
+  // Escape backslashes first, then double quotes
+  return '"' + str.replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"';
+}
+
+// ============================================
 // Security & Auth Helpers
 // ============================================
 
@@ -681,7 +698,7 @@ exports.syncProfileToAirtable = onRequest({ cors: true, secrets: [airtableApiKey
       const profile = userDoc.data();
 
       // Check if record already exists in Airtable (by uid)
-      const searchUrl = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_ATTENDEES_TABLE)}?filterByFormula={uid}="${uid}"`;
+      const searchUrl = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_ATTENDEES_TABLE)}?filterByFormula={uid}=${escapeAirtableFormula(uid)}`;
       const searchResponse = await fetch(searchUrl, {
         headers: {
           "Authorization": `Bearer ${airtableApiKey.value()}`
@@ -845,7 +862,7 @@ exports.syncAllProfilesToAirtable = onRequest({ cors: true, secrets: [airtableAp
 
         try {
           // Check if record exists
-          const searchUrl = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_ATTENDEES_TABLE)}?filterByFormula={uid}="${uid}"`;
+          const searchUrl = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_ATTENDEES_TABLE)}?filterByFormula={uid}=${escapeAirtableFormula(uid)}`;
           const searchResponse = await fetch(searchUrl, {
             headers: { "Authorization": `Bearer ${airtableApiKey.value()}` }
           });
@@ -1329,8 +1346,10 @@ exports.eventbriteWebhook = onRequest({ cors: true, secrets: [eventbriteToken, e
         return;
       }
     } else {
-      // Log warning if signature validation is disabled
-      console.warn('EVENTBRITE_WEBHOOK_KEY not configured - signature validation disabled');
+      // SECURITY: Reject webhooks if signature validation is not configured
+      console.error('CRITICAL: EVENTBRITE_WEBHOOK_KEY not configured - rejecting webhook');
+      res.status(401).json({ error: 'Webhook signature verification required' });
+      return;
     }
 
     const payload = req.body;
@@ -1974,7 +1993,7 @@ exports.syncBookmarkCountToAirtable = onDocumentWritten(
 
     try {
       // Find the Airtable record by session_id field
-      const searchUrl = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_SCHEDULE_TABLE)}?filterByFormula={session_id}="${sessionId}"`;
+      const searchUrl = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_SCHEDULE_TABLE)}?filterByFormula={session_id}=${escapeAirtableFormula(sessionId)}`;
 
       const searchResponse = await fetch(searchUrl, {
         headers: {

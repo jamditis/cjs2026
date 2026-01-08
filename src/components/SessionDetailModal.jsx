@@ -42,10 +42,15 @@ function SessionDetailModal({ session, isOpen, onClose, isBookmarked, onToggleBo
   return (
     <AnimatePresence>
       {isOpen && (
-        <>
+        <motion.div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
           {/* Backdrop */}
           <motion.div
-            className="fixed inset-0 bg-brand-ink/50 backdrop-blur-sm z-50"
+            className="absolute inset-0 bg-brand-ink/50 backdrop-blur-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -54,7 +59,7 @@ function SessionDetailModal({ session, isOpen, onClose, isBookmarked, onToggleBo
 
           {/* Modal */}
           <motion.div
-            className="fixed inset-4 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:max-w-2xl md:w-full md:max-h-[85vh] bg-paper rounded-2xl shadow-2xl z-50 flex flex-col overflow-hidden"
+            className="relative w-full max-w-2xl max-h-[85vh] bg-paper rounded-2xl shadow-2xl flex flex-col overflow-hidden"
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -184,7 +189,7 @@ function SessionDetailModal({ session, isOpen, onClose, isBookmarked, onToggleBo
               </div>
             </div>
           </motion.div>
-        </>
+        </motion.div>
       )}
     </AnimatePresence>
   )

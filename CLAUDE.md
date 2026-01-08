@@ -103,9 +103,6 @@ This file provides guidance to Claude Code when working with the CJS2026 website
 
 ### Known issues / Backlog
 
-**UI bugs:**
-- Session info modal is misaligned (see screenshot - modal appears off-center/bottom)
-
 **Speaker & organization data model improvements:**
 - Currently: Single text field for "speakers" and "speaker orgs" per session
 - Problem: Most sessions have multiple speakers from different orgs

@@ -29,10 +29,10 @@ service firebase.storage {
       allow write: if request.auth != null
                    && request.resource.size < 2 * 1024 * 1024
                    && request.resource.contentType.matches('image/(png|jpeg|jpg|gif|webp|svg\\+xml)');
-      // Delete: authenticated only (admin check in application layer)
-      // This is a calculated tradeoff - non-admins could theoretically delete
-      // if they knew the exact path, but the admin panel is the only UI
-      allow delete: if request.auth != null;
+      // Delete: Not allowed from client - use Cloud Functions with admin validation
+      // Storage rules cannot query Firestore for role, so we block client-side deletes
+      // Admins can delete via cmsUploadImage Cloud Function or Firebase Console
+      allow delete: if false;
     }
   }
 }
