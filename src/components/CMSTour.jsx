@@ -320,6 +320,7 @@ export default function CMSTour({ onComplete }) {
               onClick={handleDismiss}
               className="p-1.5 rounded-lg hover:bg-[var(--admin-glass-bg)] text-[var(--admin-text-muted)] hover:text-[var(--admin-text)] transition-colors"
               title="Close tour"
+              aria-label="Close tour"
             >
               <X className="w-4 h-4" />
             </button>

@@ -45,7 +45,7 @@ function Navbar() {
             <a
               key={item.name}
               href={item.href}
-              className="font-body text-brand-ink/70 hover:text-brand-teal font-medium transition-colors relative group"
+              className="font-body text-brand-ink-muted hover:text-brand-teal font-medium transition-colors relative group"
             >
               {item.name}
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-brand-teal transition-all group-hover:w-full opacity-50"></span>
@@ -58,7 +58,7 @@ function Navbar() {
               className={`font-body font-medium transition-colors relative group ${
                 location.pathname === item.path
                   ? 'text-brand-teal'
-                  : 'text-brand-ink/70 hover:text-brand-teal'
+                  : 'text-brand-ink-muted hover:text-brand-teal'
               }`}
             >
               {item.name}
@@ -107,7 +107,7 @@ function Navbar() {
               <a
                 key={item.name}
                 href={item.href}
-                className="font-body text-brand-ink/70 hover:text-brand-teal hover:bg-brand-ink/5 font-medium py-3 px-2 rounded-lg min-h-[44px] flex items-center"
+                className="font-body text-brand-ink-muted hover:text-brand-teal hover:bg-brand-ink/5 font-medium py-3 px-2 rounded-lg min-h-[44px] flex items-center"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {item.name}
@@ -120,7 +120,7 @@ function Navbar() {
                 className={`font-body font-medium py-3 px-2 rounded-lg min-h-[44px] flex items-center ${
                   location.pathname === item.path
                     ? 'text-brand-teal bg-brand-teal/10'
-                    : 'text-brand-ink/70 hover:text-brand-teal hover:bg-brand-ink/5'
+                    : 'text-brand-ink-muted hover:text-brand-teal hover:bg-brand-ink/5'
                 }`}
                 onClick={() => setMobileMenuOpen(false)}
               >

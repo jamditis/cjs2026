@@ -19,6 +19,7 @@ import {
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import EmailSignup from '../components/EmailSignup'
+import { UpdatesSEO } from '../components/SEO'
 import { updates as staticUpdates, getDaysUntil } from '../content/updatesData'
 import { db } from '../firebase'
 import { collection, onSnapshot, query, orderBy, where } from 'firebase/firestore'
@@ -71,7 +72,7 @@ function FeaturedCard({ update, index }) {
           {update.title}
         </h3>
 
-        <p className="font-body text-brand-ink/70 text-lg mb-6 leading-relaxed">
+        <p className="font-body text-brand-ink-muted text-lg mb-6 leading-relaxed">
           {update.summary}
         </p>
 
@@ -133,7 +134,7 @@ function TimelineCard({ update, index }) {
           </h4>
         </Link>
 
-        <p className="font-body text-brand-ink/60 text-sm leading-relaxed mb-2">
+        <p className="font-body text-brand-ink-muted text-sm leading-relaxed mb-2">
           {update.summary}
         </p>
 
@@ -180,7 +181,7 @@ function QuickLinks() {
             href={link.path}
             target={link.external ? '_blank' : undefined}
             rel={link.external ? 'noopener noreferrer' : undefined}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-brand-ink/10 hover:border-brand-teal hover:bg-brand-teal/5 transition-all font-body text-sm text-brand-ink/70 hover:text-brand-teal"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-brand-ink/10 hover:border-brand-teal hover:bg-brand-teal/5 transition-all font-body text-sm text-brand-ink-muted hover:text-brand-teal"
           >
             <link.icon className="w-4 h-4" />
             {link.label}
@@ -189,7 +190,7 @@ function QuickLinks() {
           <Link
             key={link.path}
             to={link.path}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-brand-ink/10 hover:border-brand-teal hover:bg-brand-teal/5 transition-all font-body text-sm text-brand-ink/70 hover:text-brand-teal"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-brand-ink/10 hover:border-brand-teal hover:bg-brand-teal/5 transition-all font-body text-sm text-brand-ink-muted hover:text-brand-teal"
           >
             <link.icon className="w-4 h-4" />
             {link.label}
@@ -274,6 +275,7 @@ function Updates() {
 
   return (
     <>
+      <UpdatesSEO />
       <Navbar />
       <div className="min-h-screen bg-paper pt-24 pb-16">
         <div className="max-w-5xl mx-auto px-6">
@@ -292,7 +294,7 @@ function Updates() {
             <h1 className="editorial-headline text-4xl md:text-5xl text-brand-ink mb-4">
               News and updates
             </h1>
-            <p className="font-body text-brand-ink/60 text-lg max-w-2xl mx-auto mb-8">
+            <p className="font-body text-brand-ink-muted text-lg max-w-2xl mx-auto mb-8">
               Stay up to date with the latest announcements, deadlines, and stories as we build toward the 10th anniversary summit in Pittsburgh.
             </p>
 
@@ -332,7 +334,7 @@ function Updates() {
                       {deadlineUpdate.title}
                     </h3>
                   </Link>
-                  <p className="font-body text-brand-ink/60">
+                  <p className="font-body text-brand-ink-muted">
                     {deadlineUpdate.summary}
                   </p>
                 </div>
@@ -368,7 +370,7 @@ function Updates() {
             <h3 className="font-heading font-bold text-2xl text-brand-ink mb-2">
               Never miss an update
             </h3>
-            <p className="font-body text-brand-ink/60 mb-6">
+            <p className="font-body text-brand-ink-muted mb-6">
               Get the latest CJS2026 news delivered to your inbox.
             </p>
             <div className="max-w-md mx-auto">

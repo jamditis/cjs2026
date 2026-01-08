@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { HelmetProvider } from 'react-helmet-async'
 import { Home, Schedule, Sponsors, CodeOfConduct, Contact, FAQ, Login, AuthCallback, Dashboard, EditRequest, PrivacyPolicy, Admin, MySchedulePage, SharedSchedule, AttendeeProfile, Updates, UpdateDetail } from './pages'
-import { SplashScreen, ProtectedRoute, ScrollToTop } from './components'
+import { SplashScreen, ProtectedRoute, ScrollToTop, ErrorBoundary } from './components'
 import { AuthProvider } from './contexts/AuthContext'
 import { ContentProvider } from './contexts/ContentContext'
 import { ToastProvider } from './contexts/ToastContext'
@@ -63,6 +63,8 @@ function App() {
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <App />
+    <ErrorBoundary>
+      <App />
+    </ErrorBoundary>
   </React.StrictMode>,
 )

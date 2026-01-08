@@ -22,7 +22,7 @@ function Contact() {
           <h1 className="editorial-headline text-4xl md:text-5xl text-brand-ink mb-4">
             Contact us
           </h1>
-          <p className="font-body text-brand-ink/60 text-lg max-w-2xl mx-auto">
+          <p className="font-body text-brand-ink-muted text-lg max-w-2xl mx-auto">
             Have questions about the summit? We're here to help.
           </p>
         </motion.div>
@@ -45,7 +45,7 @@ function Contact() {
               </div>
               <div>
                 <p className="font-heading font-semibold text-brand-ink group-hover:text-brand-teal transition-colors">Email</p>
-                <p className="font-body text-sm text-brand-ink/60">summit@collaborativejournalism.org</p>
+                <p className="font-body text-sm text-brand-ink-muted">summit@collaborativejournalism.org</p>
               </div>
             </a>
 
@@ -60,8 +60,8 @@ function Contact() {
               </div>
               <div className="flex-1">
                 <p className="font-heading font-semibold text-brand-ink group-hover:text-brand-teal transition-colors">Venue</p>
-                <p className="font-body text-sm text-brand-ink/60">Pittsburgh venue TBA</p>
-                <p className="font-body text-sm text-brand-ink/60">Pittsburgh, Pennsylvania</p>
+                <p className="font-body text-sm text-brand-ink-muted">Pittsburgh venue TBA</p>
+                <p className="font-body text-sm text-brand-ink-muted">Pittsburgh, Pennsylvania</p>
               </div>
               <ExternalLink className="w-4 h-4 text-brand-ink/30 group-hover:text-brand-teal transition-colors" />
             </a>
@@ -77,7 +77,7 @@ function Contact() {
               </div>
               <div className="flex-1">
                 <p className="font-heading font-semibold text-brand-ink group-hover:text-brand-teal transition-colors">Website</p>
-                <p className="font-body text-sm text-brand-ink/60">collaborativejournalism.org</p>
+                <p className="font-body text-sm text-brand-ink-muted">collaborativejournalism.org</p>
               </div>
               <ExternalLink className="w-4 h-4 text-brand-ink/30 group-hover:text-brand-teal transition-colors" />
             </a>
@@ -95,7 +95,7 @@ function Contact() {
               </div>
               <div className="flex-1">
                 <p className="font-heading font-semibold text-brand-ink group-hover:text-brand-teal transition-colors">Bluesky</p>
-                <p className="font-body text-sm text-brand-ink/60">@centercoopmedia.bsky.social</p>
+                <p className="font-body text-sm text-brand-ink-muted">@centercoopmedia.bsky.social</p>
               </div>
               <ExternalLink className="w-4 h-4 text-brand-ink/30 group-hover:text-brand-teal transition-colors" />
             </a>
@@ -111,7 +111,7 @@ function Contact() {
               </div>
               <div className="flex-1">
                 <p className="font-heading font-semibold text-brand-ink group-hover:text-brand-teal transition-colors">X/Twitter</p>
-                <p className="font-body text-sm text-brand-ink/60">@CenterCoopMedia</p>
+                <p className="font-body text-sm text-brand-ink-muted">@CenterCoopMedia</p>
               </div>
               <ExternalLink className="w-4 h-4 text-brand-ink/30 group-hover:text-brand-teal transition-colors" />
             </a>
@@ -128,7 +128,7 @@ function Contact() {
                 className="block card-sketch p-4 hover:border-brand-teal/50 transition-colors"
               >
                 <p className="font-heading font-semibold text-brand-ink">Center for Cooperative Media</p>
-                <p className="font-body text-sm text-brand-ink/60">Montclair State University</p>
+                <p className="font-body text-sm text-brand-ink-muted">Montclair State University</p>
               </a>
             </div>
 
@@ -141,7 +141,7 @@ function Contact() {
                 className="block card-sketch p-4 hover:border-brand-teal/50 transition-colors"
               >
                 <p className="font-heading font-semibold text-brand-ink">INN Days</p>
-                <p className="font-body text-sm text-brand-ink/60">Institute for Nonprofit News</p>
+                <p className="font-body text-sm text-brand-ink-muted">Institute for Nonprofit News</p>
               </a>
             </div>
           </div>
@@ -166,7 +166,7 @@ function Contact() {
             <h2 className="font-heading font-semibold text-xl text-brand-ink mb-2 group-hover:text-brand-cardinal transition-colors">
               Pitch a session
             </h2>
-            <p className="font-body text-brand-ink/70 mb-4">
+            <p className="font-body text-brand-ink-muted mb-4">
               Have an idea for a panel, workshop, or lightning talk? We want to hear from you.
             </p>
             <span className="inline-flex items-center gap-2 font-body text-brand-cardinal font-medium">
@@ -187,7 +187,7 @@ function Contact() {
             <h2 className="font-heading font-semibold text-xl text-brand-ink mb-2">
               Frequently asked questions
             </h2>
-            <p className="font-body text-brand-ink/70 mb-4">
+            <p className="font-body text-brand-ink-muted mb-4">
               Have questions about registration, travel, or the event? Check out our FAQ section or reach out directly.
             </p>
             <Link

@@ -150,7 +150,7 @@ function SponsorPackageCard({ pkg, index }) {
 
       <ul className="space-y-2 mb-4">
         {pkg.benefits.map((benefit, i) => (
-          <li key={i} className="font-body text-sm text-brand-ink/70 flex items-start gap-2">
+          <li key={i} className="font-body text-sm text-brand-ink-muted flex items-start gap-2">
             <span className={`${pkg.textClass} mt-1`}>•</span>
             {benefit}
           </li>
@@ -188,7 +188,7 @@ function Sponsors() {
           <h1 className="editorial-headline text-4xl md:text-5xl text-brand-ink mb-4">
             Sponsors
           </h1>
-          <p className="font-body text-brand-ink/60 text-lg max-w-2xl mx-auto">
+          <p className="font-body text-brand-ink-muted text-lg max-w-2xl mx-auto">
             Support the 10th anniversary Collaborative Journalism Summit and connect with 130+ leaders in collaborative journalism.
           </p>
         </motion.div>
@@ -248,7 +248,7 @@ function Sponsors() {
             transition={{ delay: 0.2 }}
           >
             <p className="font-accent text-xl text-brand-teal mb-2">Sponsorships now open</p>
-            <p className="font-body text-brand-ink/70">
+            <p className="font-body text-brand-ink-muted">
               Be among the first to support the 10th anniversary summit. Sponsors will be recognized here as they are confirmed.
             </p>
           </motion.div>
@@ -271,7 +271,7 @@ function Sponsors() {
                 <span className="font-accent text-2xl text-brand-teal">10</span>
               </div>
               <h3 className="font-heading font-semibold text-lg text-brand-ink mb-2">Milestone event</h3>
-              <p className="font-body text-sm text-brand-ink/70">
+              <p className="font-body text-sm text-brand-ink-muted">
                 Be part of our 10th anniversary celebration — a landmark moment in the collaborative journalism movement.
               </p>
             </div>
@@ -281,7 +281,7 @@ function Sponsors() {
                 <span className="font-accent text-2xl text-brand-teal">130+</span>
               </div>
               <h3 className="font-heading font-semibold text-lg text-brand-ink mb-2">Engaged audience</h3>
-              <p className="font-body text-sm text-brand-ink/70">
+              <p className="font-body text-sm text-brand-ink-muted">
                 Connect with journalists, editors, funders, and media leaders actively working on collaborative projects.
               </p>
             </div>
@@ -291,7 +291,7 @@ function Sponsors() {
                 <span className="font-accent text-2xl text-brand-teal">2x</span>
               </div>
               <h3 className="font-heading font-semibold text-lg text-brand-ink mb-2">Dual-event exposure</h3>
-              <p className="font-body text-sm text-brand-ink/70">
+              <p className="font-body text-sm text-brand-ink-muted">
                 Co-located with INN Days means additional visibility to the nonprofit news community.
               </p>
             </div>
@@ -343,7 +343,7 @@ function Sponsors() {
                       <span className="font-accent text-lg text-brand-teal">{opp.price}</span>
                     </div>
                   </div>
-                  <p className="font-body text-sm text-brand-ink/70">{opp.description}</p>
+                  <p className="font-body text-sm text-brand-ink-muted">{opp.description}</p>
                 </motion.div>
               )
             })}
@@ -360,7 +360,7 @@ function Sponsors() {
           <h2 className="font-heading font-semibold text-2xl text-brand-ink mb-4">
             Ready to sponsor?
           </h2>
-          <p className="font-body text-brand-ink/70 mb-6 max-w-xl mx-auto">
+          <p className="font-body text-brand-ink-muted mb-6 max-w-xl mx-auto">
             Contact us to discuss sponsorship opportunities and receive a full prospectus.
           </p>
           <a

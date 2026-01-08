@@ -109,7 +109,7 @@ function ShareScheduleModal({ isOpen, onClose }) {
                   <h2 className="font-heading font-semibold text-lg text-brand-ink">
                     Share your schedule
                   </h2>
-                  <p className="font-body text-sm text-brand-ink/60">
+                  <p className="font-body text-sm text-brand-ink-muted">
                     Control who can see your saved sessions
                   </p>
                 </div>
@@ -166,7 +166,7 @@ function ShareScheduleModal({ isOpen, onClose }) {
 
               {/* Visibility options */}
               <div className="space-y-2">
-                <p className="font-body text-sm text-brand-ink/70 mb-3">
+                <p className="font-body text-sm text-brand-ink-muted mb-3">
                   Who can view your schedule?
                 </p>
                 {VISIBILITY_OPTIONS.map((option) => {
@@ -197,7 +197,7 @@ function ShareScheduleModal({ isOpen, onClose }) {
                         }`}>
                           {option.label}
                         </p>
-                        <p className="font-body text-sm text-brand-ink/60">
+                        <p className="font-body text-sm text-brand-ink-muted">
                           {option.description}
                         </p>
                       </div>
@@ -212,11 +212,11 @@ function ShareScheduleModal({ isOpen, onClose }) {
               {/* Share link */}
               {canShare && (
                 <div className="pt-4 border-t border-brand-ink/10">
-                  <p className="font-body text-sm text-brand-ink/70 mb-2">
+                  <p className="font-body text-sm text-brand-ink-muted mb-2">
                     Share link
                   </p>
                   <div className="flex gap-2">
-                    <div className="flex-1 px-4 py-2 bg-brand-ink/5 rounded-lg font-mono text-sm text-brand-ink/70 truncate">
+                    <div className="flex-1 px-4 py-2 bg-brand-ink/5 rounded-lg font-mono text-sm text-brand-ink-muted truncate">
                       {shareUrl}
                     </div>
                     <button

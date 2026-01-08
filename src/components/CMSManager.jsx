@@ -967,7 +967,7 @@ function ContentEditModal({ item, isNew, isSuperAdmin = false, onSave, onClose, 
               </p>
             )}
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-[var(--admin-glass-bg)] rounded-lg transition-colors">
+          <button onClick={onClose} className="p-2 hover:bg-[var(--admin-glass-bg)] rounded-lg transition-colors" aria-label="Close modal">
             <X className="w-5 h-5 text-[var(--admin-text-muted)]" />
           </button>
         </div>
@@ -1440,7 +1440,7 @@ function SessionEditModal({ session, isNew, isSuperAdmin = false, onSave, onClos
           <h3 className="font-admin-heading text-xl font-semibold text-[var(--admin-text)]">
             {isNew ? 'Add session' : 'Edit session'}
           </h3>
-          <button onClick={onClose} className="p-2 hover:bg-[var(--admin-glass-bg)] rounded-lg transition-colors">
+          <button onClick={onClose} className="p-2 hover:bg-[var(--admin-glass-bg)] rounded-lg transition-colors" aria-label="Close modal">
             <X className="w-5 h-5 text-[var(--admin-text-muted)]" />
           </button>
         </div>
@@ -1996,7 +1996,7 @@ function OrganizationEditModal({ org, isNew, isSuperAdmin = false, onSave, onClo
           <h3 className="font-admin-heading text-xl font-semibold text-[var(--admin-text)]">
             {isNew ? 'Add organization' : 'Edit organization'}
           </h3>
-          <button onClick={onClose} className="p-2 hover:bg-[var(--admin-glass-bg)] rounded-lg transition-colors">
+          <button onClick={onClose} className="p-2 hover:bg-[var(--admin-glass-bg)] rounded-lg transition-colors" aria-label="Close modal">
             <X className="w-5 h-5 text-[var(--admin-text-muted)]" />
           </button>
         </div>
@@ -2430,7 +2430,7 @@ function TimelineEditModal({ entry, isNew, isSuperAdmin = false, onSave, onClose
           <h3 className="font-admin-heading text-xl font-semibold text-[var(--admin-text)]">
             {isNew ? 'Add timeline entry' : 'Edit timeline entry'}
           </h3>
-          <button onClick={onClose} className="p-2 hover:bg-[var(--admin-glass-bg)] rounded-lg transition-colors">
+          <button onClick={onClose} className="p-2 hover:bg-[var(--admin-glass-bg)] rounded-lg transition-colors" aria-label="Close modal">
             <X className="w-5 h-5 text-[var(--admin-text-muted)]" />
           </button>
         </div>

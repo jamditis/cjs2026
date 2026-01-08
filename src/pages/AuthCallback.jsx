@@ -64,7 +64,7 @@ function AuthCallback() {
                 <h1 className="editorial-headline text-2xl md:text-3xl text-brand-ink mb-4">
                   Signing you in...
                 </h1>
-                <p className="font-body text-brand-ink/60">
+                <p className="font-body text-brand-ink-muted">
                   Please wait while we verify your sign-in link.
                 </p>
               </>
@@ -78,7 +78,7 @@ function AuthCallback() {
                 <h1 className="editorial-headline text-2xl md:text-3xl text-brand-ink mb-4">
                   You're signed in!
                 </h1>
-                <p className="font-body text-brand-ink/60">
+                <p className="font-body text-brand-ink-muted">
                   Redirecting you to your dashboard...
                 </p>
               </>
@@ -92,7 +92,7 @@ function AuthCallback() {
                 <h1 className="editorial-headline text-2xl md:text-3xl text-brand-ink mb-4">
                   Sign-in failed
                 </h1>
-                <p className="font-body text-brand-ink/70 mb-6">
+                <p className="font-body text-brand-ink-muted mb-6">
                   {error}
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">

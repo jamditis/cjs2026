@@ -793,7 +793,7 @@ function Dashboard() {
                 ? `Welcome, ${userProfile.displayName.split(' ')[0]}`
                 : 'Welcome'}
             </h1>
-            <p className="font-body text-brand-ink/60">
+            <p className="font-body text-brand-ink-muted">
               Manage your summit registration and profile
             </p>
           </motion.div>
@@ -813,7 +813,7 @@ function Dashboard() {
                   <h3 className="font-heading font-semibold text-brand-cardinal mb-1">
                     Account pending approval
                   </h3>
-                  <p className="font-body text-sm text-brand-ink/70 mb-3">
+                  <p className="font-body text-sm text-brand-ink-muted mb-3">
                     Complete your profile below while you wait. Once you've purchased a ticket or been approved,
                     you'll unlock the personal schedule builder and attendee networking features.
                   </p>
@@ -851,7 +851,7 @@ function Dashboard() {
                   <div className="w-8 h-8 rounded-full bg-brand-teal/20 flex items-center justify-center flex-shrink-0">
                     <User className="w-4 h-4 text-brand-teal" />
                   </div>
-                  <p className="font-body text-sm text-brand-ink/70">
+                  <p className="font-body text-sm text-brand-ink-muted">
                     <span className="font-medium text-brand-ink">Complete your profile</span> so other attendees can connect with you.
                   </p>
                 </div>
@@ -896,7 +896,7 @@ function Dashboard() {
                   <div className="absolute top-3 right-3 z-10 flex items-center gap-2">
                     <button
                       onClick={() => dismissTutorial(false)}
-                      className="px-3 py-1.5 text-xs font-medium text-brand-ink/60 hover:text-brand-ink hover:bg-brand-ink/5 rounded-full transition-all"
+                      className="px-3 py-1.5 text-xs font-medium text-brand-ink-muted hover:text-brand-ink hover:bg-brand-ink/5 rounded-full transition-all"
                       title="Skip for now"
                     >
                       Later
@@ -967,7 +967,8 @@ function Dashboard() {
                               <button
                                 type="button"
                                 onClick={clearPhoto}
-                                className="absolute -top-2 -right-2 p-1.5 bg-white rounded-full shadow-lg border border-brand-ink/10 text-brand-ink/60 hover:text-brand-cardinal transition-colors"
+                                className="absolute -top-2 -right-2 p-1.5 bg-white rounded-full shadow-lg border border-brand-ink/10 text-brand-ink-muted hover:text-brand-cardinal transition-colors"
+                                aria-label="Remove photo"
                               >
                                 <X className="w-4 h-4" />
                               </button>
@@ -1286,7 +1287,7 @@ function Dashboard() {
                       <h2 className="font-heading font-semibold text-xl text-brand-green-dark">
                         Tickets purchased
                       </h2>
-                      <p className="font-body text-brand-ink/60">
+                      <p className="font-body text-brand-ink-muted">
                         See you in Pittsburgh!
                       </p>
                       <button
@@ -1295,7 +1296,7 @@ function Dashboard() {
                             await updateUserProfile(currentUser.uid, { ticketsPurchased: false })
                           }
                         }}
-                        className="mt-2 font-body text-xs text-brand-ink/40 hover:text-brand-ink/60 underline"
+                        className="mt-2 font-body text-xs text-brand-ink/40 hover:text-brand-ink-muted underline"
                       >
                         Not correct? Reset status
                       </button>
@@ -1317,7 +1318,7 @@ function Dashboard() {
                       <h2 className="font-heading font-semibold text-xl text-brand-ink mb-1">
                         {status.label}
                       </h2>
-                      <p className="font-body text-brand-ink/60 mb-4">
+                      <p className="font-body text-brand-ink-muted mb-4">
                         {status.description}
                       </p>
 
@@ -1343,7 +1344,7 @@ function Dashboard() {
                                 }}
                                 className="w-4 h-4 rounded border-2 border-brand-ink/20 text-brand-teal focus:ring-brand-teal"
                               />
-                              <span className="font-body text-sm text-brand-ink/60 group-hover:text-brand-ink">
+                              <span className="font-body text-sm text-brand-ink-muted group-hover:text-brand-ink">
                                 I've already purchased my tickets
                               </span>
                             </label>
@@ -1353,7 +1354,7 @@ function Dashboard() {
 
                       {registrationStatus === 'registered' && (
                         <div className="bg-white rounded-lg p-4 border border-brand-ink/10">
-                          <p className="font-body text-sm text-brand-ink/70">
+                          <p className="font-body text-sm text-brand-ink-muted">
                             Complete your registration by paying the registration fee.
                           </p>
                         </div>
@@ -1380,7 +1381,7 @@ function Dashboard() {
                     </div>
                     <div>
                       <p className="font-heading font-semibold text-brand-ink">June 8–9, 2026</p>
-                      <p className="font-body text-sm text-brand-ink/60">Monday & Tuesday</p>
+                      <p className="font-body text-sm text-brand-ink-muted">Monday & Tuesday</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3 lg:gap-4">
@@ -1389,7 +1390,7 @@ function Dashboard() {
                     </div>
                     <div>
                       <p className="font-heading font-semibold text-brand-ink">Pittsburgh venue TBA</p>
-                      <p className="font-body text-sm text-brand-ink/60">Pittsburgh, Pennsylvania</p>
+                      <p className="font-body text-sm text-brand-ink-muted">Pittsburgh, Pennsylvania</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3 lg:gap-4">
@@ -1398,7 +1399,7 @@ function Dashboard() {
                     </div>
                     <div>
                       <p className="font-heading font-semibold text-brand-ink">June 8–9, 2026</p>
-                      <p className="font-body text-sm text-brand-ink/60">See schedule for session times</p>
+                      <p className="font-body text-sm text-brand-ink-muted">See schedule for session times</p>
                     </div>
                   </div>
                 </div>
@@ -1422,7 +1423,7 @@ function Dashboard() {
                   </div>
                   <div>
                     <p className="font-heading font-semibold text-brand-ink">Pitch a session</p>
-                    <p className="font-body text-sm text-brand-ink/60">Submit your idea</p>
+                    <p className="font-body text-sm text-brand-ink-muted">Submit your idea</p>
                   </div>
                 </a>
                 <Link
@@ -1434,7 +1435,7 @@ function Dashboard() {
                   </div>
                   <div>
                     <p className="font-heading font-semibold text-brand-ink">Schedule</p>
-                    <p className="font-body text-sm text-brand-ink/60">View sessions & workshops</p>
+                    <p className="font-body text-sm text-brand-ink-muted">View sessions & workshops</p>
                   </div>
                 </Link>
                 <Link
@@ -1446,7 +1447,7 @@ function Dashboard() {
                   </div>
                   <div>
                     <p className="font-heading font-semibold text-brand-ink">Code of conduct</p>
-                    <p className="font-body text-sm text-brand-ink/60">Community guidelines</p>
+                    <p className="font-body text-sm text-brand-ink-muted">Community guidelines</p>
                   </div>
                 </Link>
               </motion.div>
@@ -1518,7 +1519,7 @@ function Dashboard() {
                 {!editing && profileCompletion < 100 && (
                   <div className="mb-4 p-3 bg-brand-amber/5 border border-brand-amber/20 rounded-lg">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="font-body text-sm text-brand-ink/70">
+                      <span className="font-body text-sm text-brand-ink-muted">
                         Profile strength
                       </span>
                       <span className="font-body text-sm font-medium text-brand-amber">
@@ -1604,7 +1605,7 @@ function Dashboard() {
                     </div>
 
                     <div>
-                      <label className="block font-body text-sm text-brand-ink/70 mb-1">
+                      <label className="block font-body text-sm text-brand-ink-muted mb-1">
                         Name <span className="text-brand-cardinal">*</span>
                       </label>
                       <div className="relative">
@@ -1621,7 +1622,7 @@ function Dashboard() {
                     </div>
 
                     <div>
-                      <label className="block font-body text-sm text-brand-ink/70 mb-1">
+                      <label className="block font-body text-sm text-brand-ink-muted mb-1">
                         Organization
                       </label>
                       <div className="relative">
@@ -1637,7 +1638,7 @@ function Dashboard() {
                     </div>
 
                     <div>
-                      <label className="block font-body text-sm text-brand-ink/70 mb-1">
+                      <label className="block font-body text-sm text-brand-ink-muted mb-1">
                         Job title
                       </label>
                       <input
@@ -1832,7 +1833,7 @@ function Dashboard() {
 
                                 return (
                                   <div key={key}>
-                                    <p className="font-body text-xs font-medium text-brand-ink/60 mb-2">
+                                    <p className="font-body text-xs font-medium text-brand-ink-muted mb-2">
                                       {category.label}
                                       {key === 'role' && (editData.badges || []).includes('role-personality-hire') && (
                                         <span className="text-brand-teal ml-1">(pick 2!)</span>
@@ -1982,20 +1983,20 @@ function Dashboard() {
                         <p className="font-heading font-semibold text-brand-ink truncate">
                           {userProfile?.displayName || 'No name set'}
                         </p>
-                        <p className="font-body text-sm text-brand-ink/60 truncate">
+                        <p className="font-body text-sm text-brand-ink-muted truncate">
                           {currentUser?.email}
                         </p>
                       </div>
                     </div>
 
                     {userProfile?.organization && (
-                      <p className="font-body text-sm text-brand-ink/70">
+                      <p className="font-body text-sm text-brand-ink-muted">
                         <span className="text-brand-ink/50">Organization:</span> {userProfile.organization}
                       </p>
                     )}
                     {/* Display job title (check both new jobTitle and old role field, excluding system roles) */}
                     {(userProfile?.jobTitle || (userProfile?.role && !['admin', 'super_admin'].includes(userProfile.role))) && (
-                      <p className="font-body text-sm text-brand-ink/70">
+                      <p className="font-body text-sm text-brand-ink-muted">
                         <span className="text-brand-ink/50">Job title:</span> {userProfile.jobTitle || userProfile.role}
                       </p>
                     )}
@@ -2048,7 +2049,7 @@ function Dashboard() {
                             href={`https://${userProfile.website}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="p-2 rounded-lg bg-brand-ink/5 hover:bg-brand-teal/10 text-brand-ink/60 hover:text-brand-teal transition-colors"
+                            className="p-2 rounded-lg bg-brand-ink/5 hover:bg-brand-teal/10 text-brand-ink-muted hover:text-brand-teal transition-colors"
                           >
                             <Globe className="w-4 h-4" />
                           </a>
@@ -2058,7 +2059,7 @@ function Dashboard() {
                             href={`https://instagram.com/${userProfile.instagram}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="p-2 rounded-lg bg-brand-ink/5 hover:bg-brand-teal/10 text-brand-ink/60 hover:text-brand-teal transition-colors"
+                            className="p-2 rounded-lg bg-brand-ink/5 hover:bg-brand-teal/10 text-brand-ink-muted hover:text-brand-teal transition-colors"
                           >
                             <Instagram className="w-4 h-4" />
                           </a>
@@ -2068,7 +2069,7 @@ function Dashboard() {
                             href={`https://linkedin.com/in/${userProfile.linkedin}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="p-2 rounded-lg bg-brand-ink/5 hover:bg-brand-teal/10 text-brand-ink/60 hover:text-brand-teal transition-colors"
+                            className="p-2 rounded-lg bg-brand-ink/5 hover:bg-brand-teal/10 text-brand-ink-muted hover:text-brand-teal transition-colors"
                           >
                             <Linkedin className="w-4 h-4" />
                           </a>
@@ -2078,7 +2079,7 @@ function Dashboard() {
                             href={`https://bsky.app/profile/${userProfile.bluesky}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="p-2 rounded-lg bg-brand-ink/5 hover:bg-brand-teal/10 text-brand-ink/60 hover:text-brand-teal transition-colors"
+                            className="p-2 rounded-lg bg-brand-ink/5 hover:bg-brand-teal/10 text-brand-ink-muted hover:text-brand-teal transition-colors"
                           >
                             <AtSign className="w-4 h-4" />
                           </a>
@@ -2098,7 +2099,7 @@ function Dashboard() {
               >
                 <button
                   onClick={handleLogout}
-                  className="w-full py-2 px-4 rounded-lg border-2 border-brand-ink/20 font-body text-brand-ink/70 hover:border-brand-cardinal/50 hover:text-brand-cardinal transition-colors flex items-center justify-center gap-2"
+                  className="w-full py-2 px-4 rounded-lg border-2 border-brand-ink/20 font-body text-brand-ink-muted hover:border-brand-cardinal/50 hover:text-brand-cardinal transition-colors flex items-center justify-center gap-2"
                 >
                   <LogOut className="w-4 h-4" />
                   Sign out

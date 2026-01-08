@@ -86,7 +86,7 @@ export function SplashScreen({
                   CJS2026
                 </motion.h1>
                 <motion.p
-                  className="text-brand-ink/60 text-lg mt-1 font-accent"
+                  className="text-brand-ink-muted text-lg mt-1 font-accent"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.6 }}

@@ -9,14 +9,14 @@ function Footer() {
       <div className="max-w-4xl mx-auto text-center">
         <div className="mb-10">
           <h3 className="font-heading font-semibold text-2xl text-brand-ink mb-2">Join us in Pittsburgh</h3>
-          <p className="text-brand-ink/60 mb-6 font-body">Secure your spot at the 10th anniversary summit.</p>
+          <p className="text-brand-ink-muted mb-6 font-body">Secure your spot at the 10th anniversary summit.</p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <EmailSignup />
             <a
               href="https://collaborativejournalism.us5.list-manage.com/subscribe?u=7f46611cb324e9e193acda7cc&id=2e8bb60c9c"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border-2 border-brand-ink/20 text-brand-ink/70 hover:border-brand-teal hover:text-brand-teal transition-colors font-body text-sm"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border-2 border-brand-ink/20 text-brand-ink-muted hover:border-brand-teal hover:text-brand-teal transition-colors font-body text-sm"
             >
               <Mail className="w-4 h-4" />
               Get newsletter updates
@@ -25,7 +25,7 @@ function Footer() {
         </div>
 
         <div className="border-t-2 border-brand-ink/10 pt-10">
-          <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6 text-sm text-brand-ink/50 font-body mb-6">
+          <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6 text-sm text-brand-ink-muted font-body mb-6">
             <Link to="/schedule" className="hover:text-brand-teal transition-colors">Schedule</Link>
             <span className="text-brand-ink/20">•</span>
             <Link to="/sponsors" className="hover:text-brand-teal transition-colors">Sponsors</Link>
@@ -35,7 +35,7 @@ function Footer() {
             <Link to="/contact" className="hover:text-brand-teal transition-colors">Contact</Link>
           </div>
 
-          <div className="flex flex-col md:flex-row items-center justify-center gap-6 text-sm text-brand-ink/50 font-body">
+          <div className="flex flex-col md:flex-row items-center justify-center gap-6 text-sm text-brand-ink-muted font-body">
             <a href="mailto:summit@collaborativejournalism.org" className="hover:text-brand-teal transition-colors flex items-center gap-2">
               <Mail className="w-4 h-4" />
               summit@collaborativejournalism.org

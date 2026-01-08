@@ -123,7 +123,7 @@ function Countdown({ targetDate }) {
               {String(unit.value).padStart(2, '0')}
             </span>
           </div>
-          <p className="text-brand-ink/60 text-xs md:text-sm mt-2 font-body">{unit.label}</p>
+          <p className="text-brand-ink-muted text-xs md:text-sm mt-2 font-body">{unit.label}</p>
         </motion.div>
       ))}
     </div>
@@ -151,7 +151,7 @@ function InfoCard({ icon: Icon, title, children, delay = 0, color = 'teal' }) {
         </div>
         <div>
           <h3 className="font-heading font-semibold text-xl text-brand-ink mb-2">{title}</h3>
-          <div className="text-brand-ink/70 font-body">{children}</div>
+          <div className="text-brand-ink-muted font-body">{children}</div>
         </div>
       </div>
     </motion.div>
@@ -209,7 +209,7 @@ function HistoryTimeline() {
                     <ExternalLink className="w-3 h-3 text-brand-ink/20 ml-auto group-hover:text-brand-teal transition-colors" />
                   </div>
                   <h4 className="font-heading font-bold text-lg text-brand-ink mb-1 group-hover:text-brand-teal transition-colors">{item.location}</h4>
-                  <p className="font-body text-brand-ink/60 text-sm italic">{item.theme}</p>
+                  <p className="font-body text-brand-ink-muted text-sm italic">{item.theme}</p>
                 </a>
               ) : (
                 <div className={`card-sketch p-6 transition-colors group ${item.year === '2026' ? `${bgAccentClass} ${borderColorClass}` : ''}`}>
@@ -222,7 +222,7 @@ function HistoryTimeline() {
                     </span>
                   </div>
                   <h4 className="font-heading font-bold text-lg text-brand-ink mb-1">{item.location}</h4>
-                  <p className="font-body text-brand-ink/60 text-sm italic">{item.theme}</p>
+                  <p className="font-body text-brand-ink-muted text-sm italic">{item.theme}</p>
                 </div>
               )}
             </div>
@@ -237,7 +237,7 @@ function HistoryTimeline() {
 // Home Page
 // ============================================
 function Home() {
-  const summitDate = '2026-06-15T09:00:00'
+  const summitDate = '2026-06-08T09:00:00'
 
   return (
     <div className="min-h-screen bg-paper">
@@ -305,7 +305,7 @@ function Home() {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6 }}
             >
-               <p className="font-body text-lg md:text-xl text-brand-ink/70 mb-1">{getContent('details', 'date_display', 'June 8–9, 2026')}</p>
+               <p className="font-body text-lg md:text-xl text-brand-ink-muted mb-1">{getContent('details', 'date_display', 'June 8–9, 2026')}</p>
                <p className="font-body text-brand-ink/50 mb-10">{getContent('details', 'location', 'Pittsburgh, Pennsylvania')}</p>
             </motion.div>
 
@@ -366,7 +366,7 @@ function Home() {
             <h2 className="editorial-headline text-3xl md:text-5xl text-brand-ink mb-4">
               {getContent('details', 'section_headline', 'Save the date')}
             </h2>
-            <p className="font-body text-brand-ink/60 max-w-2xl mx-auto text-lg">
+            <p className="font-body text-brand-ink-muted max-w-2xl mx-auto text-lg">
               {getContent('details', 'section_description', 'The premier gathering for journalists exploring how to work together in the public interest.')}
             </p>
           </motion.div>
@@ -414,7 +414,7 @@ function Home() {
                   <span className={`w-8 h-8 rounded-full ${getColorClass(getContentMeta('expect', 'monday_label')?.color || 'teal', 'bgLight')} flex items-center justify-center text-sm`}>1</span>
                   {getContent('expect', 'monday_label', 'Monday: Main summit')}
                 </h4>
-                <ul className="space-y-2 text-brand-ink/70 font-body ml-10">
+                <ul className="space-y-2 text-brand-ink-muted font-body ml-10">
                   {getContent('expect', 'monday_items', '').split('\n').map((item, i) => (
                     <li key={i}>• {item}</li>
                   ))}
@@ -425,7 +425,7 @@ function Home() {
                   <span className={`w-8 h-8 rounded-full ${getColorClass(getContentMeta('expect', 'tuesday_label')?.color || 'cardinal', 'bgLight')} flex items-center justify-center text-sm`}>2</span>
                   {getContent('expect', 'tuesday_label', 'Tuesday: Workshops')}
                 </h4>
-                <ul className="space-y-2 text-brand-ink/70 font-body ml-10">
+                <ul className="space-y-2 text-brand-ink-muted font-body ml-10">
                   {getContent('expect', 'tuesday_items', '').split('\n').map((item, i) => (
                     <li key={i}>• {item}</li>
                   ))}
@@ -609,7 +609,7 @@ function Home() {
         <div className="max-w-4xl mx-auto text-center">
           <div className="mb-10">
             <h3 className="font-heading font-semibold text-2xl text-brand-ink mb-2">{getContent('footer', 'signup_headline', 'Join us in Pittsburgh')}</h3>
-            <p className="text-brand-ink/60 mb-6 font-body">{getContent('footer', 'signup_description', 'Secure your spot at the 10th anniversary summit.')}</p>
+            <p className="text-brand-ink-muted mb-6 font-body">{getContent('footer', 'signup_description', 'Secure your spot at the 10th anniversary summit.')}</p>
             <EmailSignup />
           </div>
 

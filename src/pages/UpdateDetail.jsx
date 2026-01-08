@@ -17,6 +17,7 @@ import {
 } from 'lucide-react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
+import { UpdateDetailSEO } from '../components/SEO'
 import { getUpdateBySlug, getRecentUpdates, getDaysUntil, updates as staticUpdates } from '../content/updatesData'
 
 // Redirect map for renamed slugs (old -> new)
@@ -28,7 +29,7 @@ import { collection, query, where, getDocs, orderBy, limit } from 'firebase/fire
 
 // Share button component
 function ShareButton({ icon: Icon, label, onClick, href }) {
-  const className = "flex items-center gap-2 px-3 py-2 rounded-lg border border-brand-ink/10 hover:border-brand-teal hover:bg-brand-teal/5 transition-all text-sm text-brand-ink/70 hover:text-brand-teal"
+  const className = "flex items-center gap-2 px-3 py-2 rounded-lg border border-brand-ink/10 hover:border-brand-teal hover:bg-brand-teal/5 transition-all text-sm text-brand-ink-muted hover:text-brand-teal"
 
   if (href) {
     return (
@@ -185,6 +186,7 @@ function UpdateDetail() {
 
   return (
     <>
+      <UpdateDetailSEO update={update} />
       <Navbar />
       <div className="min-h-screen bg-paper pt-24 pb-16">
         <div className="max-w-5xl mx-auto px-6">
@@ -197,7 +199,7 @@ function UpdateDetail() {
           >
             <Link
               to="/updates"
-              className="inline-flex items-center gap-2 text-brand-ink/60 hover:text-brand-teal transition-colors font-body"
+              className="inline-flex items-center gap-2 text-brand-ink-muted hover:text-brand-teal transition-colors font-body"
             >
               <ArrowLeft className="w-4 h-4" />
               Back to all updates
@@ -233,7 +235,7 @@ function UpdateDetail() {
                   {update.title}
                 </h1>
 
-                <p className="font-body text-xl text-brand-ink/70 leading-relaxed">
+                <p className="font-body text-xl text-brand-ink-muted leading-relaxed">
                   {update.summary}
                 </p>
 
@@ -331,13 +333,13 @@ function UpdateDetail() {
                     Quick links
                   </h3>
                   <div className="space-y-2">
-                    <Link to="/schedule" className="block font-body text-sm text-brand-ink/70 hover:text-brand-teal transition-colors">
+                    <Link to="/schedule" className="block font-body text-sm text-brand-ink-muted hover:text-brand-teal transition-colors">
                       View schedule →
                     </Link>
-                    <Link to="/sponsors" className="block font-body text-sm text-brand-ink/70 hover:text-brand-teal transition-colors">
+                    <Link to="/sponsors" className="block font-body text-sm text-brand-ink-muted hover:text-brand-teal transition-colors">
                       Our sponsors →
                     </Link>
-                    <Link to="/contact" className="block font-body text-sm text-brand-ink/70 hover:text-brand-teal transition-colors">
+                    <Link to="/contact" className="block font-body text-sm text-brand-ink-muted hover:text-brand-teal transition-colors">
                       Contact us →
                     </Link>
                   </div>

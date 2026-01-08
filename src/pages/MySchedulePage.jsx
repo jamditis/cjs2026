@@ -48,7 +48,7 @@ function MySchedulePage() {
           >
             <Link
               to="/dashboard"
-              className="inline-flex items-center gap-2 text-brand-ink/60 hover:text-brand-teal mb-4 font-body text-sm"
+              className="inline-flex items-center gap-2 text-brand-ink-muted hover:text-brand-teal mb-4 font-body text-sm"
             >
               <ArrowLeft className="w-4 h-4" />
               Back to dashboard
@@ -59,7 +59,7 @@ function MySchedulePage() {
                 <h1 className="editorial-headline text-3xl md:text-4xl text-brand-ink mb-2">
                   My schedule
                 </h1>
-                <p className="font-body text-brand-ink/60">
+                <p className="font-body text-brand-ink-muted">
                   {savedCount > 0
                     ? `You've saved ${savedCount} session${savedCount !== 1 ? 's' : ''} for CJS2026.`
                     : 'Bookmark sessions from the schedule to build your personal agenda.'}
@@ -125,7 +125,7 @@ function MySchedulePage() {
               transition={{ delay: 0.2 }}
             >
               <h3 className="font-heading font-semibold text-brand-ink mb-2">Tips</h3>
-              <ul className="font-body text-sm text-brand-ink/70 space-y-2">
+              <ul className="font-body text-sm text-brand-ink-muted space-y-2">
                 <li>Click the bookmark icon on any session to remove it from your schedule.</li>
                 <li>Check back as sessions are finalized - more details will be added in spring 2026.</li>
                 <li>Use the share button to let others see your schedule, or download a PDF for offline access.</li>

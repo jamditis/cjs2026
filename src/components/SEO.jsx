@@ -9,8 +9,8 @@ const eventJsonLd = {
   '@type': 'Event',
   name: '2026 Collaborative Journalism Summit',
   description: 'The 10th anniversary Collaborative Journalism Summit brings together journalists, media leaders, funders, and academics to explore how to work together in the public interest.',
-  startDate: '2026-06-15T09:00:00-04:00',
-  endDate: '2026-06-16T17:00:00-04:00',
+  startDate: '2026-06-08T09:00:00-04:00',
+  endDate: '2026-06-09T17:00:00-04:00',
   eventStatus: 'https://schema.org/EventScheduled',
   eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
   location: {
@@ -75,9 +75,9 @@ export default function SEO({
   const url = `${SITE_URL}${path}`
   const fullTitle = title
     ? `${title} | 2026 Collaborative Journalism Summit`
-    : '2026 Collaborative Journalism Summit | June 15-16, Pittsburgh, PA'
+    : '2026 Collaborative Journalism Summit | June 8-9, Pittsburgh, PA'
   const metaDescription = description ||
-    'Join us for the 10th anniversary Collaborative Journalism Summit. June 15-16, 2026 in Pittsburgh, PA. A decade of bringing journalists together to work in the public interest.'
+    'Join us for the 10th anniversary Collaborative Journalism Summit. June 8-9, 2026 in Pittsburgh, PA. A decade of bringing journalists together to work in the public interest.'
 
   // Combine all JSON-LD schemas
   const allJsonLd = [eventJsonLd, organizationJsonLd, websiteJsonLd]
@@ -129,7 +129,7 @@ export function ScheduleSEO() {
   return (
     <SEO
       title="Schedule"
-      description="Browse the full schedule for the 2026 Collaborative Journalism Summit. Sessions, workshops, and networking events on June 15-16 in Pittsburgh, PA."
+      description="Browse the full schedule for the 2026 Collaborative Journalism Summit. Sessions, workshops, and networking events on June 8-9 in Pittsburgh, PA."
       path="/schedule"
     />
   )
@@ -182,6 +182,51 @@ export function PrivacySEO() {
       description="Privacy policy for the Collaborative Journalism Summit website and registration."
       path="/privacy"
       noIndex={true}
+    />
+  )
+}
+
+export function UpdatesSEO() {
+  return (
+    <SEO
+      title="News & Updates"
+      description="Stay up to date with the latest announcements, deadlines, and stories from the 2026 Collaborative Journalism Summit. Get news about registration, sessions, speakers, and more."
+      path="/updates"
+    />
+  )
+}
+
+export function UpdateDetailSEO({ update }) {
+  if (!update) return null
+
+  // Create Article JSON-LD for the update
+  const articleJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: update.title,
+    description: update.summary,
+    datePublished: update.date,
+    author: {
+      '@type': 'Organization',
+      name: 'Center for Cooperative Media'
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Center for Cooperative Media',
+      logo: {
+        '@type': 'ImageObject',
+        url: `${SITE_URL}/ccm-logo.png`
+      }
+    }
+  }
+
+  return (
+    <SEO
+      title={update.title}
+      description={update.summary}
+      path={`/updates/${update.slug}`}
+      type="article"
+      jsonLd={articleJsonLd}
     />
   )
 }

@@ -96,7 +96,7 @@ function AttendeeProfile() {
           {/* Back link */}
           <Link
             to="/schedule"
-            className="inline-flex items-center gap-2 text-brand-ink/60 hover:text-brand-teal mb-6 font-body text-sm"
+            className="inline-flex items-center gap-2 text-brand-ink-muted hover:text-brand-teal mb-6 font-body text-sm"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to schedule
@@ -105,7 +105,7 @@ function AttendeeProfile() {
           {loading ? (
             <div className="text-center py-16">
               <div className="w-12 h-12 border-3 border-brand-teal/20 border-t-brand-teal rounded-full animate-spin mx-auto mb-4" />
-              <p className="font-body text-brand-ink/60">Loading profile...</p>
+              <p className="font-body text-brand-ink-muted">Loading profile...</p>
             </div>
           ) : error ? (
             <motion.div
@@ -123,7 +123,7 @@ function AttendeeProfile() {
               <h2 className="font-heading font-semibold text-xl text-brand-ink mb-2">
                 {error === 'login_required' ? 'Login required' : 'Cannot view profile'}
               </h2>
-              <p className="font-body text-brand-ink/60 mb-6">
+              <p className="font-body text-brand-ink-muted mb-6">
                 {error === 'login_required'
                   ? 'This profile is only visible to CJS attendees. Please sign in to view.'
                   : error === 'This profile is private'
@@ -167,7 +167,7 @@ function AttendeeProfile() {
 
                 {/* Organization */}
                 {profile?.organization && (
-                  <p className="font-body text-lg text-brand-ink/70 mb-4 flex items-center justify-center gap-2">
+                  <p className="font-body text-lg text-brand-ink-muted mb-4 flex items-center justify-center gap-2">
                     <Building className="w-5 h-5" />
                     {profile.organization}
                   </p>
@@ -175,7 +175,7 @@ function AttendeeProfile() {
 
                 {/* Job title (check both new jobTitle and old role field, excluding system roles) */}
                 {(profile?.jobTitle || (profile?.role && !['admin', 'super_admin'].includes(profile.role))) && (
-                  <p className="font-body text-brand-ink/60 mb-6">
+                  <p className="font-body text-brand-ink-muted mb-6">
                     {profile.jobTitle || profile.role}
                   </p>
                 )}
@@ -201,7 +201,7 @@ function AttendeeProfile() {
                       href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-3 rounded-full bg-brand-ink/5 text-brand-ink/60 hover:bg-brand-teal/10 hover:text-brand-teal transition-colors"
+                      className="p-3 rounded-full bg-brand-ink/5 text-brand-ink-muted hover:bg-brand-teal/10 hover:text-brand-teal transition-colors"
                       title="Website"
                     >
                       <Globe className="w-5 h-5" />
@@ -212,7 +212,7 @@ function AttendeeProfile() {
                       href={`https://instagram.com/${profile.instagram}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-3 rounded-full bg-brand-ink/5 text-brand-ink/60 hover:bg-brand-teal/10 hover:text-brand-teal transition-colors"
+                      className="p-3 rounded-full bg-brand-ink/5 text-brand-ink-muted hover:bg-brand-teal/10 hover:text-brand-teal transition-colors"
                       title="Instagram"
                     >
                       <InstagramIcon />
@@ -223,7 +223,7 @@ function AttendeeProfile() {
                       href={`https://linkedin.com/in/${profile.linkedin}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-3 rounded-full bg-brand-ink/5 text-brand-ink/60 hover:bg-brand-teal/10 hover:text-brand-teal transition-colors"
+                      className="p-3 rounded-full bg-brand-ink/5 text-brand-ink-muted hover:bg-brand-teal/10 hover:text-brand-teal transition-colors"
                       title="LinkedIn"
                     >
                       <LinkedInIcon />
@@ -234,7 +234,7 @@ function AttendeeProfile() {
                       href={`https://bsky.app/profile/${profile.bluesky}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-3 rounded-full bg-brand-ink/5 text-brand-ink/60 hover:bg-brand-teal/10 hover:text-brand-teal transition-colors"
+                      className="p-3 rounded-full bg-brand-ink/5 text-brand-ink-muted hover:bg-brand-teal/10 hover:text-brand-teal transition-colors"
                       title="Bluesky"
                     >
                       <BlueskyIcon />

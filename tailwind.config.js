@@ -15,6 +15,7 @@ export default {
         'brand-cream': '#F5F0E6',
         'brand-parchment': '#EDE8DC',
         'brand-ink': '#2C3E50',
+        'brand-ink-muted': '#5C6B7A', // Accessible alternative to ink/60-70 opacity
         'brand-cardinal': '#C84B31',
         'brand-red': '#CA3553',
         'brand-black': '#000000',

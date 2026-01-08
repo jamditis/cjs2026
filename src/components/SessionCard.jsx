@@ -64,7 +64,7 @@ function getBookmarkTier(count) {
     tier: 'normal',
     icon: Users,
     bgClass: 'bg-brand-ink/10',
-    textClass: 'text-brand-ink/60',
+    textClass: 'text-brand-ink-muted',
     label: `${count} attendee${count !== 1 ? 's' : ''} saved this session`
   }
 }
@@ -216,7 +216,7 @@ function SessionCard({ session, index = 0, showSaveButton = true, compact = fals
             </div>
           </div>
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 text-sm text-brand-ink/60 mb-1">
+            <div className="flex items-center gap-2 text-sm text-brand-ink-muted mb-1">
               <Clock className="w-3 h-3" />
               <span>{formattedStartTime}{formattedEndTime && ` - ${formattedEndTime}`}</span>
               {session.room && (
@@ -253,6 +253,7 @@ function SessionCard({ session, index = 0, showSaveButton = true, compact = fals
                     : 'bg-brand-ink/5 text-brand-ink/40 hover:text-brand-teal hover:bg-brand-teal/10'
                 } ${saving ? 'opacity-50' : ''}`}
                 title={localSaved ? 'Remove from my schedule' : 'Add to my schedule'}
+                aria-label={localSaved ? 'Remove from my schedule' : 'Add to my schedule'}
               >
                 {localSaved ? <BookmarkCheck className="w-5 h-5" /> : <Bookmark className="w-5 h-5" />}
               </button>
@@ -260,6 +261,7 @@ function SessionCard({ session, index = 0, showSaveButton = true, compact = fals
               <span
                 className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full bg-brand-ink/5 text-brand-ink/30 cursor-help"
                 title={bookmarkBlockReason}
+                aria-label={bookmarkBlockReason}
               >
                 <Bookmark className="w-5 h-5" />
               </span>
@@ -291,7 +293,7 @@ function SessionCard({ session, index = 0, showSaveButton = true, compact = fals
             </div>
           </div>
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 text-xs text-brand-ink/60 mb-1">
+            <div className="flex items-center gap-2 text-xs text-brand-ink-muted mb-1">
               <Clock className="w-3 h-3" />
               <span>{formattedStartTime}{formattedEndTime && formattedEndTime !== formattedStartTime && ` - ${formattedEndTime}`}</span>
               {session.room && (
@@ -332,6 +334,7 @@ function SessionCard({ session, index = 0, showSaveButton = true, compact = fals
                     : 'bg-brand-ink/5 text-brand-ink/40 hover:text-brand-teal hover:bg-brand-teal/10'
                 } ${saving ? 'opacity-50' : ''}`}
                 title={localSaved ? 'Remove from my schedule' : 'Add to my schedule'}
+                aria-label={localSaved ? 'Remove from my schedule' : 'Add to my schedule'}
               >
                 {localSaved ? <BookmarkCheck className="w-5 h-5" /> : <Bookmark className="w-5 h-5" />}
               </button>
@@ -339,6 +342,7 @@ function SessionCard({ session, index = 0, showSaveButton = true, compact = fals
               <span
                 className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full bg-brand-ink/5 text-brand-ink/30 cursor-help"
                 title={bookmarkBlockReason}
+                aria-label={bookmarkBlockReason}
               >
                 <Bookmark className="w-5 h-5" />
               </span>
@@ -352,7 +356,7 @@ function SessionCard({ session, index = 0, showSaveButton = true, compact = fals
             onClick={() => setDescriptionExpanded(!descriptionExpanded)}
             className="w-full text-left mt-2 pl-11 group"
           >
-            <p className={`font-body text-xs text-brand-ink/60 ${descriptionExpanded ? '' : 'line-clamp-2'}`}>
+            <p className={`font-body text-xs text-brand-ink-muted ${descriptionExpanded ? '' : 'line-clamp-2'}`}>
               {session.description}
             </p>
             {session.description.length > 100 && (
@@ -386,7 +390,7 @@ function SessionCard({ session, index = 0, showSaveButton = true, compact = fals
       <div className="hidden lg:flex gap-4">
         {/* Time column */}
         <div className="flex-shrink-0 w-20 text-right">
-          <span className="font-body text-sm text-brand-ink/60">{formattedStartTime}</span>
+          <span className="font-body text-sm text-brand-ink-muted">{formattedStartTime}</span>
           {formattedEndTime && formattedEndTime !== formattedStartTime && (
             <span className="font-body text-xs text-brand-ink/40 block">{formattedEndTime}</span>
           )}
@@ -413,7 +417,7 @@ function SessionCard({ session, index = 0, showSaveButton = true, compact = fals
               </h4>
 
               {session.description && (
-                <p className="font-body text-sm text-brand-ink/60 mt-1">{session.description}</p>
+                <p className="font-body text-sm text-brand-ink-muted mt-1">{session.description}</p>
               )}
 
               {/* Meta info */}
@@ -463,6 +467,7 @@ function SessionCard({ session, index = 0, showSaveButton = true, compact = fals
                       : 'bg-brand-ink/5 text-brand-ink/40 hover:text-brand-teal hover:bg-brand-teal/10'
                   } ${saving ? 'opacity-50' : ''}`}
                   title={localSaved ? 'Remove from my schedule' : 'Add to my schedule'}
+                  aria-label={localSaved ? 'Remove from my schedule' : 'Add to my schedule'}
                 >
                   {localSaved ? <BookmarkCheck className="w-5 h-5" /> : <Bookmark className="w-5 h-5" />}
                 </button>
@@ -470,6 +475,7 @@ function SessionCard({ session, index = 0, showSaveButton = true, compact = fals
                 <span
                   className="p-2 rounded-full bg-brand-ink/5 text-brand-ink/30 cursor-help"
                   title={bookmarkBlockReason}
+                  aria-label={bookmarkBlockReason}
                 >
                   <Bookmark className="w-5 h-5" />
                 </span>

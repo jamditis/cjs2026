@@ -21,7 +21,7 @@ function CodeOfConduct() {
           <h1 className="editorial-headline text-4xl md:text-5xl text-brand-ink mb-4">
             Code of conduct
           </h1>
-          <p className="font-body text-brand-ink/60 text-lg">
+          <p className="font-body text-brand-ink-muted text-lg">
             Creating a welcoming, inclusive environment for all participants
           </p>
         </motion.div>
@@ -39,7 +39,7 @@ function CodeOfConduct() {
             </div>
             <div>
               <h2 className="font-heading font-semibold text-xl text-brand-ink mb-2">The short version</h2>
-              <p className="font-body text-brand-ink/70">
+              <p className="font-body text-brand-ink-muted">
                 The Collaborative Journalism Summit is dedicated to providing a harassment-free experience for everyone. We do not tolerate harassment of participants in any form. Be kind, be respectful, and assume good intent.
               </p>
             </div>
@@ -75,21 +75,21 @@ function CodeOfConduct() {
                 <Heart className="w-5 h-5 text-brand-teal mt-1 flex-shrink-0" />
                 <div>
                   <p className="font-heading font-semibold text-brand-ink">Be respectful and inclusive</p>
-                  <p className="font-body text-sm text-brand-ink/70">Value each other's ideas, styles, and viewpoints. Be open to learning from others.</p>
+                  <p className="font-body text-sm text-brand-ink-muted">Value each other's ideas, styles, and viewpoints. Be open to learning from others.</p>
                 </div>
               </div>
               <div className="card-sketch p-5 flex items-start gap-4">
                 <Users className="w-5 h-5 text-brand-teal mt-1 flex-shrink-0" />
                 <div>
                   <p className="font-heading font-semibold text-brand-ink">Collaborate with kindness</p>
-                  <p className="font-body text-sm text-brand-ink/70">Assume good intent. Offer and accept constructive feedback gracefully.</p>
+                  <p className="font-body text-sm text-brand-ink-muted">Assume good intent. Offer and accept constructive feedback gracefully.</p>
                 </div>
               </div>
               <div className="card-sketch p-5 flex items-start gap-4">
                 <Shield className="w-5 h-5 text-brand-teal mt-1 flex-shrink-0" />
                 <div>
                   <p className="font-heading font-semibold text-brand-ink">Create a safe space</p>
-                  <p className="font-body text-sm text-brand-ink/70">Be mindful of your surroundings and fellow participants. Alert staff if you notice someone in distress.</p>
+                  <p className="font-body text-sm text-brand-ink-muted">Be mindful of your surroundings and fellow participants. Alert staff if you notice someone in distress.</p>
                 </div>
               </div>
             </div>
@@ -144,7 +144,7 @@ function CodeOfConduct() {
                 <AlertTriangle className="w-6 h-6 text-brand-cardinal flex-shrink-0 mt-1" />
                 <div>
                   <h3 className="font-heading font-semibold text-brand-ink mb-2">Need to report an incident?</h3>
-                  <p className="font-body text-sm text-brand-ink/70 mb-4">
+                  <p className="font-body text-sm text-brand-ink-muted mb-4">
                     You can reach the event organizers through any of these channels:
                   </p>
                   <div className="space-y-2">
@@ -152,7 +152,7 @@ function CodeOfConduct() {
                       <Mail className="w-4 h-4" />
                       summit@collaborativejournalism.org
                     </a>
-                    <p className="flex items-center gap-2 font-body text-brand-ink/70">
+                    <p className="flex items-center gap-2 font-body text-brand-ink-muted">
                       <Phone className="w-4 h-4" />
                       On-site contact number will be provided at registration
                     </p>
@@ -183,7 +183,7 @@ function CodeOfConduct() {
             viewport={{ once: true }}
           >
             <h2 className="font-heading font-semibold text-2xl text-brand-ink mb-4">Attribution</h2>
-            <p className="font-body text-brand-ink/60 text-sm">
+            <p className="font-body text-brand-ink-muted text-sm">
               This code of conduct is adapted from the <a href="https://confcodeofconduct.com/" target="_blank" rel="noopener noreferrer" className="text-brand-teal hover:underline">Conference Code of Conduct</a>, which is licensed under a <a href="https://creativecommons.org/licenses/by/3.0/deed.en_US" target="_blank" rel="noopener noreferrer" className="text-brand-teal hover:underline">Creative Commons Attribution 3.0 Unported License</a>.
             </p>
           </motion.section>

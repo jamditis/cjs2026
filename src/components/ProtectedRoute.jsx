@@ -11,7 +11,7 @@ function ProtectedRoute({ children }) {
       <div className="min-h-screen bg-paper flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-brand-teal border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="font-body text-brand-ink/60">Loading...</p>
+          <p className="font-body text-brand-ink-muted">Loading...</p>
         </div>
       </div>
     )

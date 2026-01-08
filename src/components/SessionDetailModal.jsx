@@ -33,7 +33,7 @@ function SessionDetailModal({ session, isOpen, onClose, isBookmarked, onToggleBo
     session: { bg: 'bg-brand-teal/10', text: 'text-brand-teal', border: 'border-brand-teal/20' },
     lightning: { bg: 'bg-amber-500/10', text: 'text-amber-600', border: 'border-amber-500/20' },
     workshop: { bg: 'bg-brand-green-dark/10', text: 'text-brand-green-dark', border: 'border-brand-green-dark/20' },
-    break: { bg: 'bg-brand-ink/5', text: 'text-brand-ink/60', border: 'border-brand-ink/10' },
+    break: { bg: 'bg-brand-ink/5', text: 'text-brand-ink-muted', border: 'border-brand-ink/10' },
     networking: { bg: 'bg-purple-500/10', text: 'text-purple-600', border: 'border-purple-500/20' },
   }
 
@@ -84,7 +84,7 @@ function SessionDetailModal({ session, isOpen, onClose, isBookmarked, onToggleBo
                 className="p-2 hover:bg-brand-ink/5 rounded-full transition-colors flex-shrink-0"
                 aria-label="Close modal"
               >
-                <X className="w-5 h-5 text-brand-ink/60" />
+                <X className="w-5 h-5 text-brand-ink-muted" />
               </button>
             </div>
 
@@ -93,19 +93,19 @@ function SessionDetailModal({ session, isOpen, onClose, isBookmarked, onToggleBo
               {/* Meta info */}
               <div className="flex flex-wrap gap-4 mb-6">
                 {session.time && (
-                  <div className="flex items-center gap-2 text-brand-ink/70">
+                  <div className="flex items-center gap-2 text-brand-ink-muted">
                     <Clock className="w-4 h-4" />
                     <span className="font-body text-sm">{session.time}</span>
                   </div>
                 )}
                 {session.room && (
-                  <div className="flex items-center gap-2 text-brand-ink/70">
+                  <div className="flex items-center gap-2 text-brand-ink-muted">
                     <MapPin className="w-4 h-4" />
                     <span className="font-body text-sm">{session.room}</span>
                   </div>
                 )}
                 {session.track && (
-                  <div className="flex items-center gap-2 text-brand-ink/70">
+                  <div className="flex items-center gap-2 text-brand-ink-muted">
                     <Tag className="w-4 h-4" />
                     <span className="font-body text-sm">{session.track}</span>
                   </div>

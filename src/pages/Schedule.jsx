@@ -100,7 +100,7 @@ function Schedule() {
             <h1 className="editorial-headline text-4xl md:text-5xl text-brand-ink mb-4">
               Schedule
             </h1>
-            <p className="font-body text-brand-ink/60 text-lg max-w-2xl mx-auto">
+            <p className="font-body text-brand-ink-muted text-lg max-w-2xl mx-auto">
               Two days of sessions, workshops, and networking. Programming details will be announced in spring 2026.
             </p>
             {currentUser && (
@@ -109,9 +109,9 @@ function Schedule() {
               </p>
             )}
             {/* Bookmark badge legend */}
-            <div className="mt-4 flex flex-wrap items-center justify-center gap-4 text-xs text-brand-ink/60">
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-4 text-xs text-brand-ink-muted">
               <span className="flex items-center gap-1.5">
-                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-brand-ink/10 text-brand-ink/60">
+                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-brand-ink/10 text-brand-ink-muted">
                   <Users className="w-3 h-3" />3
                 </span>
                 = attendees who saved
@@ -132,7 +132,7 @@ function Schedule() {
               </div>
               <div>
                 <p className="font-heading font-semibold text-brand-ink">June 8-9, 2026</p>
-                <p className="font-body text-sm text-brand-ink/60">Monday & Tuesday</p>
+                <p className="font-body text-sm text-brand-ink-muted">Monday & Tuesday</p>
               </div>
             </motion.div>
 
@@ -154,7 +154,7 @@ function Schedule() {
                 >
                   Pittsburgh venue TBA
                 </a>
-                <p className="font-body text-sm text-brand-ink/60">Pittsburgh, Pennsylvania</p>
+                <p className="font-body text-sm text-brand-ink-muted">Pittsburgh, Pennsylvania</p>
               </div>
             </motion.div>
           </div>
@@ -173,7 +173,7 @@ function Schedule() {
               <h2 className="font-heading font-semibold text-2xl text-brand-ink mb-4">
                 Schedule coming soon
               </h2>
-              <p className="font-body text-brand-ink/70 max-w-md mx-auto mb-6">
+              <p className="font-body text-brand-ink-muted max-w-md mx-auto mb-6">
                 We're putting together an incredible lineup of sessions, workshops, and speakers for CJS2026. Check back soon for the full schedule.
               </p>
               <div className="grid md:grid-cols-2 gap-4 max-w-2xl mx-auto">
@@ -187,7 +187,7 @@ function Schedule() {
                     <Lightbulb className="w-5 h-5 text-brand-cardinal" />
                     <p className="font-body font-medium text-brand-ink">Pitch a session</p>
                   </div>
-                  <p className="font-body text-sm text-brand-ink/60">
+                  <p className="font-body text-sm text-brand-ink-muted">
                     Have an idea for a session, workshop, or discussion? We want to hear from you.
                   </p>
                 </a>
@@ -201,7 +201,7 @@ function Schedule() {
                     <Mail className="w-5 h-5 text-brand-teal" />
                     <p className="font-body font-medium text-brand-ink">Stay in the loop</p>
                   </div>
-                  <p className="font-body text-sm text-brand-ink/60">
+                  <p className="font-body text-sm text-brand-ink-muted">
                     Sign up for the Collaborative Journalism Newsletter for updates on CJS2026.
                   </p>
                 </a>
@@ -227,6 +227,7 @@ function Schedule() {
                     placeholder="Search sessions, speakers, rooms..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
+                    aria-label="Search sessions"
                     className="w-full pl-10 pr-10 py-3 rounded-lg border-2 border-brand-ink/10 bg-white/50 font-body text-sm text-brand-ink placeholder:text-brand-ink/40 focus:outline-none focus:border-brand-teal/50 focus:bg-white transition-colors"
                   />
                   {searchQuery && (
@@ -244,7 +245,7 @@ function Schedule() {
                 {(sessionTypes.length > 1 || sessionTracks.length > 0) && (
                   <button
                     onClick={() => setShowFilters(!showFilters)}
-                    className="flex items-center gap-2 font-body text-sm text-brand-ink/60 hover:text-brand-teal transition-colors"
+                    className="flex items-center gap-2 font-body text-sm text-brand-ink-muted hover:text-brand-teal transition-colors"
                   >
                     <Filter className="w-4 h-4" />
                     {showFilters ? 'Hide filters' : 'Filter by type'}
@@ -270,7 +271,7 @@ function Schedule() {
                                 className={`px-4 py-2.5 rounded-full text-sm font-body transition-colors min-h-[40px] ${
                                   activeFilters.types.includes(type)
                                     ? 'bg-brand-teal text-white'
-                                    : 'bg-brand-ink/5 text-brand-ink/60 hover:bg-brand-ink/10'
+                                    : 'bg-brand-ink/5 text-brand-ink-muted hover:bg-brand-ink/10'
                                 }`}
                               >
                                 {type}
@@ -292,7 +293,7 @@ function Schedule() {
                                 className={`px-4 py-2.5 rounded-full text-sm font-body transition-colors min-h-[40px] ${
                                   activeFilters.tracks.includes(track)
                                     ? 'bg-brand-teal text-white'
-                                    : 'bg-brand-ink/5 text-brand-ink/60 hover:bg-brand-ink/10'
+                                    : 'bg-brand-ink/5 text-brand-ink-muted hover:bg-brand-ink/10'
                                 }`}
                               >
                                 {track}
@@ -323,7 +324,7 @@ function Schedule() {
                 transition={{ delay: 0.3 }}
               >
                 <p className="font-accent text-xl text-brand-cardinal mb-2">Preliminary schedule</p>
-                <p className="font-body text-brand-ink/70 mb-4">
+                <p className="font-body text-brand-ink-muted mb-4">
                   Session topics and speakers will be announced in spring 2026.
                 </p>
                 <a
@@ -351,7 +352,7 @@ function Schedule() {
                     </div>
                     <div>
                       <h2 className="font-heading font-bold text-2xl text-brand-ink">Monday, June 8</h2>
-                      <p className="font-body text-brand-ink/60">Main summit day</p>
+                      <p className="font-body text-brand-ink-muted">Main summit day</p>
                     </div>
                   </div>
 
@@ -376,7 +377,7 @@ function Schedule() {
                     </div>
                     <div>
                       <h2 className="font-heading font-bold text-2xl text-brand-ink">Tuesday, June 9</h2>
-                      <p className="font-body text-brand-ink/60">Workshop day</p>
+                      <p className="font-body text-brand-ink-muted">Workshop day</p>
                     </div>
                   </div>
 
@@ -395,7 +396,7 @@ function Schedule() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                 >
-                  <p className="font-body text-brand-ink/60 mb-4">No sessions match your filters.</p>
+                  <p className="font-body text-brand-ink-muted mb-4">No sessions match your filters.</p>
                   <button
                     onClick={clearFilters}
                     className="btn-secondary text-sm"
@@ -417,7 +418,7 @@ function Schedule() {
             <h3 className="font-heading font-semibold text-xl text-brand-green-dark mb-2">
               Co-located with INN Days
             </h3>
-            <p className="font-body text-brand-ink/70 mb-4">
+            <p className="font-body text-brand-ink-muted mb-4">
               INN Days runs June 9-11 at the same venue. Attend both events in one trip.
             </p>
             <a

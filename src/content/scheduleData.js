@@ -122,7 +122,7 @@ export function getBookmarkableSessions() {
 export const typeColors = {
   session: { bg: 'bg-brand-teal/5', text: 'text-brand-teal', border: 'border-brand-teal/20' },
   workshop: { bg: 'bg-brand-cardinal/5', text: 'text-brand-cardinal', border: 'border-brand-cardinal/20' },
-  break: { bg: 'bg-brand-cream', text: 'text-brand-ink/60', border: 'border-brand-ink/10' },
+  break: { bg: 'bg-brand-cream', text: 'text-brand-ink-muted', border: 'border-brand-ink/10' },
   special: { bg: 'bg-brand-green-dark/5', text: 'text-brand-green-dark', border: 'border-brand-green-dark/20' },
   lightning: { bg: 'bg-brand-gold/10', text: 'text-brand-gold', border: 'border-brand-gold/20' },
 };

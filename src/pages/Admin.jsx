@@ -481,6 +481,7 @@ function AdminPanel() {
                 <button
                   onClick={() => setMobileMenuOpen(false)}
                   className="p-2 rounded-lg text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)]"
+                  aria-label="Close menu"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -1620,6 +1621,7 @@ function SessionsTab({ currentUser, isInk }) {
   const [bookmarkCounts, setBookmarkCounts] = useState({})
   const [loading, setLoading] = useState(true)
   const [sessions, setSessions] = useState([])
+  const [sessionLoadError, setSessionLoadError] = useState(null)
 
   // Fetch bookmark counts from Firestore
   useEffect(() => {
@@ -1643,13 +1645,19 @@ function SessionsTab({ currentUser, isInk }) {
 
   // Load session data from static file
   useEffect(() => {
-    import('../content/scheduleData').then((module) => {
-      const allSessions = [
-        ...(module.sessionsByDay.monday || []),
-        ...(module.sessionsByDay.tuesday || [])
-      ]
-      setSessions(allSessions)
-    })
+    import('../content/scheduleData')
+      .then((module) => {
+        const allSessions = [
+          ...(module.sessionsByDay.monday || []),
+          ...(module.sessionsByDay.tuesday || [])
+        ]
+        setSessions(allSessions)
+        setSessionLoadError(null)
+      })
+      .catch((error) => {
+        console.error('Failed to load schedule data:', error)
+        setSessionLoadError('Failed to load session data. Please refresh the page.')
+      })
   }, [])
 
   // Combine sessions with bookmark counts and sort by count
@@ -1675,6 +1683,18 @@ function SessionsTab({ currentUser, isInk }) {
 
   return (
     <div className="space-y-6">
+      {/* Error state */}
+      {sessionLoadError && (
+        <div className="admin-card p-4 border-l-4 border-admin-rose">
+          <div className="flex items-center gap-3">
+            <AlertCircle className="w-5 h-5 text-admin-rose flex-shrink-0" />
+            <div>
+              <p className="font-admin-body text-sm text-admin-rose">{sessionLoadError}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Summary cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <div className="admin-card p-4">

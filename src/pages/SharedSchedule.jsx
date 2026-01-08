@@ -99,7 +99,7 @@ function SharedSchedule() {
           {/* Back link */}
           <Link
             to="/schedule"
-            className="inline-flex items-center gap-2 text-brand-ink/60 hover:text-brand-teal mb-6 font-body text-sm"
+            className="inline-flex items-center gap-2 text-brand-ink-muted hover:text-brand-teal mb-6 font-body text-sm"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to schedule
@@ -126,7 +126,7 @@ function SharedSchedule() {
               <h2 className="font-heading font-semibold text-xl text-brand-ink mb-2">
                 {error === 'login_required' ? 'Login required' : 'Cannot view schedule'}
               </h2>
-              <p className="font-body text-brand-ink/60 mb-6">
+              <p className="font-body text-brand-ink-muted mb-6">
                 {error === 'login_required'
                   ? 'This schedule is only visible to CJS attendees. Please sign in to view.'
                   : error === 'This schedule is private'
@@ -169,7 +169,7 @@ function SharedSchedule() {
                         {userData?.displayName}'s schedule
                       </h1>
                       {userData?.organization && (
-                        <p className="font-body text-sm sm:text-base text-brand-ink/60 truncate">
+                        <p className="font-body text-sm sm:text-base text-brand-ink-muted truncate">
                           {userData.organization}
                         </p>
                       )}
@@ -197,7 +197,7 @@ function SharedSchedule() {
                   <div className="w-16 h-16 rounded-full bg-brand-ink/5 flex items-center justify-center mx-auto mb-4">
                     <Calendar className="w-8 h-8 text-brand-ink/30" />
                   </div>
-                  <p className="font-body text-brand-ink/60">
+                  <p className="font-body text-brand-ink-muted">
                     No sessions saved yet.
                   </p>
                 </motion.div>

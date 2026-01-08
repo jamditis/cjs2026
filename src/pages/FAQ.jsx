@@ -135,7 +135,7 @@ function FAQItem({ question, answer, isOpen, onToggle }) {
             transition={{ duration: 0.2 }}
             className="overflow-hidden"
           >
-            <p className="font-body text-brand-ink/70 pb-5 leading-relaxed">
+            <p className="font-body text-brand-ink-muted pb-5 leading-relaxed">
               {answer}
             </p>
           </motion.div>
@@ -192,7 +192,7 @@ function FAQ() {
             <h1 className="editorial-headline text-4xl md:text-5xl text-brand-ink mb-4">
               Frequently asked questions
             </h1>
-            <p className="font-body text-brand-ink/60 text-lg max-w-2xl mx-auto">
+            <p className="font-body text-brand-ink-muted text-lg max-w-2xl mx-auto">
               Everything you need to know about CJS2026. Can't find what you're looking for?{' '}
               <Link to="/contact" className="text-brand-teal hover:underline">Contact us</Link>.
             </p>
@@ -221,7 +221,7 @@ function FAQ() {
               <h3 className="font-heading font-semibold text-xl text-brand-ink mb-3">
                 Still have questions?
               </h3>
-              <p className="font-body text-brand-ink/60 mb-6">
+              <p className="font-body text-brand-ink-muted mb-6">
                 We're here to help! Reach out and we'll get back to you as soon as possible.
               </p>
               <a

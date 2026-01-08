@@ -37,7 +37,7 @@ function MySchedule({ compact = false, maxSessions = null, showViewAll = true })
           <BookmarkX className="w-8 h-8 text-brand-ink/30" />
         </div>
         <h3 className="font-heading font-semibold text-brand-ink mb-2">No saved sessions</h3>
-        <p className="font-body text-sm text-brand-ink/60 mb-4">
+        <p className="font-body text-sm text-brand-ink-muted mb-4">
           Browse the schedule and bookmark sessions you want to attend.
         </p>
         <Link
@@ -79,7 +79,7 @@ function MySchedule({ compact = false, maxSessions = null, showViewAll = true })
   return (
     <div className="space-y-8">
       {/* Stats */}
-      <div className="flex items-center gap-6 text-sm text-brand-ink/60">
+      <div className="flex items-center gap-6 text-sm text-brand-ink-muted">
         <span className="inline-flex items-center gap-2">
           <Calendar className="w-4 h-4" />
           {savedSessions.length} session{savedSessions.length !== 1 ? 's' : ''} saved

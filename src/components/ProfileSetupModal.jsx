@@ -45,9 +45,10 @@ export default function ProfileSetupModal() {
         {/* Skip button */}
         <button
           onClick={skipProfileSetup}
-          className="absolute top-4 right-4 p-2 text-brand-ink/40 hover:text-brand-ink/70
+          className="absolute top-4 right-4 p-2 text-brand-ink/40 hover:text-brand-ink-muted
                    hover:bg-brand-ink/5 rounded-full transition-colors"
           title="Skip for now"
+          aria-label="Skip profile setup"
           disabled={loading}
         >
           <X className="w-5 h-5" />
@@ -60,7 +61,7 @@ export default function ProfileSetupModal() {
           <h2 className="font-heading text-2xl text-brand-ink mb-2">
             Complete your profile
           </h2>
-          <p className="font-body text-brand-ink/70">
+          <p className="font-body text-brand-ink-muted">
             Add your name so other attendees can find you.
           </p>
         </div>
@@ -92,7 +93,7 @@ export default function ProfileSetupModal() {
               value={currentUser?.email || ''}
               disabled
               className="w-full px-4 py-3 border-2 border-brand-ink/10 rounded-lg font-body
-                       bg-brand-cream/50 text-brand-ink/70"
+                       bg-brand-cream/50 text-brand-ink-muted"
             />
             <p className="font-body text-xs text-brand-ink/50 mt-1">
               This is the email you signed in with
@@ -133,7 +134,7 @@ export default function ProfileSetupModal() {
             type="button"
             onClick={skipProfileSetup}
             disabled={loading}
-            className="font-body text-sm text-brand-ink/60 hover:text-brand-teal underline
+            className="font-body text-sm text-brand-ink-muted hover:text-brand-teal underline
                      disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Skip for now

@@ -93,7 +93,7 @@ function EditRequest() {
               <h1 className="editorial-headline text-3xl md:text-4xl text-brand-ink mb-2">
                 Request a copy edit
               </h1>
-              <p className="font-body text-brand-ink/60">
+              <p className="font-body text-brand-ink-muted">
                 Use this form to request changes to the CJS2026 website copy
               </p>
             </div>
@@ -111,7 +111,7 @@ function EditRequest() {
                   <h2 className="font-heading font-semibold text-xl text-brand-ink mb-2">
                     Request submitted
                   </h2>
-                  <p className="font-body text-brand-ink/60 mb-6">
+                  <p className="font-body text-brand-ink-muted mb-6">
                     Your edit request has been saved. An admin will review it and implement the changes.
                   </p>
                   <button

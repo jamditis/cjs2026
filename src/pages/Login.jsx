@@ -149,7 +149,7 @@ function Login() {
               <h1 className="editorial-headline text-2xl md:text-3xl text-brand-ink mb-4">
                 Check your inbox
               </h1>
-              <p className="font-body text-brand-ink/70 mb-6">
+              <p className="font-body text-brand-ink-muted mb-6">
                 We sent a sign-in link to <strong className="text-brand-ink">{email}</strong>
               </p>
               <p className="font-body text-brand-ink/50 text-sm mb-4">
@@ -180,13 +180,13 @@ function Login() {
                 >
                   📬 Check your spam folder!
                 </motion.p>
-                <p className="font-body text-sm text-brand-ink/60 mb-1">
+                <p className="font-body text-sm text-brand-ink-muted mb-1">
                   The email comes from:
                 </p>
-                <p className="font-mono text-sm text-brand-ink/70 mb-1">
+                <p className="font-mono text-sm text-brand-ink-muted mb-1">
                   noreply@cjs2026.firebaseapp.com
                 </p>
-                <p className="font-body text-sm text-brand-ink/60">
+                <p className="font-body text-sm text-brand-ink-muted">
                   Subject: "Sign in to cjs2026"
                 </p>
               </motion.div>
@@ -236,7 +236,7 @@ function Login() {
             <h1 className="editorial-headline text-3xl md:text-4xl text-brand-ink mb-2">
               Welcome back
             </h1>
-            <p className="font-body text-brand-ink/60">
+            <p className="font-body text-brand-ink-muted">
               Sign in to access your attendee dashboard
             </p>
           </div>
@@ -275,7 +275,7 @@ function Login() {
                 </svg>
                 Continue with Google
               </motion.button>
-              <p className="text-center font-body text-sm text-brand-ink/60">
+              <p className="text-center font-body text-sm text-brand-ink-muted">
                 Recommended — instant sign-in
               </p>
             </div>
@@ -331,7 +331,7 @@ function Login() {
                 >
                   ⚠️ Check your spam folder
                 </motion.p>
-                <p className="font-body text-xs text-brand-ink/70">
+                <p className="font-body text-xs text-brand-ink-muted">
                   Sign-in emails often land in spam. Look for an email from <span className="font-mono text-brand-ink/80">noreply@cjs2026.firebaseapp.com</span>
                 </p>
               </motion.div>
